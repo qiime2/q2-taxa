@@ -30,7 +30,7 @@ def viz(output_dir: str, taxonomy: pd.Series, frequency: biom.Table,
         taxa_cols = df.columns.values.tolist()
         df = df.join(metadata, how='left')
 
-        filename = 'lvl-%d.tsv' % lvl
+        filename = 'lvl-%d.tsvp' % lvl
         tsvs.append(filename)
         with open(os.path.join(output_dir, filename), 'w') as fh:
             # TODO: fix SampleID column label in dataframe
