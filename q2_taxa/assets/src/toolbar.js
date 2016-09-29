@@ -155,6 +155,8 @@ export function addDownloadLinks(sel, svg) {
       const link = document.createElement('a');
       link.setAttribute('href', url);
       link.setAttribute('download', 'taxaplot.svg');
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     });
 }
