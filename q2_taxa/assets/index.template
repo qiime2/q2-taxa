@@ -7,10 +7,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title></title>
     <link rel="stylesheet" href="dist/bootstrap.min.css">
+    <style type="text/css">
+      body {
+        padding-left: 10px;
+      }
+    </style>
     <script src='dist/vendor.bundle.js'></script>
   </head>
   <body>
-    <div class="container"></div>
+    <div class="container-fluid"></div>
     <script>
       var d = [];
       function load_data(name, taxa_keys, str) {

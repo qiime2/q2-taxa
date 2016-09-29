@@ -85,8 +85,8 @@ export function addTaxaPicker(row, levels, selectedLevel) {
     .attr('class', 'form-control')
     .on('change', function appendTaxaPicker() {
       const body = select('body');
-      body.select('.container').remove();
-      body.insert('div', ':first-child').attr('class', 'container');
+      body.select('.container-fluid').remove();
+      body.insert('div', ':first-child').attr('class', 'container-fluid');
       init(this.selectedIndex);
     })
     .selectAll('option')

@@ -16,7 +16,7 @@ export default function init(level) {
   const data = d[level].data;
 
   // DOM
-  const body = select('body .container');
+  const body = select('body .container-fluid');
   const plotRow = body.append('div').attr('class', 'viz row');
   const plotDiv = plotRow.append('div').attr('class', 'col-lg-12');
   const controlsRow = plotDiv.append('div').attr('class', 'controls row');
@@ -49,8 +49,8 @@ export default function init(level) {
 
   // Controls
   const ctrlRowOne = controls.append('div').attr('class', 'row');
+  addDownloadLinks(ctrlRowOne, svg);
   addTaxaPicker(ctrlRowOne, levels, d[level].name);
   addColorPicker(ctrlRowOne, svg, data, dataMeta);
   addSortByPicker(ctrlRowOne, svg, data, dataMeta);
-  addDownloadLinks(ctrlRowOne, svg);
 }
