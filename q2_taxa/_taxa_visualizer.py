@@ -8,31 +8,18 @@ from trender import TRender
 from qiime import Metadata
 from qiime.plugin.util import transform
 
+from ._util import _extract_to_level
+
 
 def bar_plots(output_dir: str, taxonomy: pd.Series, table: biom.Table,
-        metadata: Metadata) -> None:
+              metadata: Metadata) -> None:
     metadata = metadata.to_dataframe()
-
-    # Assemble the taxonomy data
-    taxa = {}
-    for k, v in taxonomy.to_dict().items():
-        taxa[k] = {'taxonomy': [x.strip() for x in v.split(';')]}
-    table.add_metadata(taxa, axis='observation')
-
-    # Pluck first to determine depth.
-    # TODO: Is it safe to assume that the depth will be the same for
-    # each sample?
-    depth = len(list(taxa.values())[0]['taxonomy'])
     tsvs = []
+    collapsed_tables = _extract_to_level(taxonomy, table)
 
-    # Collapse table at specified level
-    for level in range(1, depth+1):
-        def bin_f(id_, x):
-            return ';'.join(x['taxonomy'][:level])
-        collapsedTable = table.collapse(bin_f, norm=False, min_group_size=1,
-                                   axis='observation')
+    for level, collapsed_table in enumerate(collapsed_tables, 1):
         # Join collapsed table with metadata
-        df = transform(collapsedTable, to_type=pd.DataFrame)
+        df = transform(collapsed_table, to_type=pd.DataFrame)
         taxa_cols = df.columns.values.tolist()
         df = df.join(metadata, how='left')
 
