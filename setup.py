@@ -21,5 +21,6 @@ setup(
     entry_points={
         "qiime.plugins":
         ["q2-taxa=q2_taxa.plugin_setup:plugin"]
-    }
+    },
+    package_data={'q2_taxa': ['assets/index.template', 'assets/dst/*']}
 )
