@@ -13,7 +13,7 @@ export default function plotBars(chart, x, y, z, dataMeta, sortMap) {
   chart.selectAll('#tooltip').remove();
   const tooltip = chart.append('g').style('display', 'none').attr('id', 'tooltip');
   tooltip.append('rect')
-    .attr('height', 35)
+    .attr('height', 45)
     .attr('fill', 'white');
   const tttext = tooltip.append('text')
     .style('text-anchor', 'middle')
@@ -24,6 +24,9 @@ export default function plotBars(chart, x, y, z, dataMeta, sortMap) {
     .attr('dy', '1.2em');
   tttext.append('tspan')
     .attr('id', 'taxalabel')
+    .attr('dy', '1.2em');
+  tttext.append('tspan')
+    .attr('id', 'abunlabel')
     .attr('dy', '1.2em');
 
   // Color groups
@@ -50,15 +53,18 @@ export default function plotBars(chart, x, y, z, dataMeta, sortMap) {
       const hoveredTaxa = select(this.parentNode).property('taxa');
       const txlabel = text.select('#ttxlabel');
       const taxalabel = text.select('#taxalabel');
+      const abunlabel = text.select('#abunlabel');
 
       txlabel.text(() => sortMap[d.data.SampleID]);
       taxalabel.text(() => hoveredTaxa);
+      abunlabel.text(() => `${d[1] - d[0]}`);
 
       const textWidth = text.node().getBBox().width;
       const midpoint = (textWidth / 2) + 5;
 
       txlabel.attr('x', midpoint);
       taxalabel.attr('x', midpoint);
+      abunlabel.attr('x', midpoint);
 
       tooltip.select('rect').attr('width', textWidth + 10);
 
