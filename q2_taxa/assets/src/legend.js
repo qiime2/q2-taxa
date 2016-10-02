@@ -22,8 +22,7 @@ export default function plotLegend(svg, chart, keys, width, z) {
   // Swatches
   legendEnter.append('rect')
     .attr('width', 18)
-    .attr('height', 18)
-    .attr('selected', false);
+    .attr('height', 18);
   legend.selectAll('rect')
     .attr('x', width)
     .call(_swatchColor, z, stackOrder)
@@ -31,13 +30,13 @@ export default function plotLegend(svg, chart, keys, width, z) {
     .on('click', (d) => {
       const clickedLegend = select(`#id${d}`);
       const clickedSwatch = clickedLegend.select('rect');
-      const isSelected = (clickedSwatch.attr('selected') === 'true');
+      const isSelected = clickedSwatch.classed('selected');
 
-      clickedSwatch.attr('selected', !isSelected)
+      clickedSwatch.classed('selected', !isSelected)
         .style('stroke', () => (isSelected ? null : 'black'))
         .style('stroke-width', () => (isSelected ? null : 2));
 
-      const selectedTaxa = selectAll('.legend rect[selected=true]')
+      const selectedTaxa = selectAll('.legend .selected')
         .nodes().map(k => keys[select(k).datum()]);
 
       selectAll('.layer')

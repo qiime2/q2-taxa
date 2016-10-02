@@ -35,6 +35,7 @@ export default function plotBars(chart, x, y, z, dataMeta, sortMap) {
   const layerEnter = layerUpdate.enter().append('g').attr('class', 'layer');
   const layer = layerUpdate.merge(layerEnter)
     .call(_barGroupColor, z)
+    .attr('visibility', null)
     .property('taxa', d => d.key);
 
   // Rectangles
