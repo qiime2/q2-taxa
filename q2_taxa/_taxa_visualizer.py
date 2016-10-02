@@ -11,8 +11,8 @@ from qiime.plugin.util import transform
 from ._util import _extract_to_level
 
 
-def bar_plots(output_dir: str, taxonomy: pd.Series, table: biom.Table,
-              metadata: Metadata) -> None:
+def barplot(output_dir: str, taxonomy: pd.Series, table: biom.Table,
+            metadata: Metadata) -> None:
     metadata = metadata.to_dataframe()
     tsvs = []
     collapsed_tables = _extract_to_level(taxonomy, table)

@@ -6,7 +6,7 @@ from q2_types.feature_data import FeatureData, Taxonomy
 from q2_types.feature_table import FeatureTable, Frequency
 
 
-from ._taxa_visualizer import bar_plots
+from ._taxa_visualizer import barplot
 
 
 plugin = qiime.plugin.Plugin(
@@ -19,13 +19,13 @@ plugin = qiime.plugin.Plugin(
 )
 
 plugin.visualizers.register_function(
-    function=bar_plots,
+    function=barplot,
     inputs={
         'taxonomy': FeatureData[Taxonomy],
         'table': FeatureTable[Frequency]
     },
     parameters={'metadata': qiime.plugin.Metadata},
-    name='Visualize taxonomy with bar plots',
+    name='Visualize taxonomy with and interactive bar plot',
     description='This visualizer produces an interactive visualization of '
                 'taxonomies.'
 )
