@@ -22,14 +22,19 @@ def barplot(output_dir: str, taxonomy: pd.Series, table: biom.Table,
         df = transform(collapsed_table, to_type=pd.DataFrame)
         taxa_cols = df.columns.values.tolist()
         df = df.join(metadata, how='left')
+        df['SampleID'] = df.index
+        df = df.fillna('')  # D3 sort works best with empty strings vs null
+        all_cols = df.columns.values.tolist()
+        # viz relies on first column being `SampleID`
+        all_cols.insert(0, all_cols.pop(all_cols.index('SampleID')))
 
-        filename = 'lvl-%d.tsvp' % level
+        filename = 'lvl-%d.jsonp' % level
         tsvs.append(filename)
 
         with open(os.path.join(output_dir, filename), 'w') as fh:
-            # TODO: fix SampleID column label in dataframe
-            fh.write('load_data("Level %d",%s,`SampleID' % (level, taxa_cols))
-            df.to_csv(fh, sep='\t', line_terminator='\n')
+            fh.write('load_data("Level %d",%s,%s,`' % (level, taxa_cols,
+                                                       all_cols))
+            df.to_json(fh, orient='records')
             fh.write('`);')
 
     # Now that the tables have been collapsed, write out the index template

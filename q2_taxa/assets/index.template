@@ -18,8 +18,14 @@
     <div class="container-fluid"></div>
     <script>
       var d = [];
-      function load_data(name, taxa_keys, str) {
-        d.push({ 'name': name, taxa_keys: taxa_keys, 'rawdata': str });
+      function load_data(name, taxaKeys, allKeys, JSONstr) {
+        data = JSON.parse(JSONstr);
+        data.columns = allKeys;
+        d.push({
+          name: name,
+          taxaKeys: taxaKeys,
+          data: data,
+        });
       }
     </script>
   #for @level in @tsvs:

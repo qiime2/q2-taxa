@@ -12,7 +12,7 @@ function _stableAscending(a, b, key) {
   const aVal = a[key];
   const bVal = b[key];
   if (aVal === bVal) {
-    return a.position - b.position;
+    return ascending(a.position, b.position);
   }
   return ascending(aVal, bVal);
 }
@@ -25,7 +25,7 @@ function _stableDescending(a, b, key) {
   const aVal = a[key];
   const bVal = b[key];
   if (aVal === bVal) {
-    return b.position - a.position;
+    return descending(a.position, b.position);
   }
   return descending(aVal, bVal);
 }
@@ -43,7 +43,7 @@ function _getRelative(a, b, key) {
 function _stableSortAscRelative(a, b, key) {
   const { aRel, bRel } = _getRelative(a, b, key);
   if (aRel === bRel) {
-    return a.position - b.position;
+    return ascending(a.position, b.position);
   }
   return ascending(aRel, bRel);
 }
@@ -56,7 +56,7 @@ function _sortAscRelative(a, b, key) {
 function _stableSortDescRelative(a, b, key) {
   const { aRel, bRel } = _getRelative(a, b, key);
   if (aRel === bRel) {
-    return b.position - a.position;
+    return descending(a.position, b.position);
   }
   return descending(aRel, bRel);
 }
@@ -114,7 +114,7 @@ export function sort(data, keys, orders, labels, dataMeta) {
 
 export function setupData(data, svg) {
   const levelData = data.data;
-  const keys = data.taxa_keys;
+  const keys = data.taxaKeys;
   const columns = JSON.parse(JSON.stringify(levelData.columns));
   let sortedKeys;
   let sortedKeysReverse;
