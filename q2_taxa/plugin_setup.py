@@ -7,6 +7,7 @@ from q2_types.feature_table import FeatureTable, Frequency
 
 
 from ._taxa_visualizer import barplot
+from ._util import collapse
 
 
 plugin = qiime.plugin.Plugin(
@@ -16,6 +17,20 @@ plugin = qiime.plugin.Plugin(
     package='q2_taxa',
     user_support_text=None,
     citation_text=None
+)
+
+plugin.methods.register_function(
+    function=collapse,
+    inputs={
+        'taxonomy': FeatureData[Taxonomy],
+        'table': FeatureTable[Frequency]
+    },
+    parameters={'level': qiime.plugin.Int},
+    outputs={'collapsed_table': FeatureTable[Frequency]},
+    name='Collapse features by their taxonomy at the specified level',
+    description='Collapse groups of features that have the same taxonomic '
+                'assignment through the specified level. The frequencies of '
+                'all features will be summed when they are collapsed.'
 )
 
 plugin.visualizers.register_function(
