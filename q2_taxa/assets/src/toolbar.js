@@ -131,7 +131,7 @@ export function addColorPicker(row, svg, data, dataMeta) {
 export function addSortByPicker(row, svg, data, dataMeta) {
   const { metaData, sortedKeysReverse, sortedKeys } = dataMeta;
   const grp = row.append('div').attr('class', 'col-lg-6 form-group sortByPicker');
-  grp.append('label').text('Sort Sample By');
+  grp.append('label').text('Sort Samples By');
   grp.append('button').text('+')
     .attr('class', 'btn btn-primary btn-xs')
     .style('margin-left', '10px')
