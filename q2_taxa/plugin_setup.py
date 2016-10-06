@@ -25,7 +25,9 @@ plugin.visualizers.register_function(
         'table': FeatureTable[Frequency]
     },
     parameters={'metadata': qiime.plugin.Metadata},
-    name='Visualize taxonomy with and interactive bar plot',
-    description='This visualizer produces an interactive visualization of '
-                'taxonomies.'
+    name='Visualize taxonomy with an interactive bar plot',
+    description='This visualizer produces an interactive barplot visualization'
+                ' of taxonomies. Interactive features include multi-level '
+                'sorting, plot recoloring, category selection/highlighting, '
+                'sample relabeling, and SVG figure export.'
 )

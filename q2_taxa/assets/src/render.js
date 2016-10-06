@@ -5,6 +5,7 @@ import {
   axisBottom,
   axisLeft,
   select,
+  format,
 } from 'd3';
 import * as d3chromo from 'd3-scale-chromatic';
 
@@ -18,7 +19,7 @@ export default function render(svg, colorScheme, xOrdering, dataMeta) {
   const { sortMap, sortedSampleIDs } = xOrdering;
   const width = sortedSampleIDs.length * 10;
   const height = 600;
-  const margin = { top: 20, left: 50, right: 50, bottom: 50 };
+  const margin = { top: 20, left: 60, right: 50, bottom: 50 };
   const legendCanvasWidth = 200;
   const { keys } = dataMeta;
   const chart = svg.select('g');
@@ -33,7 +34,7 @@ export default function render(svg, colorScheme, xOrdering, dataMeta) {
   const yAxis = axisLeft();
 
   xAxis.scale(x).tickFormat(d => sortMap[d]);
-  yAxis.scale(y);
+  yAxis.scale(y).tickFormat(format('.0%'));
 
   chart.attr('transform', `translate(${margin.left},${margin.top})`);
 

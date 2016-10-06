@@ -5,6 +5,7 @@ import {
   ascending,
   descending,
 } from 'd3';
+import naturalSort from 'natural-sort';
 import firstBy from 'thenby';
 
 
@@ -14,11 +15,11 @@ function _stableAscending(a, b, key) {
   if (aVal === bVal) {
     return ascending(a.position, b.position);
   }
-  return ascending(aVal, bVal);
+  return naturalSort({ direction: 'asc' })(aVal, bVal);
 }
 
 function _ascending(a, b, key) {
-  return ascending(a[key], b[key]);
+  return naturalSort({ direction: 'asc' })(a[key], b[key]);
 }
 
 function _stableDescending(a, b, key) {
@@ -27,11 +28,11 @@ function _stableDescending(a, b, key) {
   if (aVal === bVal) {
     return descending(a.position, b.position);
   }
-  return descending(aVal, bVal);
+  return naturalSort({ direction: 'desc' })(aVal, bVal);
 }
 
 function _descending(a, b, key) {
-  return descending(a[key], b[key]);
+  return naturalSort({ direction: 'desc' })(a[key], b[key]);
 }
 
 function _getRelative(a, b, key) {

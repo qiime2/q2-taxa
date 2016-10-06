@@ -1,4 +1,6 @@
+import json
 import os.path
+import pkg_resources
 import shutil
 
 import pandas as pd
@@ -11,10 +13,10 @@ from qiime.plugin.util import transform
 from ._util import _extract_to_level
 
 
-def barplot(output_dir: str, taxonomy: pd.Series, table: biom.Table,
+def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series,
             metadata: Metadata) -> None:
     metadata = metadata.to_dataframe()
-    tsvs = []
+    filenames = []
     collapsed_tables = _extract_to_level(taxonomy, table)
 
     for level, collapsed_table in enumerate(collapsed_tables, 1):
@@ -22,26 +24,26 @@ def barplot(output_dir: str, taxonomy: pd.Series, table: biom.Table,
         df = transform(collapsed_table, to_type=pd.DataFrame)
         taxa_cols = df.columns.values.tolist()
         df = df.join(metadata, how='left')
-        df['SampleID'] = df.index
-        df = df.fillna('')  # D3 sort works best with empty strings vs null
+        df = df.reset_index(drop=False)  # Move SampleID index into columns
+        df = df.fillna('')  # JS sort works best with empty strings vs null
         all_cols = df.columns.values.tolist()
-        # viz relies on first column being `SampleID`
-        all_cols.insert(0, all_cols.pop(all_cols.index('SampleID')))
 
         filename = 'lvl-%d.jsonp' % level
-        tsvs.append(filename)
+        filenames.append(filename)
 
         with open(os.path.join(output_dir, filename), 'w') as fh:
-            fh.write('load_data("Level %d",%s,%s,`' % (level, taxa_cols,
-                                                       all_cols))
+            fh.write("load_data('Level %d'," % level)
+            json.dump(taxa_cols, fh)
+            fh.write(",")
+            json.dump(all_cols, fh)
+            fh.write(",")
             df.to_json(fh, orient='records')
-            fh.write('`);')
+            fh.write(");")
 
     # Now that the tables have been collapsed, write out the index template
-    TEMPLATES = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                             'assets')
+    TEMPLATES = pkg_resources.resource_filename('q2_taxa', 'assets')
     index = TRender('index.template', path=TEMPLATES)
-    rendered_index = index.render({'tsvs': tsvs})
+    rendered_index = index.render({'filenames': filenames})
     with open(os.path.join(output_dir, 'index.html'), 'w') as fh:
         fh.write(rendered_index)
 

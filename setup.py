@@ -17,7 +17,7 @@ setup(
     install_requires=['qiime >= 2.0.0', 'pandas', 'q2-types', 'trender'],
     author="Matthew Ryan Dillon",
     author_email="matthewrdillon@gmail.com",
-    description="Work with taxonomies in QIIME 2",
+    description="Taxonomic analysis and visualization.",
     entry_points={
         "qiime.plugins":
         ["q2-taxa=q2_taxa.plugin_setup:plugin"]

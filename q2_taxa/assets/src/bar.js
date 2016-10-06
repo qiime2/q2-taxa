@@ -13,7 +13,7 @@ export default function plotBars(chart, x, y, z, dataMeta, sortMap) {
   chart.selectAll('#tooltip').remove();
   const tooltip = chart.append('g').style('display', 'none').attr('id', 'tooltip');
   tooltip.append('rect')
-    .attr('height', 45)
+    .attr('height', 50)
     .attr('fill', 'white');
   const tttext = tooltip.append('text')
     .style('text-anchor', 'middle')
@@ -56,9 +56,9 @@ export default function plotBars(chart, x, y, z, dataMeta, sortMap) {
       const taxalabel = text.select('#taxalabel');
       const abunlabel = text.select('#abunlabel');
 
-      txlabel.text(() => sortMap[d.data.SampleID]);
+      txlabel.text(() => sortMap[d.data[dataMeta.first]]);
       taxalabel.text(() => hoveredTaxa);
-      abunlabel.text(() => `${d[1] - d[0]}`);
+      abunlabel.text(() => `${((d[1] - d[0]) * 100).toFixed(3)}%`);
 
       const textWidth = text.node().getBBox().width;
       const midpoint = (textWidth / 2) + 5;

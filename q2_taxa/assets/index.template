@@ -15,11 +15,18 @@
     <script src='dist/vendor.bundle.js'></script>
   </head>
   <body>
-    <div class="container-fluid"></div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-12">
+          <img class="header" src="dist/qiime_logo_large.png" alt="QIIME"
+           width="288" height="93">
+        </div>
+      </div>
+    </div>
     <script>
       var d = [];
-      function load_data(name, taxaKeys, allKeys, JSONstr) {
-        data = JSON.parse(JSONstr);
+      function load_data(name, taxaKeys, allKeys, data) {
+        data = data;
         data.columns = allKeys;
         d.push({
           name: name,
@@ -28,7 +35,7 @@
         });
       }
     </script>
-  #for @level in @tsvs:
+  #for @level in @filenames:
     <script src='@level?callback=load_data'></script>
   #end
     <script src='dist/bundle.js'></script>

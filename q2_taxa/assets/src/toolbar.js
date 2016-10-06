@@ -68,11 +68,21 @@ function _appendSortByPicker(sel, svg, data, dataMeta) {
   return sortBySelect;
 }
 
-function _sortBySelectOptions(sel, keys, defaultOptionName) {
-  const update = sel.selectAll('option').data(keys, d => d);
-  update.exit().remove();
-  const enter = update.enter().append('option');
-  return update.merge(enter)
+function _sortBySelectOptions(sel, metaData, sortedKeysReverse, defaultOptionName) {
+  const optGroups = [
+    { label: 'Sample Metadata', keys: metaData },
+    { label: 'Taxonomic Abundance', keys: sortedKeysReverse },
+  ];
+  const updateGroup = sel.selectAll('optgroup').data(optGroups);
+  updateGroup.exit().remove();
+  const enterGroup = updateGroup.enter().append('optgroup');
+  const optgroups = updateGroup.merge(enterGroup)
+    .attr('label', d => d.label);
+
+  const updateOpt = optgroups.selectAll('option').data(d => d.keys);
+  updateOpt.exit().remove();
+  const enterOpt = updateOpt.enter().append('option');
+  return updateOpt.merge(enterOpt)
     .attr('value', d => d)
     .property('selected', d => (d === defaultOptionName))
     .text(d => d);
@@ -119,22 +129,21 @@ export function addColorPicker(row, svg, data, dataMeta) {
 }
 
 export function addSortByPicker(row, svg, data, dataMeta) {
+  const { metaData, sortedKeysReverse, sortedKeys } = dataMeta;
   const grp = row.append('div').attr('class', 'col-lg-6 form-group sortByPicker');
-  grp.append('label').text('Sort By');
+  grp.append('label').text('Sort Sample By');
   grp.append('button').text('+')
     .attr('class', 'btn btn-primary btn-xs')
     .style('margin-left', '10px')
     .on('click', () => {
-      const keys = [...dataMeta.metaData, ...dataMeta.sortedKeysReverse];
       const selects = grp.selectAll('.xCtrl');
-      if (selects.size() === keys.length + 1) { return; }
+      if (selects.size() === metaData.length + sortedKeysReverse.length + 1) { return; }
       const sel = _appendSortByPicker(grp, svg, data, dataMeta);
-      _sortBySelectOptions(sel, keys, dataMeta.sortedKeys[0]);
+      _sortBySelectOptions(sel, metaData, sortedKeysReverse, sortedKeys[0]);
     });
   // Add initial 'Sort By' to sortByGroup
   const sel = _appendSortByPicker(grp, svg, data, dataMeta);
-  const keys = [...dataMeta.metaData, ...dataMeta.sortedKeysReverse];
-  _sortBySelectOptions(sel, keys, dataMeta.sortedKeys[0]);
+  _sortBySelectOptions(sel, metaData, sortedKeysReverse, sortedKeys[0]);
   return grp;
 }
 
