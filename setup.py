@@ -14,16 +14,13 @@ setup(
     name="q2-taxa",
     version=version,
     packages=find_packages(),
-    # pandas and q2-dummy-types are only required for the dummy methods and
-    # visualizers provided as examples. Remove these dependencies when you're
-    # ready to develop your plugin, and add your own dependencies (if there are
-    # any).
-    install_requires=['qiime >= 2.0.0', 'pandas', 'q2-dummy-types'],
+    install_requires=['qiime >= 2.0.0', 'pandas', 'q2-types', 'trender'],
     author="Matthew Ryan Dillon",
     author_email="matthewrdillon@gmail.com",
-    description="Work with taxonomies in QIIME 2",
+    description="Taxonomic analysis and visualization.",
     entry_points={
         "qiime.plugins":
         ["q2-taxa=q2_taxa.plugin_setup:plugin"]
-    }
+    },
+    package_data={'q2_taxa': ['assets/index.template', 'assets/dst/*']}
 )
