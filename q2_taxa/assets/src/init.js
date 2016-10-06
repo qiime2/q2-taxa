@@ -40,7 +40,7 @@ export default function init(level) {
     .style('font', '12px sans-serif')
     .text('Sample');
 
-  const initialColorScheme = availableColorSchemes[0].scheme;
+  const initialColorScheme = availableColorSchemes[0].name;
   const dataMeta = setupData(d[level], svg);
   const { sortedKeys, levels } = dataMeta;
 
