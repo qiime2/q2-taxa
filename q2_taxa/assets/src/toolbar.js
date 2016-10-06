@@ -1,4 +1,5 @@
 import { select } from 'd3';
+import * as d3chromo from 'd3-scale-chromatic';
 
 import init from './init';
 import render from './render';
@@ -6,15 +7,16 @@ import { sort } from './data';
 
 
 export const availableColorSchemes = [
-  { name: 'PRGn', scheme: 'interpolatePRGn' },
-  { name: 'BrBG', scheme: 'interpolateBrBG' },
-  { name: 'PiYG', scheme: 'interpolatePiYG' },
-  { name: 'PuOr', scheme: 'interpolatePuOr' },
-  { name: 'RdBu', scheme: 'interpolateRdBu' },
-  { name: 'RdGy', scheme: 'interpolateRdGy' },
-  { name: 'RdYlBu', scheme: 'interpolateRdYlBu' },
-  { name: 'RdYlGn', scheme: 'interpolateRdYlGn' },
-  { name: 'Spectral', scheme: 'interpolateSpectral' },
+  { name: 'PRGn', scheme: d3chromo.interpolatePRGn, type: 's' },
+  { name: 'BrBG', scheme: d3chromo.interpolateBrBG, type: 's' },
+  { name: 'PiYG', scheme: d3chromo.interpolatePiYG, type: 's' },
+  { name: 'PuOr', scheme: d3chromo.interpolatePuOr, type: 's' },
+  { name: 'RdBu', scheme: d3chromo.interpolateRdBu, type: 's' },
+  { name: 'RdGy', scheme: d3chromo.interpolateRdGy, type: 's' },
+  { name: 'RdYlBu', scheme: d3chromo.interpolateRdYlBu, type: 's' },
+  { name: 'RdYlGn', scheme: d3chromo.interpolateRdYlGn, type: 's' },
+  { name: 'Spectral', scheme: d3chromo.interpolateSpectral, type: 's' },
+  { name: 'schemeAccent (discrete)', scheme: d3chromo.schemeAccent, type: 'o' },
 ];
 
 // HELPERS
@@ -123,7 +125,7 @@ export function addColorPicker(row, svg, data, dataMeta) {
     .data(availableColorSchemes)
     .enter()
       .append('option')
-        .attr('value', d => d.scheme)
+        .attr('value', d => d.name)
         .text(d => d.name);
   return grp;
 }
