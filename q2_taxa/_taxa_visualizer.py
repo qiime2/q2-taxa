@@ -5,7 +5,7 @@ import shutil
 
 import pandas as pd
 import biom
-from trender import TRender
+import q2templates
 
 from qiime import Metadata
 from qiime.plugin.util import transform
@@ -42,10 +42,8 @@ def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series,
 
     # Now that the tables have been collapsed, write out the index template
     TEMPLATES = pkg_resources.resource_filename('q2_taxa', 'assets')
-    index = TRender('index.template', path=TEMPLATES)
-    rendered_index = index.render({'filenames': filenames})
-    with open(os.path.join(output_dir, 'index.html'), 'w') as fh:
-        fh.write(rendered_index)
+    index = os.path.join(TEMPLATES, 'index.html')
+    q2templates.render(index, output_dir, context={'filenames': filenames})
 
     # Copy assets for rendering figure
     shutil.copytree(os.path.join(TEMPLATES, 'dst'),
