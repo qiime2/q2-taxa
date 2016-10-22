@@ -15,7 +15,7 @@ setup(
     version=version,
     packages=find_packages(),
     install_requires=['qiime >= 2.0.5', 'q2-types >= 0.0.5', 'pandas',
-                      'trender'],
+                      'q2templates'],
     author="Matthew Ryan Dillon",
     author_email="matthewrdillon@gmail.com",
     description="Taxonomic analysis and visualization.",
