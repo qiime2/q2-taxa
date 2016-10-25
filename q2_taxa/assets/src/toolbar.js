@@ -7,6 +7,14 @@ import { sort } from './data';
 
 
 export const availableColorSchemes = [
+  { name: 'schemeAccent', scheme: d3chromo.schemeAccent, type: 'o' },
+  { name: 'schemeDark2', scheme: d3chromo.schemeDark2, type: 'o' },
+  { name: 'schemePaired', scheme: d3chromo.schemePaired, type: 'o' },
+  { name: 'schemePastel1', scheme: d3chromo.schemePastel1, type: 'o' },
+  { name: 'schemePastel2', scheme: d3chromo.schemePastel2, type: 'o' },
+  { name: 'schemeSet1', scheme: d3chromo.schemeSet1, type: 'o' },
+  { name: 'schemeSet2', scheme: d3chromo.schemeSet2, type: 'o' },
+  { name: 'schemeSet3', scheme: d3chromo.schemeSet3, type: 'o' },
   { name: 'PRGn', scheme: d3chromo.interpolatePRGn, type: 's' },
   { name: 'BrBG', scheme: d3chromo.interpolateBrBG, type: 's' },
   { name: 'PiYG', scheme: d3chromo.interpolatePiYG, type: 's' },
@@ -16,7 +24,6 @@ export const availableColorSchemes = [
   { name: 'RdYlBu', scheme: d3chromo.interpolateRdYlBu, type: 's' },
   { name: 'RdYlGn', scheme: d3chromo.interpolateRdYlGn, type: 's' },
   { name: 'Spectral', scheme: d3chromo.interpolateSpectral, type: 's' },
-  { name: 'schemeAccent (discrete)', scheme: d3chromo.schemeAccent, type: 'o' },
 ];
 
 // HELPERS
@@ -113,19 +120,33 @@ export function addTaxaPicker(row, levels, selectedLevel) {
 export function addColorPicker(row, svg, data, dataMeta) {
   const grp = row.append('div').attr('class', 'col-lg-2 form-group colorPicker');
   grp.append('label').text('Color Palette');
-  grp.append('select')
+  const sel = grp.append('select')
     .attr('class', 'form-control')
     .on('change', function changeColorPicker() {
       const colorScheme = this.options[this.selectedIndex].value;
       const xOrdering = _getSort(row, svg, data, dataMeta);
       render(svg, colorScheme, xOrdering, dataMeta);
-    })
-    .selectAll('option')
-    .data(availableColorSchemes)
-    .enter()
-      .append('option')
-        .attr('value', d => d.name)
-        .text(d => d.name);
+    });
+
+  const discrete = availableColorSchemes.filter(d => d.type === 'o');
+  const continuous = availableColorSchemes.filter(d => d.type === 's');
+  const optGroups = [
+    { label: 'Discrete', keys: discrete },
+    { label: 'Continuous', keys: continuous },
+  ];
+
+  const updateGroup = sel.selectAll('optgroup').data(optGroups);
+  updateGroup.exit().remove();
+  const enterGroup = updateGroup.enter().append('optgroup');
+  const optgroups = updateGroup.merge(enterGroup)
+    .attr('label', d => d.label);
+
+  const updateOpt = optgroups.selectAll('option').data(d => d.keys);
+  updateOpt.exit().remove();
+  const enterOpt = updateOpt.enter().append('option');
+  updateOpt.merge(enterOpt)
+    .attr('value', d => d.name)
+    .text(d => d.name);
   return grp;
 }
 
