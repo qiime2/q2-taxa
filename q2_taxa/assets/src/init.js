@@ -42,9 +42,9 @@ export default function init(level) {
 
   const initialColorScheme = availableColorSchemes[0].name;
   const dataMeta = setupData(d[level], svg);
-  const { sortedKeys, levels } = dataMeta;
+  const { sortedKeysReverse, levels } = dataMeta;
 
-  const initialSort = sort(data, [sortedKeys[0]], ['Ascending'], [false], dataMeta);
+  const initialSort = sort(data, [sortedKeysReverse[0]], ['Ascending'], [false], dataMeta);
   render(svg, initialColorScheme, initialSort, dataMeta);
 
   // Controls

@@ -55,11 +55,11 @@ export default function plotLegend(svg, chart, keys, width, z) {
     .attr('x', width + 24)
     .text(d => keys[d]);
 
-  let maxLabelLegend = 0;
+  let maxLabelLegendWidth = 0;
   legend.each(function getMaxWidth() {
-    const textHeight = this.getComputedTextLength();
-    if (textHeight > maxLabelLegend) maxLabelLegend = textHeight;
+    const textWidth = this.getComputedTextLength();
+    if (textWidth > maxLabelLegendWidth) maxLabelLegendWidth = textWidth;
   });
 
-  return maxLabelLegend;
+  return maxLabelLegendWidth;
 }

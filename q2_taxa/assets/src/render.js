@@ -34,7 +34,13 @@ export default function render(svg, colorScheme, xOrdering, dataMeta) {
   if (scheme.type === 's') {
     z = scaleSequential(scheme.scheme).domain([0, keys.length - 1]);
   } else if (scheme.type === 'o') {
-    z = scaleOrdinal(scheme.scheme).domain([0, keys.length - 1]);
+    const range = [];
+    const domain = [];
+    for (let i = 0; i < keys.length; i += 1) {
+      range.push(scheme.scheme[i % scheme.scheme.length]);
+      domain.push(i);
+    }
+    z = scaleOrdinal(range).domain(domain);
   }
 
   const xAxis = axisBottom();
@@ -49,11 +55,11 @@ export default function render(svg, colorScheme, xOrdering, dataMeta) {
   setupYAxis(svg, chart, height, yAxis);
 
   plotBars(chart, x, y, z, dataMeta, sortMap);
-  const maxLabelLegend = plotLegend(svg, chart, keys, width, z);
+  const maxLabelLegendWidth = plotLegend(svg, chart, keys, width, z);
 
   const newHeight = height + margin.top + margin.bottom + maxLabelX;
-  const newWidth = width + margin.left + margin.right + maxLabelLegend;
-  const legendHeight = (keys.length - 1) * 20;
+  const newWidth = width + margin.left + margin.right + maxLabelLegendWidth;
+  const legendHeight = (keys.length + 1) * 20;
 
   // Resize canvas as needed
   svg.attr('width', newWidth < width + legendCanvasWidth ? width + legendCanvasWidth : newWidth)
