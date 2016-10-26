@@ -151,7 +151,7 @@ export function addColorPicker(row, svg, data, dataMeta) {
 }
 
 export function addSortByPicker(row, svg, data, dataMeta) {
-  const { metaData, sortedKeysReverse, sortedKeys } = dataMeta;
+  const { metaData, sortedKeysReverse } = dataMeta;
   const grp = row.append('div').attr('class', 'col-lg-6 form-group sortByPicker');
   grp.append('label').text('Sort Samples By');
   grp.append('button').text('+')
@@ -161,11 +161,11 @@ export function addSortByPicker(row, svg, data, dataMeta) {
       const selects = grp.selectAll('.xCtrl');
       if (selects.size() === metaData.length + sortedKeysReverse.length + 1) { return; }
       const sel = _appendSortByPicker(grp, svg, data, dataMeta);
-      _sortBySelectOptions(sel, metaData, sortedKeysReverse, sortedKeys[0]);
+      _sortBySelectOptions(sel, metaData, sortedKeysReverse, sortedKeysReverse[0]);
     });
   // Add initial 'Sort By' to sortByGroup
   const sel = _appendSortByPicker(grp, svg, data, dataMeta);
-  _sortBySelectOptions(sel, metaData, sortedKeysReverse, sortedKeys[0]);
+  _sortBySelectOptions(sel, metaData, sortedKeysReverse, sortedKeysReverse[0]);
   return grp;
 }
 

@@ -1,7 +1,7 @@
 import {
   stack,
   stackOffsetExpand,
-  stackOrderDescending,
+  stackOrderAscending,
   ascending,
   descending,
 } from 'd3';
@@ -126,7 +126,7 @@ export function setupData(data, svg) {
   const dataStack = stack()
     .keys(keys)
     .order((series) => {
-      const stackOrder = stackOrderDescending(series);
+      const stackOrder = stackOrderAscending(series);
       sortedKeys = new Array(stackOrder.length);
       stackOrder.forEach((sortKey, i) => { sortedKeys[i] = keys[sortKey]; });
       sortedKeysReverse = sortedKeys.slice().reverse();
