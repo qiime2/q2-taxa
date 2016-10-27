@@ -23,5 +23,6 @@ setup(
         "qiime.plugins":
         ["q2-taxa=q2_taxa.plugin_setup:plugin"]
     },
-    package_data={'q2_taxa': ['assets/index.template', 'assets/dst/*']}
+    package_data={'q2_taxa': ['assets/index.template', 'assets/dst/*',
+                              'assets/tabulate/*']}
 )
