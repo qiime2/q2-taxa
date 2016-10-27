@@ -6,7 +6,7 @@ from q2_types.feature_data import FeatureData, Taxonomy
 from q2_types.feature_table import FeatureTable, Frequency
 
 
-from ._taxa_visualizer import barplot
+from ._taxa_visualizer import barplot, tabulate
 from ._util import collapse
 
 
@@ -45,4 +45,13 @@ plugin.visualizers.register_function(
                 ' of taxonomies. Interactive features include multi-level '
                 'sorting, plot recoloring, category selection/highlighting, '
                 'sample relabeling, and SVG figure export.'
+)
+
+plugin.visualizers.register_function(
+    function=tabulate,
+    inputs={'data': FeatureData[Taxonomy]},
+    parameters={},
+    name='View taxonomy associated with each feature',
+    description="Generate tabular view of feature identifier to taxonomic "
+                "assignment mapping."
 )
