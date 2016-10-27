@@ -44,11 +44,11 @@ def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series,
             fh.write(");")
 
     # Now that the tables have been collapsed, write out the index template
-    index = os.path.join(TEMPLATES, 'index.html')
+    index = os.path.join(TEMPLATES, 'barplot', 'index.html')
     q2templates.render(index, output_dir, context={'filenames': filenames})
 
     # Copy assets for rendering figure
-    shutil.copytree(os.path.join(TEMPLATES, 'dst'),
+    shutil.copytree(os.path.join(TEMPLATES, 'barplot', 'dst'),
                     os.path.join(output_dir, 'dist'))
 
 
