@@ -163,6 +163,13 @@ export function addSortByPicker(row, svg, data, dataMeta) {
       const sel = _appendSortByPicker(grp, svg, data, dataMeta);
       _sortBySelectOptions(sel, metaData, sortedKeysReverse, sortedKeysReverse[0]);
     });
+  grp.append('button').text('-')
+    .attr('class', 'btn btn-primary btn-xs')
+    .style('margin-left', '10px')
+    .on('click', () => {
+      if (grp.selectAll('.row').size() > 1) { grp.select('.row:last-child').remove(); }
+      _updateSort(grp, svg, data, dataMeta);
+    });
   // Add initial 'Sort By' to sortByGroup
   const sel = _appendSortByPicker(grp, svg, data, dataMeta);
   _sortBySelectOptions(sel, metaData, sortedKeysReverse, sortedKeysReverse[0]);
