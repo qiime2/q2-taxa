@@ -14,7 +14,7 @@ setup(
     name="q2-taxa",
     version=version,
     packages=find_packages(),
-    install_requires=['qiime >= 2.0.5', 'q2-types >= 0.0.5', 'pandas',
+    install_requires=['qiime >= 2.0.6', 'q2-types >= 0.0.6', 'pandas',
                       'q2templates'],
     author="Matthew Ryan Dillon",
     author_email="matthewrdillon@gmail.com",
