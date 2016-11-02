@@ -74,6 +74,12 @@ function _appendSortByPicker(sel, svg, data, dataMeta) {
       .append('option')
       .attr('value', d => d)
       .text(d => d);
+  if (sel.selectAll('.row').size() > 1) {
+    rcol.append('button').html('<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>')
+        .attr('class', 'btn btn-danger btn-xs')
+        .style('padding', '5px')
+        .on('click', () => { row.remove(); _updateSort(sel, svg, data, dataMeta); });
+  }
   return sortBySelect;
 }
 
@@ -154,7 +160,7 @@ export function addSortByPicker(row, svg, data, dataMeta) {
   const { metaData, sortedKeysReverse } = dataMeta;
   const grp = row.append('div').attr('class', 'col-lg-6 form-group sortByPicker');
   grp.append('label').text('Sort Samples By');
-  grp.append('button').text('+')
+  grp.append('button').html('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>')
     .attr('class', 'btn btn-primary btn-xs')
     .style('margin-left', '10px')
     .on('click', () => {
@@ -162,13 +168,6 @@ export function addSortByPicker(row, svg, data, dataMeta) {
       if (selects.size() === metaData.length + sortedKeysReverse.length + 1) { return; }
       const sel = _appendSortByPicker(grp, svg, data, dataMeta);
       _sortBySelectOptions(sel, metaData, sortedKeysReverse, sortedKeysReverse[0]);
-    });
-  grp.append('button').text('-')
-    .attr('class', 'btn btn-primary btn-xs')
-    .style('margin-left', '10px')
-    .on('click', () => {
-      if (grp.selectAll('.row').size() > 1) { grp.select('.row:last-child').remove(); }
-      _updateSort(grp, svg, data, dataMeta);
     });
   // Add initial 'Sort By' to sortByGroup
   const sel = _appendSortByPicker(grp, svg, data, dataMeta);
