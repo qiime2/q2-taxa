@@ -26,7 +26,7 @@ plugin.methods.register_function(
         'table': FeatureTable[Frequency]
     },
     parameters={'level': qiime.plugin.Int},
-    outputs={'collapsed_table': FeatureTable[Frequency]},
+    outputs=[('collapsed_table', FeatureTable[Frequency])],
     name='Collapse features by their taxonomy at the specified level',
     description='Collapse groups of features that have the same taxonomic '
                 'assignment through the specified level. The frequencies of '
