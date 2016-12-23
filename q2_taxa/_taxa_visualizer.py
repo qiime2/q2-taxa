@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2016--, QIIME development team.
+# Copyright (c) 2016-2017, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -15,8 +15,8 @@ import pandas as pd
 import biom
 import q2templates
 
-from qiime import Metadata
-from qiime.plugin.util import transform
+from qiime2 import Metadata
+from qiime2.plugin.util import transform
 
 from ._util import _extract_to_level
 
