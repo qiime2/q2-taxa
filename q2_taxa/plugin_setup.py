@@ -14,8 +14,8 @@ from q2_types.feature_data import FeatureData, Taxonomy
 from q2_types.feature_table import FeatureTable, Frequency
 
 
-from ._taxa_visualizer import barplot, tabulate
-from ._util import collapse
+from ._visualizer import barplot, tabulate
+from ._method import collapse
 
 
 plugin = qiime2.plugin.Plugin(

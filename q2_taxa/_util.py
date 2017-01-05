@@ -6,9 +6,6 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
-import biom
-import pandas as pd
-
 
 def _assemble_taxonomy_data(taxonomy, table):
     taxa = {}
@@ -51,19 +48,3 @@ def _extract_to_level(taxonomy, table, max_level=None):
         collapsed_tables.append(collapsed_table)
 
     return collapsed_tables
-
-
-def collapse(table: biom.Table, taxonomy: pd.Series, level: int) -> biom.Table:
-    if level < 1:
-        raise ValueError('Requested level of %d is too low. Must be greater '
-                         'than or equal to 1.' % level)
-
-    # Assemble the taxonomy data
-    table, max_observed_level = _assemble_taxonomy_data(taxonomy, table)
-
-    if level > max_observed_level:
-        raise ValueError('Requested level of %d is larger than the maximum '
-                         'level available in taxonomy data (%d).' %
-                         (level, max_observed_level))
-
-    return _collapse_table(table, level, max_observed_level)
