@@ -12,11 +12,9 @@ import pkg_resources
 import shutil
 
 import pandas as pd
-import biom
 import q2templates
 
 from qiime2 import Metadata
-from qiime2.plugin.util import transform
 
 from ._util import _extract_to_level
 
@@ -24,15 +22,14 @@ from ._util import _extract_to_level
 TEMPLATES = pkg_resources.resource_filename('q2_taxa', 'assets')
 
 
-def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series,
+def barplot(output_dir: str, table: pd.DataFrame, taxonomy: pd.Series,
             metadata: Metadata) -> None:
     metadata = metadata.to_dataframe()
     filenames = []
     collapsed_tables = _extract_to_level(taxonomy, table)
 
-    for level, collapsed_table in enumerate(collapsed_tables, 1):
+    for level, df in enumerate(collapsed_tables, 1):
         # Join collapsed table with metadata
-        df = transform(collapsed_table, to_type=pd.DataFrame)
         taxa_cols = df.columns.values.tolist()
         df = df.join(metadata, how='left')
         df = df.reset_index(drop=False)  # Move SampleID index into columns
