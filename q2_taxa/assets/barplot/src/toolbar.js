@@ -75,10 +75,11 @@ function _appendSortByPicker(sel, svg, data, dataMeta) {
       .attr('value', d => d)
       .text(d => d);
   if (sel.selectAll('.row').size() > 1) {
-    rcol.append('button').html('<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>')
-        .attr('class', 'btn btn-danger btn-xs')
-        .style('padding', '5px')
-        .on('click', () => { row.remove(); _updateSort(sel, svg, data, dataMeta); });
+    rcol.append('a')
+        .on('click', () => { row.remove(); _updateSort(sel, svg, data, dataMeta); })
+      .append('span')
+        .attr('class', 'glyphicon glyphicon-minus-sign text-danger')
+        .attr('style', 'cursor: pointer; cursor: hand;');
   }
   return sortBySelect;
 }
@@ -130,6 +131,8 @@ export function addColorPicker(row, svg, data, dataMeta) {
       .attr('style', 'padding-left: 5px;')
       .attr('href', 'https://github.com/d3/d3-scale-chromatic#api-reference')
       .attr('title', 'Click here for more information on the color schemes.')
+      .attr('target', '_blank')
+      .attr('rel', 'noopener noreferrer')
     .append('span')
       .attr('class', 'glyphicon glyphicon-info-sign');
   const sel = grp.append('select')
