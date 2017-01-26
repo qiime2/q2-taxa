@@ -75,10 +75,11 @@ function _appendSortByPicker(sel, svg, data, dataMeta) {
       .attr('value', d => d)
       .text(d => d);
   if (sel.selectAll('.row').size() > 1) {
-    rcol.append('button').html('<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>')
-        .attr('class', 'btn btn-danger btn-xs')
-        .style('padding', '5px')
-        .on('click', () => { row.remove(); _updateSort(sel, svg, data, dataMeta); });
+    rcol.append('a')
+        .on('click', () => { row.remove(); _updateSort(sel, svg, data, dataMeta); })
+      .append('span')
+        .attr('class', 'glyphicon glyphicon-minus-sign text-danger')
+        .attr('style', 'cursor: pointer; cursor: hand;');
   }
   return sortBySelect;
 }
@@ -126,6 +127,14 @@ export function addTaxaPicker(row, levels, selectedLevel) {
 export function addColorPicker(row, svg, data, dataMeta) {
   const grp = row.append('div').attr('class', 'col-lg-2 form-group colorPicker');
   grp.append('label').text('Color Palette');
+  grp.append('a')
+      .attr('style', 'padding-left: 5px;')
+      .attr('href', 'https://github.com/d3/d3-scale-chromatic#api-reference')
+      .attr('title', 'Click here for more information on the color schemes.')
+      .attr('target', '_blank')
+      .attr('rel', 'noopener noreferrer')
+    .append('span')
+      .attr('class', 'glyphicon glyphicon-info-sign');
   const sel = grp.append('select')
     .attr('class', 'form-control')
     .on('change', function changeColorPicker() {
@@ -153,6 +162,7 @@ export function addColorPicker(row, svg, data, dataMeta) {
   updateOpt.merge(enterOpt)
     .attr('value', d => d.name)
     .text(d => d.name);
+
   return grp;
 }
 
@@ -160,15 +170,17 @@ export function addSortByPicker(row, svg, data, dataMeta) {
   const { metaData, sortedKeysReverse } = dataMeta;
   const grp = row.append('div').attr('class', 'col-lg-6 form-group sortByPicker');
   grp.append('label').text('Sort Samples By');
-  grp.append('button').html('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>')
-    .attr('class', 'btn btn-primary btn-xs')
-    .style('margin-left', '10px')
-    .on('click', () => {
-      const selects = grp.selectAll('.xCtrl');
-      if (selects.size() === metaData.length + sortedKeysReverse.length + 1) { return; }
-      const sel = _appendSortByPicker(grp, svg, data, dataMeta);
-      _sortBySelectOptions(sel, metaData, sortedKeysReverse, sortedKeysReverse[0]);
-    });
+  grp.append('a')
+      .on('click', () => {
+        const selects = grp.selectAll('.xCtrl');
+        if (selects.size() === metaData.length + sortedKeysReverse.length + 1) { return; }
+        const sel = _appendSortByPicker(grp, svg, data, dataMeta);
+        _sortBySelectOptions(sel, metaData, sortedKeysReverse, sortedKeysReverse[0]);
+      })
+    .append('span')
+      .attr('class', 'glyphicon glyphicon-plus-sign')
+      .attr('style', 'padding-left: 5px; cursor: pointer; cursor: hand;');
+
   // Add initial 'Sort By' to sortByGroup
   const sel = _appendSortByPicker(grp, svg, data, dataMeta);
   _sortBySelectOptions(sel, metaData, sortedKeysReverse, sortedKeysReverse[0]);
