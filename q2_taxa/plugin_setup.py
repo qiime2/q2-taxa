@@ -35,6 +35,19 @@ plugin.methods.register_function(
     },
     parameters={'level': qiime2.plugin.Int},
     outputs=[('collapsed_table', FeatureTable[Frequency])],
+    input_descriptions={
+        'taxonomy': 'Taxonomic annotations for all features.',
+        'table': 'Feature table to be collapsed.'},
+    parameter_descriptions={
+        'level': ('The taxonomic level at which the features should be '
+                  'collapsed. All ouput features will have exactly '
+                  'this many levels of taxonomic annotation.')
+    },
+    output_descriptions={
+        'collapsed_table': ('The resulting feature table, where all features '
+                            'are now taxonomic annotations with the '
+                            'user-specified number of levels.')
+    },
     name='Collapse features by their taxonomy at the specified level',
     description='Collapse groups of features that have the same taxonomic '
                 'assignment through the specified level. The frequencies of '
@@ -48,6 +61,10 @@ plugin.visualizers.register_function(
         'table': FeatureTable[Frequency]
     },
     parameters={'metadata': qiime2.plugin.Metadata},
+    input_descriptions={
+        'taxonomy': 'Taxonomic annotations for all features.',
+        'table': 'Feature table containing counts of features by sample.'},
+    parameter_descriptions={'metadata': 'The sample metadata.'},
     name='Visualize taxonomy with an interactive bar plot',
     description='This visualizer produces an interactive barplot visualization'
                 ' of taxonomies. Interactive features include multi-level '
@@ -59,6 +76,10 @@ plugin.visualizers.register_function(
     function=tabulate,
     inputs={'data': FeatureData[Taxonomy]},
     parameters={},
+    input_descriptions={
+        'data': 'Taxonomic annotations for all features.',
+    },
+    parameter_descriptions={},
     name='View taxonomy associated with each feature',
     description="Generate tabular view of feature identifier to taxonomic "
                 "assignment mapping."
