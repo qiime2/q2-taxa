@@ -36,7 +36,11 @@ plugin.methods.register_function(
     parameters={'level': qiime2.plugin.Int},
     outputs=[('collapsed_table', FeatureTable[Frequency])],
     input_descriptions={
-        'taxonomy': 'Taxonomic annotations for all features.',
+        'taxonomy': ('Taxonomic annotations for features in the provided '
+                     'feature table. All features in the feature table must '
+                     'have a corresponding taxonomic annotation. Taxonomic '
+                     'annotations that are not present in the feature table '
+                     'will be ignored.'),
         'table': 'Feature table to be collapsed.'},
     parameter_descriptions={
         'level': ('The taxonomic level at which the features should be '
@@ -62,8 +66,12 @@ plugin.visualizers.register_function(
     },
     parameters={'metadata': qiime2.plugin.Metadata},
     input_descriptions={
-        'taxonomy': 'Taxonomic annotations for all features.',
-        'table': 'Feature table containing counts of features by sample.'},
+        'taxonomy': ('Taxonomic annotations for features in the provided '
+                     'feature table. All features in the feature table must '
+                     'have a corresponding taxonomic annotation. Taxonomic '
+                     'annotations that are not present in the feature table '
+                     'will be ignored.'),
+        'table': 'Feature table to visualize at various taxonomic levels.'},
     parameter_descriptions={'metadata': 'The sample metadata.'},
     name='Visualize taxonomy with an interactive bar plot',
     description='This visualizer produces an interactive barplot visualization'
@@ -77,7 +85,7 @@ plugin.visualizers.register_function(
     inputs={'data': FeatureData[Taxonomy]},
     parameters={},
     input_descriptions={
-        'data': 'Taxonomic annotations for all features.',
+        'data': ('Features with associated taxonomic annotations.'),
     },
     parameter_descriptions={},
     name='View taxonomy associated with each feature',
