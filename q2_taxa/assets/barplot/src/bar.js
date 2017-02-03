@@ -47,7 +47,7 @@ export default function plotBars(chart, x, y, z, dataMeta, sortMap) {
     .attr('y', d => y(d[1]))
     .attr('height', d => y(d[0]) - y(d[1]))
     .attr('width', x.bandwidth())
-    .on('mouseover', () => { tooltip.style('display', null); })
+    .on('mouseover', () => { setTimeout(() => tooltip.style('display', null), 500); })
     .on('mouseout', () => { tooltip.style('display', 'none'); })
     .on('mousemove', function mouseMove(d) {
       const text = tooltip.select('text');
