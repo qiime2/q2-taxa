@@ -41,9 +41,9 @@ function _updateSort(sel, svg, data, dataMeta) {
 
 function _appendSortByPicker(sel, svg, data, dataMeta) {
   const row = sel.append('div').attr('class', 'row');
-  const lcol = row.append('div').attr('class', 'col-lg-4');
-  const mcol = row.append('div').attr('class', 'col-lg-4');
-  const rcol = row.append('div').attr('class', 'col-lg-4');
+  const lcol = row.append('div').attr('class', 'col-xs-7 col-md-4');
+  const mcol = row.append('div').attr('class', 'col-xs-4 col-md-4');
+  const rcol = row.append('div').attr('class', 'col-xs-1 col-md-4');
 
   const sortBySelect = lcol.append('select').attr('class', 'xCtrl form-control')
     .on('change', function sortChange() {
@@ -79,7 +79,7 @@ function _appendSortByPicker(sel, svg, data, dataMeta) {
         .on('click', () => { row.remove(); _updateSort(sel, svg, data, dataMeta); })
       .append('span')
         .attr('class', 'glyphicon glyphicon-minus-sign text-danger')
-        .attr('style', 'cursor: pointer; cursor: hand;');
+        .attr('style', 'padding-top: 8px; margin-left: -10px; cursor: pointer; cursor: hand;');
   }
   return sortBySelect;
 }
