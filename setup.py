@@ -11,7 +11,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="q2-taxa",
-    version="2017.2.0.dev0",
+    version="2017.2.0",
     packages=find_packages(),
     install_requires=['qiime2 == 2017.2.*', 'q2-types == 2017.2.*',
                       'q2templates == 2017.2.*', 'pandas'],
