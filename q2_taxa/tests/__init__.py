@@ -5,11 +5,3 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-
-import pkg_resources
-
-from ._visualizer import barplot
-
-__version__ = pkg_resources.get_distribution('q2-taxa').version
-
-__all__ = ['barplot']
