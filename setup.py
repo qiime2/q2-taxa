@@ -7,11 +7,12 @@
 # ----------------------------------------------------------------------------
 
 from setuptools import setup, find_packages
-
+import versioneer
 
 setup(
     name="q2-taxa",
-    version="2017.3.0.dev",
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     packages=find_packages(),
     install_requires=['qiime2 == 2017.3.*', 'q2-types == 2017.3.*',
                       'q2templates == 2017.3.*', 'pandas'],
@@ -26,5 +27,6 @@ setup(
     },
     package_data={'q2_taxa': ['assets/barplot/index.html',
                               'assets/barplot/dst/*',
-                              'assets/tabulate/*']}
+                              'assets/tabulate/*']},
+    zip_safe=False,
 )
