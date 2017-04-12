@@ -14,8 +14,6 @@ setup(
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     packages=find_packages(),
-    install_requires=['qiime2 == 2017.3.*', 'q2-types == 2017.3.*',
-                      'q2templates == 2017.3.*', 'pandas'],
     author="Matthew Ryan Dillon",
     author_email="matthewrdillon@gmail.com",
     url="https://qiime2.org",
