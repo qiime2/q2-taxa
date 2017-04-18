@@ -12,22 +12,14 @@ import { setupData, sort } from './data';
 
 
 export default function init(level) {
-  /* global d window */
+  /* global d */
   const data = d[level].data;
 
   // DOM
   const body = select('body .container-fluid');
   const plotRow = body.append('div').attr('class', 'viz row');
   const plotDiv = plotRow.append('div').attr('class', 'col-lg-12');
-  const collapseButton = plotDiv
-    .append('a')
-      .attr('class', 'btn btn-default form-control')
-      .attr('role', 'button')
-      .attr('data-toggle', 'collapse')
-      .attr('href', '#collapse')
-      .text('Toggle Controls');
-  const collapsePanel = plotDiv.append('div').attr('class', 'collapse in').attr('id', 'collapse');
-  const controlsRow = collapsePanel.append('div').attr('class', 'controls row');
+  const controlsRow = plotDiv.append('div').attr('class', 'controls row');
   const controls = controlsRow.append('div').attr('class', 'col-lg-12');
   const svgRow = plotDiv.append('div').attr('class', 'plot row');
   const svgCol = svgRow.append('div').attr('class', 'col-md-12');
@@ -55,16 +47,8 @@ export default function init(level) {
   const initialSort = sort(data, [sortedKeysReverse[0]], ['Ascending'], [false], dataMeta);
   render(svg, initialColorScheme, initialSort, dataMeta);
 
-  const checkToggle = () => {
-    collapseButton.style('display', window.innerWidth > 1199 ? 'none' : 'inline-block');
-    collapsePanel.attr('class', window.innerWidth > 1199 ? 'collapse.in' : 'collapse');
-  };
-
-  select(window).on('resize', checkToggle);
-
   // Controls
   const ctrlRowOne = controls.append('div').attr('class', 'row');
-  checkToggle();
   addDownloadLinks(ctrlRowOne, svg);
   addTaxaPicker(ctrlRowOne, levels, d[level].name);
   addColorPicker(ctrlRowOne, svg, data, dataMeta);
