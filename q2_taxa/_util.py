@@ -25,21 +25,13 @@ def _collapse_table(table, taxonomy, level, max_observed_level):
     return table.groupby(table.columns, axis=1).agg(sum)
 
 
-def _extract_to_level(taxonomy, table, max_level=None):
+def _extract_to_level(taxonomy, table):
     # Assemble the taxonomy data
     max_obs_lvl = _get_max_level(taxonomy)
 
-    if max_level is None:
-        max_level = max_obs_lvl
-
-    if max_level > max_obs_lvl:
-        raise ValueError('Requested max_level of %d is larger than max_level '
-                         'available in taxonomy data (%d).' % (max_level,
-                                                               max_obs_lvl))
-
     collapsed_tables = []
     # Collapse table at specified level
-    for level in range(1, max_level + 1):
+    for level in range(1, max_obs_lvl + 1):
         collapsed_table = _collapse_table(table, taxonomy, level, max_obs_lvl)
         collapsed_tables.append(collapsed_table)
 
