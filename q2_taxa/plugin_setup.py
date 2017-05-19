@@ -14,8 +14,7 @@ from q2_types.feature_data import FeatureData, Taxonomy
 from q2_types.feature_table import FeatureTable, Frequency
 
 
-from ._visualizer import barplot, tabulate
-from ._method import collapse
+from . import barplot, tabulate, collapse
 
 
 plugin = qiime2.plugin.Plugin(
@@ -24,7 +23,10 @@ plugin = qiime2.plugin.Plugin(
     website='https://github.com/qiime2/q2-taxa',
     package='q2_taxa',
     user_support_text=None,
-    citation_text=None
+    citation_text=None,
+    description=('This QIIME 2 plugin provides functionality for working with '
+                 'and visualizing taxonomic annotations of features.'),
+    short_description='Plugin for working with feature taxonomy annotations.'
 )
 
 plugin.methods.register_function(

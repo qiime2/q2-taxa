@@ -6,11 +6,16 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
-from ._method import collapse
-from ._visualizer import barplot, tabulate
-from ._version import get_versions
+from unittest import TestCase, main
 
-__version__ = get_versions()['version']
-del get_versions
+from q2_taxa.plugin_setup import plugin
 
-__all__ = ['barplot', 'tabulate', 'collapse']
+
+class PluginTests(TestCase):
+
+    def test_plugin(self):
+        self.assertEqual(plugin.name, 'taxa')
+
+
+if __name__ == "__main__":
+    main()
