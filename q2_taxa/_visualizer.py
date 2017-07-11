@@ -55,12 +55,3 @@ def barplot(output_dir: str, table: pd.DataFrame, taxonomy: pd.Series,
     # Copy assets for rendering figure
     shutil.copytree(os.path.join(TEMPLATES, 'barplot', 'dst'),
                     os.path.join(output_dir, 'dist'))
-
-
-def tabulate(output_dir: str, data: pd.Series) -> None:
-    prepped = []
-    for _id, taxa in data.iteritems():
-        prepped.append({'id': _id, 'taxa': taxa})
-
-    index = os.path.join(TEMPLATES, 'tabulate', 'index.html')
-    q2templates.render(index, output_dir, context={'data': prepped})

@@ -14,7 +14,7 @@ from q2_types.feature_data import FeatureData, Taxonomy
 from q2_types.feature_table import FeatureTable, Frequency
 
 
-from . import barplot, tabulate, collapse
+from . import barplot, collapse
 
 
 plugin = qiime2.plugin.Plugin(
@@ -80,17 +80,4 @@ plugin.visualizers.register_function(
                 ' of taxonomies. Interactive features include multi-level '
                 'sorting, plot recoloring, category selection/highlighting, '
                 'sample relabeling, and SVG figure export.'
-)
-
-plugin.visualizers.register_function(
-    function=tabulate,
-    inputs={'data': FeatureData[Taxonomy]},
-    parameters={},
-    input_descriptions={
-        'data': ('Features with associated taxonomic annotations.'),
-    },
-    parameter_descriptions={},
-    name='View taxonomy associated with each feature',
-    description="Generate tabular view of feature identifier to taxonomic "
-                "assignment mapping."
 )

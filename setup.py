@@ -24,7 +24,6 @@ setup(
         ["q2-taxa=q2_taxa.plugin_setup:plugin"]
     },
     package_data={'q2_taxa': ['assets/barplot/index.html',
-                              'assets/barplot/dst/*',
-                              'assets/tabulate/*']},
+                              'assets/barplot/dst/*']},
     zip_safe=False,
 )
