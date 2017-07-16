@@ -32,5 +32,7 @@ class BarplotTests(unittest.TestCase):
             barplot(output_dir, table, taxonomy, metadata)
             index_fp = os.path.join(output_dir, 'index.html')
             self.assertTrue(os.path.exists(index_fp))
-            self.assertTrue("src='lvl-1.jsonp?callback=load_data'" in
+            self.assertTrue("src='level-1.jsonp?callback=load_data'" in
                             open(index_fp).read())
+            csv_lvl3_fp = os.path.join(output_dir, 'level-3.csv')
+            self.assertTrue(os.path.exists(csv_lvl3_fp))

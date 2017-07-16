@@ -119,7 +119,7 @@ export function addTaxaPicker(row, levels, selectedLevel) {
     .enter()
       .append('option')
         .attr('value', d => d)
-        .text(d => d)
+        .text(d => `Level ${d}`)
         .property('selected', d => (d === selectedLevel));
   return grp;
 }
@@ -187,12 +187,13 @@ export function addSortByPicker(row, svg, data, dataMeta) {
   return grp;
 }
 
-export function addDownloadLinks(sel, svg) {
-  const grp = sel.append('div').attr('class', 'col-lg-2 form-group');
-  grp.append('label').html('&nbsp;');
+export function addDownloadLinks(sel, svg, level) {
+  const col = sel.append('div').attr('class', 'col-lg-1 form-group');
+  col.append('label').html('Download');
+  const grp = col.append('span').attr('class', 'input-group-btn');
   grp.append('button')
-    .text('Download SVG')
-    .attr('class', 'btn btn-default form-control')
+    .text('SVG')
+    .attr('class', 'btn btn-default')
     .on('click', () => {
       /* global XMLSerializer */
       const serializer = new XMLSerializer();
@@ -203,9 +204,13 @@ export function addDownloadLinks(sel, svg) {
       /* global document */
       const link = document.createElement('a');
       link.setAttribute('href', url);
-      link.setAttribute('download', 'taxaplot.svg');
+      link.setAttribute('download', `level-${level}.svg`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     });
+  grp.append('a')
+    .text('CSV')
+    .attr('href', `level-${level}.csv`)
+    .attr('class', 'btn btn-default');
 }
