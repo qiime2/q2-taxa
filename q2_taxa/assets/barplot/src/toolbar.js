@@ -187,14 +187,9 @@ export function addSortByPicker(row, svg, data, dataMeta) {
   return grp;
 }
 
-export function addDownloadLinks(sel, svg, level) {
-  const col = sel.append('div').attr('class', 'col-lg-1 form-group');
-  col.append('label').html('Download');
-  const grp = col.append('span').attr('class', 'input-group-btn');
-  grp.append('button')
-    .text('SVG')
-    .attr('class', 'btn btn-default')
-    .on('click', () => {
+export function addDownloadLinks(sel, svgPlot, svgLegend, level) {
+  function _serializer(svg, label) {
+    return () => {
       /* global XMLSerializer */
       const serializer = new XMLSerializer();
       let src = serializer.serializeToString(svg.node());
@@ -204,11 +199,23 @@ export function addDownloadLinks(sel, svg, level) {
       /* global document */
       const link = document.createElement('a');
       link.setAttribute('href', url);
-      link.setAttribute('download', `level-${level}.svg`);
+      link.setAttribute('download', `level-${level}-${label}.svg`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    });
+    };
+  }
+  const col = sel.append('div').attr('class', 'col-lg-2 form-group');
+  col.append('label').html('Download');
+  const grp = col.append('span').attr('class', 'input-group-btn');
+  grp.append('a')
+    .text('SVG (bars)')
+    .attr('class', 'btn btn-default')
+    .on('click', _serializer(svgPlot, 'bars'));
+  grp.append('a')
+    .text('SVG (legend)')
+    .attr('class', 'btn btn-default')
+    .on('click', _serializer(svgLegend, 'legend'));
   grp.append('a')
     .text('CSV')
     .attr('href', `level-${level}.csv`)

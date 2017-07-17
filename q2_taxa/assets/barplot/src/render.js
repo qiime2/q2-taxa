@@ -5,13 +5,11 @@ import {
   scaleSequential,
   axisBottom,
   axisLeft,
-  select,
   format,
 } from 'd3';
 
 import { setupXAxis, setupYAxis } from './axis';
 import plotBars from './bar';
-import plotLegend from './legend';
 import { availableColorSchemes } from './toolbar';
 
 export const transitionDur = 500;
@@ -20,8 +18,7 @@ export default function render(svg, colorScheme, xOrdering, dataMeta) {
   const { sortMap, sortedSampleIDs } = xOrdering;
   const width = sortedSampleIDs.length * 10;
   const height = 600;
-  const margin = { top: 20, left: 60, right: 50, bottom: 50 };
-  const legendCanvasWidth = 200;
+  const margin = { top: 20, left: 60, right: 0, bottom: 50 };
   const { keys } = dataMeta;
   const chart = svg.select('g');
 
@@ -55,17 +52,15 @@ export default function render(svg, colorScheme, xOrdering, dataMeta) {
   setupYAxis(svg, chart, height, yAxis);
 
   plotBars(chart, x, y, z, dataMeta, sortMap);
-  const maxLabelLegendWidth = plotLegend(svg, chart, keys, width, z);
 
+  const newWidth = width + margin.left + margin.right;
   const newHeight = height + margin.top + margin.bottom + maxLabelX;
-  const newWidth = width + margin.left + margin.right + maxLabelLegendWidth;
-  const legendHeight = (keys.length + 1) * 20;
 
   // Resize canvas as needed
-  svg.attr('width', newWidth < width + legendCanvasWidth ? width + legendCanvasWidth : newWidth)
-    .attr('height', newHeight < legendHeight ? legendHeight : newHeight);
+  svg
+    .attr('width', newWidth)
+    .attr('height', newHeight);
 
-  // Move tooltip to front
-  const tooltip = select('#tooltip');
-  tooltip.node().parentNode.appendChild(tooltip.node());
+  const stackOrder = svg.property('stackOrder');
+  return { keys, z, stackOrder, newHeight };
 }
