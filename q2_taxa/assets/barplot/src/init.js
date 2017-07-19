@@ -49,8 +49,8 @@ export default function init(level) {
 
   // Controls
   const ctrlRowOne = controls.append('div').attr('class', 'row');
-  addDownloadLinks(ctrlRowOne, svg);
-  addTaxaPicker(ctrlRowOne, levels, d[level].name);
+  addDownloadLinks(ctrlRowOne, svg, level + 1);
+  addTaxaPicker(ctrlRowOne, levels, level + 1);
   addColorPicker(ctrlRowOne, svg, data, dataMeta);
   addSortByPicker(ctrlRowOne, svg, data, dataMeta);
 }

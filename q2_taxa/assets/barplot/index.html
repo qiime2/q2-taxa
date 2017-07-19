@@ -7,17 +7,17 @@
 {% block content %}
     <script>
       var d = [];
-      function load_data(name, taxaKeys, allKeys, data) {
+      function load_data(level, taxaKeys, allKeys, data) {
         data = data;
         data.columns = allKeys;
         d.push({
-          name: name,
+          level: level,
           taxaKeys: taxaKeys,
           data: data,
         });
       }
     </script>
-    {% for level in filenames %}
+    {% for level in jsonp_files %}
     <script src='{{ level }}?callback=load_data'></script>
     {% endfor %}
     <script src='dist/bundle.js'></script>

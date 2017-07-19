@@ -139,7 +139,7 @@ export function setupData(data, svg) {
   _computeTotal(levelData, keys);
 
   /* global d */
-  const levels = d.map(d => d.name);
+  const levels = d.map(d => d.level);
 
   return {
     keys,
