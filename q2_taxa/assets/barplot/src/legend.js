@@ -7,24 +7,26 @@ function _swatchColor(sel, z, stackOrder) {
     .style('fill', d => z(stackOrder.indexOf(d)));
 }
 
-export default function plotLegend(svg, chart, keys, width, z) {
+export default function plotLegend(legendCol, chartInfo) {
+  const { keys, z, stackOrder, newHeight } = chartInfo;
+  const svg = legendCol.append('svg');
+
   // Legend
-  const stackOrder = svg.property('stackOrder');
-  chart.selectAll('.legend').remove();
-  const legendUpdate = chart.selectAll('.legend').data(stackOrder);
+  svg.selectAll('.legend').remove();
+  const legendUpdate = svg.selectAll('.legend').data(stackOrder);
   const legendEnter = legendUpdate.enter().append('g')
     .attr('class', 'legend')
     .attr('id', d => `id${d}`)
     .style('font', '10px sans-serif');
   let legend = legendUpdate.merge(legendEnter)
-    .attr('transform', (_, i) => `translate(10,${((keys.length - i - 1) * 20)})`);
+    .attr('transform', (_, i) => `translate(0,${((keys.length - i - 1) * 20)})`);
 
   // Swatches
   legendEnter.append('rect')
     .attr('width', 18)
     .attr('height', 18);
   legend.selectAll('rect')
-    .attr('x', width)
+    .attr('x', 0)
     .call(_swatchColor, z, stackOrder)
     .on('mouseover', function pointer() { select(this).style('cursor', 'pointer'); })
     .on('click', (d) => {
@@ -52,7 +54,7 @@ export default function plotLegend(svg, chart, keys, width, z) {
     .attr('dy', '.35em')
     .attr('text-anchor', 'start');
   legend = legend.selectAll('text')
-    .attr('x', width + 24)
+    .attr('x', 24)
     .text(d => keys[d]);
 
   let maxLabelLegendWidth = 0;
@@ -61,5 +63,11 @@ export default function plotLegend(svg, chart, keys, width, z) {
     if (textWidth > maxLabelLegendWidth) maxLabelLegendWidth = textWidth;
   });
 
-  return maxLabelLegendWidth;
+  const { width: barWidth } = select('.bars').node().getBoundingClientRect();
+  /* global window */
+  legendCol.attr('style', `max-height: ${newHeight + 10}px; max-width: ${(1 - (barWidth / window.innerWidth)) * 100}%`);
+
+  svg
+    .attr('width', maxLabelLegendWidth + 24)
+    .attr('height', (keys.length + 1) * 20);
 }

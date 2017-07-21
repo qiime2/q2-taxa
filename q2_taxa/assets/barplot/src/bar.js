@@ -1,4 +1,4 @@
-import { select, mouse } from 'd3';
+import { select } from 'd3';
 
 import { transitionDur } from './init';
 
@@ -9,25 +9,11 @@ function _barGroupColor(sel, z) {
 }
 
 export default function plotBars(chart, x, y, z, dataMeta, sortMap) {
-  // Tooltip
-  chart.selectAll('#tooltip').remove();
-  const tooltip = chart.append('g').style('display', 'none').attr('id', 'tooltip');
-  tooltip.append('rect')
-    .attr('height', 50)
-    .attr('fill', 'white');
-  const tttext = tooltip.append('text')
-    .style('text-anchor', 'middle')
-    .attr('font-size', '12px')
-    .attr('font-weight', 'bold');
-  tttext.append('tspan')
-    .attr('id', 'ttxlabel')
-    .attr('dy', '1.2em');
-  tttext.append('tspan')
-    .attr('id', 'taxalabel')
-    .attr('dy', '1.2em');
-  tttext.append('tspan')
-    .attr('id', 'abunlabel')
-    .attr('dy', '1.2em');
+  // Details
+  const details = select('.details > div');
+  details.selectAll('#details').remove();
+  const info = details.append('p').attr('id', 'details')
+    .html('Hover over the plot to learn more');
 
   // Color groups
   const layerUpdate = chart.selectAll('.layer').data(dataMeta.layers);
@@ -47,30 +33,10 @@ export default function plotBars(chart, x, y, z, dataMeta, sortMap) {
     .attr('y', d => y(d[1]))
     .attr('height', d => y(d[0]) - y(d[1]))
     .attr('width', x.bandwidth())
-    .on('mouseover', () => { setTimeout(() => tooltip.style('display', null), 500); })
-    .on('mouseout', () => { tooltip.style('display', 'none'); })
-    .on('mousemove', function mouseMove(d) {
-      const text = tooltip.select('text');
-      const hoveredTaxa = select(this.parentNode).property('taxa');
-      const txlabel = text.select('#ttxlabel');
-      const taxalabel = text.select('#taxalabel');
-      const abunlabel = text.select('#abunlabel');
-
-      txlabel.text(() => sortMap[d.data[dataMeta.first]]);
-      taxalabel.text(() => hoveredTaxa);
-      abunlabel.text(() => `${((d[1] - d[0]) * 100).toFixed(3)}%`);
-
-      const textWidth = text.node().getBBox().width;
-      const midpoint = (textWidth / 2) + 5;
-
-      txlabel.attr('x', midpoint);
-      taxalabel.attr('x', midpoint);
-      abunlabel.attr('x', midpoint);
-
-      tooltip.select('rect').attr('width', textWidth + 10);
-
-      const xPosition = mouse(this)[0];
-      const yPosition = mouse(this)[1] - 25;
-      tooltip.attr('transform', `translate(${xPosition},${yPosition})`);
+    .on('mouseover', function mouseOver(d) {
+      const txlabel = sortMap[d.data[dataMeta.first]];
+      const taxalabel = select(this.parentNode).property('taxa');
+      const abunlabel = `${((d[1] - d[0]) * 100).toFixed(3)}%`;
+      info.html(`${txlabel} | ${taxalabel} | ${abunlabel}`);
     });
 }

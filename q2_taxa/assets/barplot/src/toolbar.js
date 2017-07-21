@@ -168,7 +168,7 @@ export function addColorPicker(row, svg, data, dataMeta) {
 
 export function addSortByPicker(row, svg, data, dataMeta) {
   const { metaData, sortedKeysReverse } = dataMeta;
-  const grp = row.append('div').attr('class', 'col-lg-6 form-group sortByPicker');
+  const grp = row.append('div').attr('class', 'col-lg-5 form-group sortByPicker');
   grp.append('label').text('Sort Samples By');
   grp.append('a')
       .on('click', () => {
@@ -187,14 +187,9 @@ export function addSortByPicker(row, svg, data, dataMeta) {
   return grp;
 }
 
-export function addDownloadLinks(sel, svg, level) {
-  const col = sel.append('div').attr('class', 'col-lg-1 form-group');
-  col.append('label').html('Download');
-  const grp = col.append('span').attr('class', 'input-group-btn');
-  grp.append('button')
-    .text('SVG')
-    .attr('class', 'btn btn-default')
-    .on('click', () => {
+export function addDownloadLinks(sel, svgPlot, svgLegend, level) {
+  function _serializer(svg, label) {
+    return () => {
       /* global XMLSerializer */
       const serializer = new XMLSerializer();
       let src = serializer.serializeToString(svg.node());
@@ -204,11 +199,23 @@ export function addDownloadLinks(sel, svg, level) {
       /* global document */
       const link = document.createElement('a');
       link.setAttribute('href', url);
-      link.setAttribute('download', `level-${level}.svg`);
+      link.setAttribute('download', `level-${level}-${label}.svg`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    });
+    };
+  }
+  const col = sel.append('div').attr('class', 'col-lg-3');
+  col.append('label').html('Download');
+  const grp = col.append('div').append('span').attr('class', 'btn-group');
+  grp.append('a')
+    .text('SVG (bars)')
+    .attr('class', 'btn btn-default')
+    .on('click', _serializer(svgPlot, 'bars'));
+  grp.append('a')
+    .text('SVG (legend)')
+    .attr('class', 'btn btn-default')
+    .on('click', _serializer(svgLegend, 'legend'));
   grp.append('a')
     .text('CSV')
     .attr('href', `level-${level}.csv`)
