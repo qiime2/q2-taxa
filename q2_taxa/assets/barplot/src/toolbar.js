@@ -168,7 +168,7 @@ export function addColorPicker(row, svg, data, dataMeta) {
 
 export function addSortByPicker(row, svg, data, dataMeta) {
   const { metaData, sortedKeysReverse } = dataMeta;
-  const grp = row.append('div').attr('class', 'col-lg-6 form-group sortByPicker');
+  const grp = row.append('div').attr('class', 'col-lg-5 form-group sortByPicker');
   grp.append('label').text('Sort Samples By');
   grp.append('a')
       .on('click', () => {
@@ -205,9 +205,9 @@ export function addDownloadLinks(sel, svgPlot, svgLegend, level) {
       document.body.removeChild(link);
     };
   }
-  const col = sel.append('div').attr('class', 'col-lg-2 form-group');
+  const col = sel.append('div').attr('class', 'col-lg-3');
   col.append('label').html('Download');
-  const grp = col.append('span').attr('class', 'input-group-btn');
+  const grp = col.append('div').append('span').attr('class', 'btn-group');
   grp.append('a')
     .text('SVG (bars)')
     .attr('class', 'btn btn-default')
