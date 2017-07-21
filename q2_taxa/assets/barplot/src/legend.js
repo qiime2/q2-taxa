@@ -63,7 +63,9 @@ export default function plotLegend(legendCol, chartInfo) {
     if (textWidth > maxLabelLegendWidth) maxLabelLegendWidth = textWidth;
   });
 
-  legendCol.attr('style', `max-height: ${newHeight + 10}px;`);
+  const { width: barWidth } = select('.bars').node().getBoundingClientRect();
+  /* global window */
+  legendCol.attr('style', `max-height: ${newHeight + 10}px; max-width: ${(1 - (barWidth / window.innerWidth)) * 100}%`);
 
   svg
     .attr('width', maxLabelLegendWidth + 24)
