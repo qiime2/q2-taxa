@@ -12,7 +12,7 @@ export default function plotBars(chart, x, y, z, dataMeta, sortMap) {
   // Details
   const details = select('.details > div');
   details.selectAll('#details').remove();
-  const info = details.append('g').attr('id', 'details')
+  const info = details.append('p').attr('id', 'details')
     .html('Hover over the plot to learn more');
 
   // Color groups
