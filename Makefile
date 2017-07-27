@@ -1,0 +1,33 @@
+.PHONY: all lint test viz-barplot clean q2_taxa/assets/barplot/dist
+
+all: viz-barplot
+
+lint:
+	q2lint
+	flake8
+
+test: all
+	py.test
+
+test-cov: all
+	py.test --cov=q2_taxa
+
+q2_taxa/assets/barplot/dist:
+	cd q2_taxa/assets/barplot && \
+	npm install && \
+	npm run build && \
+	cp licenses/* dist
+
+viz-barplot: q2_taxa/assets/barplot/dist
+
+install: all
+	python setup.py install
+
+dev: all
+	pip install -e .
+
+clean: distclean
+	rm -rf q2_taxa/assets/barplot/node_modules
+
+distclean:
+	rm -rf q2_taxa/assets/barplot/dist

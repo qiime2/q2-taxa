@@ -16,10 +16,10 @@ install:
   - source activate test-env
   - conda install -q pytest-cov
   - pip install -q flake8 coveralls
-  - python setup.py install
+  - make install
 script:
-  - flake8
+  - make lint
   - python ../q2lint/q2lint.py
-  - py.test --cov=q2_taxa
+  - make test-cov
 after_success:
   - coveralls
