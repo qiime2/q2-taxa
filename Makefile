@@ -1,4 +1,4 @@
-.PHONY: all lint test viz-barplot clean q2_taxa/assets/barplot/dist
+.PHONY: all lint test test-cov viz-barplot install dev clean distclean
 
 all: viz-barplot
 
