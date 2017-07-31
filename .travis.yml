@@ -19,7 +19,6 @@ install:
   - make install
 script:
   - make lint
-  - python ../q2lint/q2lint.py
   - make test-cov
 after_success:
   - coveralls
