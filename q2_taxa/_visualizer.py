@@ -60,5 +60,5 @@ def barplot(output_dir: str, table: pd.DataFrame, taxonomy: pd.Series,
     q2templates.render(index, output_dir, context={'jsonp_files': jsonp_files})
 
     # Copy assets for rendering figure
-    shutil.copytree(os.path.join(TEMPLATES, 'barplot', 'dst'),
+    shutil.copytree(os.path.join(TEMPLATES, 'barplot', 'dist'),
                     os.path.join(output_dir, 'dist'))
