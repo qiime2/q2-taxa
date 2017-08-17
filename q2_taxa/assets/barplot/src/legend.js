@@ -9,7 +9,7 @@ function _swatchColor(sel, z, stackOrder) {
 
 export default function plotLegend(legendCol, chartInfo) {
   const { keys, z, stackOrder, newHeight } = chartInfo;
-  const svg = legendCol.append('svg');
+  const svg = legendCol.select('svg');
 
   // Legend
   svg.selectAll('.legend').remove();
