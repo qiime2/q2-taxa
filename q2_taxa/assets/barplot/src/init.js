@@ -33,6 +33,7 @@ export default function init(level) {
   bars.append('g').attr('class', 'y axis');
 
   const legendCol = plotRow.append('div').attr('class', 'legend');
+  legendCol.append('svg');
 
   bars.append('text')
     .attr('id', 'y-label')
@@ -59,6 +60,6 @@ export default function init(level) {
   const ctrlRowOne = controls.append('div').attr('class', 'row');
   addDownloadLinks(ctrlRowOne, svgBar, legendCol.select('svg'), level + 1);
   addTaxaPicker(ctrlRowOne, levels, level + 1);
-  addColorPicker(ctrlRowOne, svgBar, data, dataMeta);
+  addColorPicker(ctrlRowOne, svgBar, legendCol, data, dataMeta);
   addSortByPicker(ctrlRowOne, svgBar, data, dataMeta);
 }

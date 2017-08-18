@@ -4,6 +4,7 @@ import * as d3chromo from 'd3-scale-chromatic';
 import init from './init';
 import render from './render';
 import { sort } from './data';
+import plotLegend from './legend';
 
 
 export const availableColorSchemes = [
@@ -124,7 +125,7 @@ export function addTaxaPicker(row, levels, selectedLevel) {
   return grp;
 }
 
-export function addColorPicker(row, svg, data, dataMeta) {
+export function addColorPicker(row, svg, legendCol, data, dataMeta) {
   const grp = row.append('div').attr('class', 'col-lg-2 form-group colorPicker');
   grp.append('label').text('Color Palette');
   grp.append('a')
@@ -140,7 +141,8 @@ export function addColorPicker(row, svg, data, dataMeta) {
     .on('change', function changeColorPicker() {
       const colorScheme = this.options[this.selectedIndex].value;
       const xOrdering = _getSort(row, svg, data, dataMeta);
-      render(svg, colorScheme, xOrdering, dataMeta);
+      const chartInfo = render(svg, colorScheme, xOrdering, dataMeta);
+      plotLegend(legendCol, chartInfo);
     });
 
   const discrete = availableColorSchemes.filter(d => d.type === 'o');
