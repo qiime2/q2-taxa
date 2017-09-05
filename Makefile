@@ -16,7 +16,7 @@ q2_taxa/assets/barplot/dist:
 	cd q2_taxa/assets/barplot && \
 	npm install && \
 	npm run build && \
-	cp licenses/* dist
+	cp licenses/* dist/
 
 viz-barplot: q2_taxa/assets/barplot/dist
 
