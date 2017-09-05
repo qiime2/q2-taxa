@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "dependencies": {
-    "d3": "^4.2.6",
+    "d3": "4.10.0",
     "d3-scale-chromatic": "^1.0.2",
     "natural-sort": "^1.0.0",
     "thenby": "^1.2.1"
