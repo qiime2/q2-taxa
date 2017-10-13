@@ -29,11 +29,8 @@ def collapse(table: pd.DataFrame, taxonomy: pd.Series,
     return _collapse_table(table, taxonomy, level, max_observed_level)
 
 
-def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
-                 include: str=None, exclude: str=None,
-                 query_delimiter: str=',', exact_match: bool=False) \
-                 -> pd.DataFrame:
-
+def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
+                               query_delimiter, exact_match):
     if include is None and exclude is None:
         raise ValueError("At least one filtering criterion must be provided.")
 
@@ -51,7 +48,7 @@ def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
             query = query_template % e
             ids_to_keep |= set(taxonomy.ids(where=query))
     else:
-        ids_to_keep = set(table.columns)
+        ids_to_keep = set(feature_ids)
 
     # Then, remove features that are excluded.
     if exclude is not None:
@@ -59,6 +56,17 @@ def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
         for e in exclude:
             query = query_template % e
             ids_to_keep -= set(taxonomy.ids(where=query))
+
+    return ids_to_keep
+
+
+def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
+                 include: str=None, exclude: str=None,
+                 query_delimiter: str=',', exact_match: bool=False) \
+                 -> pd.DataFrame:
+    ids_to_keep = _ids_to_keep_from_taxonomy(
+        table.columns, taxonomy, include, exclude, query_delimiter,
+        exact_match)
 
     if len(ids_to_keep) == 0:
         raise ValueError("All features were filtered, resulting in an "
@@ -72,6 +80,10 @@ def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
 
 
 def filter_seqs(seqs: pd.Series, taxonomy: qiime2.Metadata,
-                 include: list, exclude: list,
-                 include_exact: list, exclude_exact: list) -> pd.Series:
-    pass
+                include: str=None, exclude: str=None,
+                query_delimiter: str=',', exact_match: bool=False) \
+                -> pd.Series:
+    ids_to_keep = _ids_to_keep_from_taxonomy(
+        seqs.index, taxonomy, include, exclude, query_delimiter, exact_match)
+
+    return seqs[ids_to_keep]
