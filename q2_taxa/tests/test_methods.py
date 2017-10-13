@@ -10,8 +10,9 @@ import unittest
 
 import pandas as pd
 import pandas.util.testing as pdt
+import qiime2
 
-from q2_taxa import collapse
+from q2_taxa import collapse, filter_table
 
 
 class CollapseTests(unittest.TestCase):
@@ -99,3 +100,59 @@ class CollapseTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, 'of 0 is too low'):
             collapse(table, taxonomy, 0)
+
+class FilterTable(unittest.TestCase):
+
+    def test_filter_table_include_contains(self):
+        table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
+                             index=['A', 'B', 'C', 'D'],
+                             columns=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+            pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
+            index=['feat1', 'feat2'], columns=['Taxon']))
+
+        # keep both features
+        obs = filter_table(table, taxonomy, include_contains='bb')
+        pdt.assert_frame_equal(obs, table, check_like=True)
+
+        # keep feat1 only
+        obs = filter_table(table, taxonomy, include_contains='cc')
+        exp = pd.DataFrame([[2.0], [1.0], [9.0]],
+                           index=['A', 'B', 'C'],
+                           columns=['feat1'])
+        pdt.assert_frame_equal(obs, exp, check_like=True)
+
+        obs = filter_table(table, taxonomy, include_contains='aa; bb; cc')
+        exp = pd.DataFrame([[2.0], [1.0], [9.0]],
+                           index=['A', 'B', 'C'],
+                           columns=['feat1'])
+        pdt.assert_frame_equal(obs, exp, check_like=True)
+
+        # keep feat2 only
+        obs = filter_table(table, taxonomy, include_contains='dd')
+        exp = pd.DataFrame([[2.0], [1.0], [8.0], [4.0]],
+                           index=['A', 'B', 'C', 'D'],
+                           columns=['feat2'])
+        pdt.assert_frame_equal(obs, exp, check_like=True)
+
+        obs = filter_table(table, taxonomy, include_contains='ee')
+        exp = pd.DataFrame([[2.0], [1.0], [8.0], [4.0]],
+                           index=['A', 'B', 'C', 'D'],
+                           columns=['feat2'])
+        pdt.assert_frame_equal(obs, exp, check_like=True)
+
+        obs = filter_table(table, taxonomy, include_contains='dd ee')
+        exp = pd.DataFrame([[2.0], [1.0], [8.0], [4.0]],
+                           index=['A', 'B', 'C', 'D'],
+                           columns=['feat2'])
+        pdt.assert_frame_equal(obs, exp, check_like=True)
+
+        obs = filter_table(table, taxonomy, include_contains='aa; bb; dd ee')
+        exp = pd.DataFrame([[2.0], [1.0], [8.0], [4.0]],
+                           index=['A', 'B', 'C', 'D'],
+                           columns=['feat2'])
+        pdt.assert_frame_equal(obs, exp, check_like=True)
+
+        # keep no features
+        with self.assertRaisesRegex(ValueError, expected_regex='empty table'):
+            obs = filter_table(table, taxonomy, include_contains='peanut!')
