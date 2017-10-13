@@ -14,7 +14,7 @@ from q2_types.feature_data import FeatureData, Taxonomy
 from q2_types.feature_table import FeatureTable, Frequency
 
 
-from . import barplot, collapse
+from . import barplot, collapse, filter_table
 
 
 plugin = qiime2.plugin.Plugin(
@@ -58,6 +58,33 @@ plugin.methods.register_function(
     description='Collapse groups of features that have the same taxonomic '
                 'assignment through the specified level. The frequencies of '
                 'all features will be summed when they are collapsed.'
+)
+
+plugin.methods.register_function(
+    function=filter_table,
+    inputs={
+        'taxonomy': FeatureData[Taxonomy],
+        'table': FeatureTable[Frequency]
+    },
+    parameters={'include_contains': qiime2.plugin.Str,
+                'exclude_contains': qiime2.plugin.Str,
+                'include_exact': qiime2.plugin.Str,
+                'exclude_exact': qiime2.plugin.Str},
+    outputs=[('filtered_table', FeatureTable[Frequency])],
+    input_descriptions={
+        'taxonomy': ('Taxonomic annotations for features in the provided '
+                     'feature table. All features in the feature table must '
+                     'have a corresponding taxonomic annotation. Taxonomic '
+                     'annotations that are not present in the feature table '
+                     'will be ignored.'),
+        'table': 'Feature table to be filtered.'},
+    parameter_descriptions={},
+    output_descriptions={
+        'filtered_table': ('The resulting feature table where specified '
+                           'taxa have been filtered.')
+    },
+    name='Filter features from table based on their taxonomy.',
+    description=''
 )
 
 plugin.visualizers.register_function(
