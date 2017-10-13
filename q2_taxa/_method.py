@@ -30,45 +30,48 @@ def collapse(table: pd.DataFrame, taxonomy: pd.Series,
 
 
 def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
-                 include_contains: str=None, exclude_contains: str=None,
-                 include_exact: str=None, exclude_exact: str=None,
-                 query_delimiter: str=',') \
+                 include: str=None, exclude: str=None,
+                 query_delimiter: str=',', exact_match: bool=False) \
                  -> pd.DataFrame:
-    queries = []
-    if include_contains is not None:
-        include_contains = include_contains.split(query_delimiter)
-        for e in include_contains:
-            queries.append("Taxon LIKE '%%%s%%'" % e)
-    if exclude_contains is not None:
-        exclude_contains = exclude_contains.split(query_delimiter)
-        for e in exclude_contains:
-            queries.append("Taxon NOT LIKE '%%%s%%'" % e)
-    if include_exact is not None:
-        include_exact = include_exact.split(query_delimiter)
-        for e in include_exact:
-            queries.append("Taxon='%s'" % e)
-    if exclude_exact is not None:
-        exclude_exact = exclude_exact.split(query_delimiter)
-        for e in exclude_exact:
-            queries.append("NOT Taxon='%s'" % e)
 
-    if len(queries) == 0:
+    if include is None and exclude is None:
         raise ValueError("At least one filtering criterion must be provided.")
 
-    ids_to_keep = set(table.columns)
-    for e in queries:
-        ids_to_keep &= set(taxonomy.ids(where=e))
+    if exact_match:
+        query_template = "Taxon='%s'"
+    else:
+        query_template = "Taxon LIKE '%%%s%%'"
+
+    # First identify the features that are included (if no includes are
+    # provided, include all features).
+    if include is not None:
+        include = include.split(query_delimiter)
+        ids_to_keep = set()
+        for e in include:
+            query = query_template % e
+            ids_to_keep |= set(taxonomy.ids(where=query))
+    else:
+        ids_to_keep = set(table.columns)
+
+    # Then, remove features that are excluded.
+    if exclude is not None:
+        exclude = exclude.split(query_delimiter)
+        for e in exclude:
+            query = query_template % e
+            ids_to_keep -= set(taxonomy.ids(where=query))
 
     if len(ids_to_keep) == 0:
         raise ValueError("All features were filtered, resulting in an "
                          "empty table.")
 
+    # filter the table to only the ids that should be retained
     table = table[list(ids_to_keep)]
     # drop samples that now have a zero-count
-    return table[table.T.sum() > 0]
+    table = table[table.T.sum() > 0]
+    return table
 
 
 def filter_seqs(seqs: pd.Series, taxonomy: qiime2.Metadata,
-                 include_contains: list, exclude_contains: list,
+                 include: list, exclude: list,
                  include_exact: list, exclude_exact: list) -> pd.Series:
     pass
