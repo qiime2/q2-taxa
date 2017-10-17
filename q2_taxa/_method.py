@@ -79,11 +79,16 @@ def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
     return table
 
 
-def filter_seqs(seqs: pd.Series, taxonomy: qiime2.Metadata,
+def filter_seqs(sequences: pd.Series, taxonomy: qiime2.Metadata,
                 include: str=None, exclude: str=None,
                 query_delimiter: str=',', exact_match: bool=False) \
                 -> pd.Series:
     ids_to_keep = _ids_to_keep_from_taxonomy(
-        seqs.index, taxonomy, include, exclude, query_delimiter, exact_match)
+        sequences.index, taxonomy, include, exclude, query_delimiter,
+        exact_match)
 
-    return seqs[ids_to_keep]
+    if len(ids_to_keep) == 0:
+        raise ValueError("All features were filtered, resulting in an "
+                         "empty collection of feature sequences.")
+
+    return sequences[ids_to_keep]

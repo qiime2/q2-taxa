@@ -12,7 +12,7 @@ import pandas as pd
 import pandas.util.testing as pdt
 import qiime2
 
-from q2_taxa import collapse, filter_table
+from q2_taxa import collapse, filter_table, filter_seqs
 
 
 class CollapseTests(unittest.TestCase):
@@ -389,3 +389,310 @@ class FilterTable(unittest.TestCase):
                                include='peanut',
                                exclude='bb',
                                exact_match=True)
+
+
+class FilterSeqs(unittest.TestCase):
+
+    def test_filter_no_filters(self):
+        seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
+                             index=['feat1', 'feat2'], columns=['Taxon']))
+
+        with self.assertRaisesRegex(ValueError, 'At least one'):
+            filter_seqs(seqs, taxonomy)
+
+    def test_alt_delimiter(self):
+        seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
+                             index=['feat1', 'feat2'], columns=['Taxon']))
+
+        # include with delimiter
+        obs = filter_seqs(seqs, taxonomy, include='cc@peanut@ee',
+                          query_delimiter='@peanut@')
+        exp = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # exclude with delimiter
+        obs = filter_seqs(seqs, taxonomy, exclude='ww@peanut@ee',
+                          query_delimiter='@peanut@')
+        exp = pd.Series(['ACGT'], index=['feat1'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+    def test_filter_seqs_include(self):
+        seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
+                             index=['feat1', 'feat2'], columns=['Taxon']))
+
+        # keep both features
+        obs = filter_seqs(seqs, taxonomy, include='bb')
+        exp = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        obs = filter_seqs(seqs, taxonomy, include='cc,ee')
+        exp = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep feat1 only
+        obs = filter_seqs(seqs, taxonomy, include='cc')
+        exp = pd.Series(['ACGT'], index=['feat1'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        obs = filter_seqs(seqs, taxonomy, include='aa; bb; cc')
+        exp = pd.Series(['ACGT'], index=['feat1'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep feat2 only
+        obs = filter_seqs(seqs, taxonomy, include='dd')
+        exp = pd.Series(['ACCC'], index=['feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        obs = filter_seqs(seqs, taxonomy, include='ee')
+        exp = pd.Series(['ACCC'], index=['feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        obs = filter_seqs(seqs, taxonomy, include='dd ee')
+        exp = pd.Series(['ACCC'], index=['feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        obs = filter_seqs(seqs, taxonomy, include='aa; bb; dd ee')
+        exp = pd.Series(['ACCC'], index=['feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep no features
+        with self.assertRaisesRegex(ValueError,
+                                    expected_regex='empty collection'):
+            obs = filter_seqs(seqs, taxonomy, include='peanut!')
+
+    def test_filter_seqs_include_exact_match(self):
+        seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
+                             index=['feat1', 'feat2'], columns=['Taxon']))
+
+        # keep both features
+        obs = filter_seqs(seqs, taxonomy, include='aa; bb; cc,aa; bb; dd ee',
+                          exact_match=True)
+        exp = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep feat1 only
+        obs = filter_seqs(seqs, taxonomy, include='aa; bb; cc',
+                          exact_match=True)
+        exp = pd.Series(['ACGT'], index=['feat1'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep feat2 only
+        obs = filter_seqs(seqs, taxonomy, include='aa; bb; dd ee',
+                          exact_match=True)
+        exp = pd.Series(['ACCC'], index=['feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep no features
+        with self.assertRaisesRegex(ValueError,
+                                    expected_regex='empty collection'):
+            obs = filter_seqs(seqs, taxonomy, include='bb', exact_match=True)
+
+    def test_filter_seqs_exclude(self):
+        seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
+                             index=['feat1', 'feat2'], columns=['Taxon']))
+
+        # keep both features
+        obs = filter_seqs(seqs, taxonomy, exclude='ab')
+        exp = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        obs = filter_seqs(seqs, taxonomy, exclude='xx')
+        exp = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep feat1 only
+        obs = filter_seqs(seqs, taxonomy, exclude='dd')
+        exp = pd.Series(['ACGT'], index=['feat1'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        obs = filter_seqs(seqs, taxonomy, exclude='dd ee')
+        exp = pd.Series(['ACGT'], index=['feat1'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        obs = filter_seqs(seqs, taxonomy, exclude='aa; bb; dd ee')
+        exp = pd.Series(['ACGT'], index=['feat1'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep feat2 only
+        obs = filter_seqs(seqs, taxonomy, exclude='cc')
+        exp = pd.Series(['ACCC'], index=['feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        obs = filter_seqs(seqs, taxonomy, exclude='aa; bb; cc')
+        exp = pd.Series(['ACCC'], index=['feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep no features
+        with self.assertRaisesRegex(ValueError,
+                                    expected_regex='empty collection'):
+            obs = filter_seqs(seqs, taxonomy, exclude='aa')
+
+        with self.assertRaisesRegex(ValueError,
+                                    expected_regex='empty collection'):
+            obs = filter_seqs(seqs, taxonomy, exclude='aa; bb')
+
+    def test_filter_seqs_exclude_exact_match(self):
+        seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
+                             index=['feat1', 'feat2'], columns=['Taxon']))
+
+        # keep both features
+        obs = filter_seqs(seqs, taxonomy, exclude='peanut!',
+                          exact_match=True)
+        exp = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep feat1 only
+        obs = filter_seqs(seqs, taxonomy, exclude='aa; bb; dd ee',
+                          exact_match=True)
+        exp = pd.Series(['ACGT'], index=['feat1'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        obs = filter_seqs(seqs, taxonomy, exclude='aa; bb; dd ee,aa',
+                          exact_match=True)
+        exp = pd.Series(['ACGT'], index=['feat1'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep feat2 only
+        obs = filter_seqs(seqs, taxonomy, exclude='aa; bb; cc',
+                          exact_match=True)
+        exp = pd.Series(['ACCC'], index=['feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        obs = filter_seqs(seqs, taxonomy, exclude='aa; bb; cc,aa',
+                          exact_match=True)
+        exp = pd.Series(['ACCC'], index=['feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep no features
+        with self.assertRaisesRegex(ValueError,
+                                    expected_regex='empty collection'):
+            obs = filter_seqs(seqs, taxonomy,
+                              exclude='aa; bb; cc,aa; bb; dd ee',
+                              exact_match=True)
+
+    def test_filter_seqs_include_exclude(self):
+        seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
+                             index=['feat1', 'feat2'], columns=['Taxon']))
+
+        # keep both features
+        obs = filter_seqs(seqs, taxonomy, include='aa', exclude='peanut!')
+        exp = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep feat1 only - feat2 dropped at exclusion step
+        obs = filter_seqs(seqs, taxonomy, include='aa', exclude='ee')
+        exp = pd.Series(['ACGT'], index=['feat1'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep feat1 only - feat2 dropped at inclusion step
+        obs = filter_seqs(seqs, taxonomy, include='cc', exclude='ee')
+        exp = pd.Series(['ACGT'], index=['feat1'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep feat2 only - feat1 dropped at exclusion step
+        obs = filter_seqs(seqs, taxonomy, include='aa', exclude='cc')
+        exp = pd.Series(['ACCC'], index=['feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep feat2 only - feat1 dropped at inclusion step
+        obs = filter_seqs(seqs, taxonomy, include='ee', exclude='cc')
+        exp = pd.Series(['ACCC'], index=['feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep no features - all dropped at exclusion
+        with self.assertRaisesRegex(ValueError,
+                                    expected_regex='empty collection'):
+            obs = filter_seqs(seqs, taxonomy,
+                              include='aa',
+                              exclude='bb',
+                              exact_match=True)
+
+        # keep no features - one dropped at inclusion, one dropped at exclusion
+        with self.assertRaisesRegex(ValueError,
+                                    expected_regex='empty collection'):
+            obs = filter_seqs(seqs, taxonomy,
+                              include='cc',
+                              exclude='cc',
+                              exact_match=True)
+
+        # keep no features - all dropped at inclusion
+        with self.assertRaisesRegex(ValueError,
+                                    expected_regex='empty collection'):
+            obs = filter_seqs(seqs, taxonomy,
+                              include='peanut',
+                              exclude='bb',
+                              exact_match=True)
