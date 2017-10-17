@@ -66,25 +66,50 @@ plugin.methods.register_function(
         'taxonomy': FeatureData[Taxonomy],
         'table': FeatureTable[Frequency]
     },
-    parameters={'include_contains': qiime2.plugin.Str,
-                'exclude_contains': qiime2.plugin.Str,
-                'include_exact': qiime2.plugin.Str,
-                'exclude_exact': qiime2.plugin.Str},
+    parameters={'include': qiime2.plugin.Str,
+                'exclude': qiime2.plugin.Str,
+                'exact_match': qiime2.plugin.Bool,
+                'query_delimiter': qiime2.plugin.Str},
     outputs=[('filtered_table', FeatureTable[Frequency])],
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
                      'feature table. All features in the feature table must '
                      'have a corresponding taxonomic annotation. Taxonomic '
-                     'annotations that are not present in the feature table '
-                     'will be ignored.'),
+                     'annotations for features that are not present in the '
+                     'feature table will be ignored.'),
         'table': 'Feature table to be filtered.'},
-    parameter_descriptions={},
-    output_descriptions={
-        'filtered_table': ('The resulting feature table where specified '
-                           'taxa have been filtered.')
+    parameter_descriptions={
+        'include': ('One or more search terms that indicate which taxa should '
+                    'be included in the resulting table. If providing '
+                    'more than one term, terms should be delimited by the '
+                    'query-delimiter character. By default, all taxa '
+                    'will be included.'),
+        'exclude': ('One or more search terms that indicate which taxa should '
+                    'be excluded from the resulting table. If providing '
+                    'more than one term, terms should be delimited by the '
+                    'query-delimiter character. By default, no taxa '
+                    'will be excluded.'),
+        'exact_match': ('Include and exclude terms should only be considered '
+                        'matches if the taxonomic annotation for a '
+                        'feature is an exact match to the query term.'),
+        'query_delimiter': ('The string used to delimit multiple search terms '
+                            'provided to include or exclude. This parameter '
+                            'should only need to be modified if the default '
+                            'delimiter (a comma) is used in the provided '
+                            'taxonomic annotations.')
     },
-    name='Filter features from table based on their taxonomy.',
-    description=''
+    output_descriptions={
+        'filtered_table': ('The taxonomy-filtered feature table.')
+    },
+    name='Taxonomy-based feature table filter.',
+    description=('This method filters features from a table based on their '
+                 'taxonomic annotations. Features can be retained in the '
+                 'resulting table by specifying one or more include search '
+                 'terms, and can be filtered out of the resulting table by '
+                 'specifying one or more exclude search terms. If both '
+                 'include and exclude are provided, the inclusion critera '
+                 'will be applied before the exclusion critera. Either '
+                 'include or exclude terms (or both) must be provided.')
 )
 
 plugin.visualizers.register_function(
