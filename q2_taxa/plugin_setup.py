@@ -125,10 +125,10 @@ plugin.methods.register_function(
     outputs=[('filtered_sequences', FeatureData[Sequence])],
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
-                     'feature data. All features in the feature data must '
-                     'have a corresponding taxonomic annotation. Taxonomic '
-                     'annotations for features that are not present in the '
-                     'feature data will be ignored.'),
+                     'feature sequences. All features in the feature '
+                     'sequences must have a corresponding taxonomic '
+                     'annotation. Taxonomic annotations for features that are '
+                     'not present in the feature sequences will be ignored.'),
         'sequences': 'Feature sequences to be filtered.'},
     parameter_descriptions={
         'include': ('One or more search terms that indicate which taxa should '
