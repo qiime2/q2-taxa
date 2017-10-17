@@ -30,14 +30,16 @@ def collapse(table: pd.DataFrame, taxonomy: pd.Series,
 
 
 def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
-                               query_delimiter, exact_match):
+                               query_delimiter, mode):
     if include is None and exclude is None:
         raise ValueError("At least one filtering term must be provided.")
 
-    if exact_match:
+    if mode == 'exact':
         query_template = "Taxon='%s'"
-    else:
+    elif mode == 'contains':
         query_template = "Taxon LIKE '%%%s%%'"
+    else:
+        raise ValueError('Unknown mode: %s' % mode)
 
     # First identify the features that are included (if no includes are
     # provided, include all features).
@@ -62,11 +64,11 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
 
 def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
                  include: str=None, exclude: str=None,
-                 query_delimiter: str=',', exact_match: bool=False) \
+                 query_delimiter: str=',', mode: str='contains') \
                  -> pd.DataFrame:
     ids_to_keep = _ids_to_keep_from_taxonomy(
         table.columns, taxonomy, include, exclude, query_delimiter,
-        exact_match)
+        mode)
 
     if len(ids_to_keep) == 0:
         raise ValueError("All features were filtered, resulting in an "
@@ -81,11 +83,11 @@ def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
 
 def filter_seqs(sequences: pd.Series, taxonomy: qiime2.Metadata,
                 include: str=None, exclude: str=None,
-                query_delimiter: str=',', exact_match: bool=False) \
+                query_delimiter: str=',', mode: str='contains') \
                 -> pd.Series:
     ids_to_keep = _ids_to_keep_from_taxonomy(
         sequences.index, taxonomy, include, exclude, query_delimiter,
-        exact_match)
+        mode)
 
     if len(ids_to_keep) == 0:
         raise ValueError("All features were filtered, resulting in an "

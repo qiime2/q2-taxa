@@ -136,6 +136,17 @@ class FilterTable(unittest.TestCase):
                            columns=['feat1'])
         pdt.assert_frame_equal(obs, exp, check_like=True)
 
+    def test_filter_table_unknown_mode(self):
+        table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
+                             index=['A', 'B', 'C', 'D'],
+                             columns=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
+                             index=['feat1', 'feat2'], columns=['Taxon']))
+
+        with self.assertRaisesRegex(ValueError, 'Unknown mode'):
+            filter_table(table, taxonomy, include='bb', mode='not-a-mode')
+
     def test_filter_table_include(self):
         table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
                              index=['A', 'B', 'C', 'D'],
@@ -203,12 +214,12 @@ class FilterTable(unittest.TestCase):
 
         # keep both features
         obs = filter_table(table, taxonomy, include='aa; bb; cc,aa; bb; dd ee',
-                           exact_match=True)
+                           mode='exact')
         pdt.assert_frame_equal(obs, table, check_like=True)
 
         # keep feat1 only
         obs = filter_table(table, taxonomy, include='aa; bb; cc',
-                           exact_match=True)
+                           mode='exact')
         exp = pd.DataFrame([[2.0], [1.0], [9.0]],
                            index=['A', 'B', 'C'],
                            columns=['feat1'])
@@ -216,7 +227,7 @@ class FilterTable(unittest.TestCase):
 
         # keep feat2 only
         obs = filter_table(table, taxonomy, include='aa; bb; dd ee',
-                           exact_match=True)
+                           mode='exact')
         exp = pd.DataFrame([[2.0], [1.0], [8.0], [4.0]],
                            index=['A', 'B', 'C', 'D'],
                            columns=['feat2'])
@@ -224,7 +235,7 @@ class FilterTable(unittest.TestCase):
 
         # keep no features
         with self.assertRaisesRegex(ValueError, expected_regex='empty table'):
-            obs = filter_table(table, taxonomy, include='bb', exact_match=True)
+            obs = filter_table(table, taxonomy, include='bb', mode='exact')
 
     def test_filter_table_exclude(self):
         table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
@@ -290,19 +301,19 @@ class FilterTable(unittest.TestCase):
 
         # keep both features
         obs = filter_table(table, taxonomy, exclude='peanut!',
-                           exact_match=True)
+                           mode='exact')
         pdt.assert_frame_equal(obs, table, check_like=True)
 
         # keep feat1 only
         obs = filter_table(table, taxonomy, exclude='aa; bb; dd ee',
-                           exact_match=True)
+                           mode='exact')
         exp = pd.DataFrame([[2.0], [1.0], [9.0]],
                            index=['A', 'B', 'C'],
                            columns=['feat1'])
         pdt.assert_frame_equal(obs, exp, check_like=True)
 
         obs = filter_table(table, taxonomy, exclude='aa; bb; dd ee,aa',
-                           exact_match=True)
+                           mode='exact')
         exp = pd.DataFrame([[2.0], [1.0], [9.0]],
                            index=['A', 'B', 'C'],
                            columns=['feat1'])
@@ -310,14 +321,14 @@ class FilterTable(unittest.TestCase):
 
         # keep feat2 only
         obs = filter_table(table, taxonomy, exclude='aa; bb; cc',
-                           exact_match=True)
+                           mode='exact')
         exp = pd.DataFrame([[2.0], [1.0], [8.0], [4.0]],
                            index=['A', 'B', 'C', 'D'],
                            columns=['feat2'])
         pdt.assert_frame_equal(obs, exp, check_like=True)
 
         obs = filter_table(table, taxonomy, exclude='aa; bb; cc,aa',
-                           exact_match=True)
+                           mode='exact')
         exp = pd.DataFrame([[2.0], [1.0], [8.0], [4.0]],
                            index=['A', 'B', 'C', 'D'],
                            columns=['feat2'])
@@ -327,7 +338,7 @@ class FilterTable(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, expected_regex='empty table'):
             obs = filter_table(table, taxonomy,
                                exclude='aa; bb; cc,aa; bb; dd ee',
-                               exact_match=True)
+                               mode='exact')
 
     def test_filter_table_include_exclude(self):
         table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
@@ -374,21 +385,21 @@ class FilterTable(unittest.TestCase):
             obs = filter_table(table, taxonomy,
                                include='aa',
                                exclude='bb',
-                               exact_match=True)
+                               mode='exact')
 
         # keep no features - one dropped at inclusion, one dropped at exclusion
         with self.assertRaisesRegex(ValueError, expected_regex='empty table'):
             obs = filter_table(table, taxonomy,
                                include='cc',
                                exclude='cc',
-                               exact_match=True)
+                               mode='exact')
 
         # keep no features - all dropped at inclusion
         with self.assertRaisesRegex(ValueError, expected_regex='empty table'):
             obs = filter_table(table, taxonomy,
                                include='peanut',
                                exclude='bb',
-                               exact_match=True)
+                               mode='exact')
 
 
 class FilterSeqs(unittest.TestCase):
@@ -423,6 +434,15 @@ class FilterSeqs(unittest.TestCase):
         obs.sort_values(inplace=True)
         exp.sort_values(inplace=True)
         pdt.assert_series_equal(obs, exp)
+
+    def test_filter_seqs_unknown_mode(self):
+        seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
+                             index=['feat1', 'feat2'], columns=['Taxon']))
+
+        with self.assertRaisesRegex(ValueError, 'Unknown mode'):
+            filter_seqs(seqs, taxonomy, include='bb', mode='not-a-mode')
 
     def test_filter_seqs_include(self):
         seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
@@ -494,7 +514,7 @@ class FilterSeqs(unittest.TestCase):
 
         # keep both features
         obs = filter_seqs(seqs, taxonomy, include='aa; bb; cc,aa; bb; dd ee',
-                          exact_match=True)
+                          mode='exact')
         exp = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
         obs.sort_values(inplace=True)
         exp.sort_values(inplace=True)
@@ -502,7 +522,7 @@ class FilterSeqs(unittest.TestCase):
 
         # keep feat1 only
         obs = filter_seqs(seqs, taxonomy, include='aa; bb; cc',
-                          exact_match=True)
+                          mode='exact')
         exp = pd.Series(['ACGT'], index=['feat1'])
         obs.sort_values(inplace=True)
         exp.sort_values(inplace=True)
@@ -510,7 +530,7 @@ class FilterSeqs(unittest.TestCase):
 
         # keep feat2 only
         obs = filter_seqs(seqs, taxonomy, include='aa; bb; dd ee',
-                          exact_match=True)
+                          mode='exact')
         exp = pd.Series(['ACCC'], index=['feat2'])
         obs.sort_values(inplace=True)
         exp.sort_values(inplace=True)
@@ -519,7 +539,7 @@ class FilterSeqs(unittest.TestCase):
         # keep no features
         with self.assertRaisesRegex(ValueError,
                                     expected_regex='empty collection'):
-            obs = filter_seqs(seqs, taxonomy, include='bb', exact_match=True)
+            obs = filter_seqs(seqs, taxonomy, include='bb', mode='exact')
 
     def test_filter_seqs_exclude(self):
         seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
@@ -589,7 +609,7 @@ class FilterSeqs(unittest.TestCase):
 
         # keep both features
         obs = filter_seqs(seqs, taxonomy, exclude='peanut!',
-                          exact_match=True)
+                          mode='exact')
         exp = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
         obs.sort_values(inplace=True)
         exp.sort_values(inplace=True)
@@ -597,14 +617,14 @@ class FilterSeqs(unittest.TestCase):
 
         # keep feat1 only
         obs = filter_seqs(seqs, taxonomy, exclude='aa; bb; dd ee',
-                          exact_match=True)
+                          mode='exact')
         exp = pd.Series(['ACGT'], index=['feat1'])
         obs.sort_values(inplace=True)
         exp.sort_values(inplace=True)
         pdt.assert_series_equal(obs, exp)
 
         obs = filter_seqs(seqs, taxonomy, exclude='aa; bb; dd ee,aa',
-                          exact_match=True)
+                          mode='exact')
         exp = pd.Series(['ACGT'], index=['feat1'])
         obs.sort_values(inplace=True)
         exp.sort_values(inplace=True)
@@ -612,14 +632,14 @@ class FilterSeqs(unittest.TestCase):
 
         # keep feat2 only
         obs = filter_seqs(seqs, taxonomy, exclude='aa; bb; cc',
-                          exact_match=True)
+                          mode='exact')
         exp = pd.Series(['ACCC'], index=['feat2'])
         obs.sort_values(inplace=True)
         exp.sort_values(inplace=True)
         pdt.assert_series_equal(obs, exp)
 
         obs = filter_seqs(seqs, taxonomy, exclude='aa; bb; cc,aa',
-                          exact_match=True)
+                          mode='exact')
         exp = pd.Series(['ACCC'], index=['feat2'])
         obs.sort_values(inplace=True)
         exp.sort_values(inplace=True)
@@ -630,7 +650,7 @@ class FilterSeqs(unittest.TestCase):
                                     expected_regex='empty collection'):
             obs = filter_seqs(seqs, taxonomy,
                               exclude='aa; bb; cc,aa; bb; dd ee',
-                              exact_match=True)
+                              mode='exact')
 
     def test_filter_seqs_include_exclude(self):
         seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
@@ -679,7 +699,7 @@ class FilterSeqs(unittest.TestCase):
             obs = filter_seqs(seqs, taxonomy,
                               include='aa',
                               exclude='bb',
-                              exact_match=True)
+                              mode='exact')
 
         # keep no features - one dropped at inclusion, one dropped at exclusion
         with self.assertRaisesRegex(ValueError,
@@ -687,7 +707,7 @@ class FilterSeqs(unittest.TestCase):
             obs = filter_seqs(seqs, taxonomy,
                               include='cc',
                               exclude='cc',
-                              exact_match=True)
+                              mode='exact')
 
         # keep no features - all dropped at inclusion
         with self.assertRaisesRegex(ValueError,
@@ -695,4 +715,4 @@ class FilterSeqs(unittest.TestCase):
             obs = filter_seqs(seqs, taxonomy,
                               include='peanut',
                               exclude='bb',
-                              exact_match=True)
+                              mode='exact')

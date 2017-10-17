@@ -68,7 +68,9 @@ plugin.methods.register_function(
     },
     parameters={'include': qiime2.plugin.Str,
                 'exclude': qiime2.plugin.Str,
-                'exact_match': qiime2.plugin.Bool,
+                'mode':
+                    qiime2.plugin.Str % qiime2.plugin.Choices(['exact',
+                                                               'contains']),
                 'query_delimiter': qiime2.plugin.Str},
     outputs=[('filtered_table', FeatureTable[Frequency])],
     input_descriptions={
@@ -89,9 +91,10 @@ plugin.methods.register_function(
                     'more than one term, terms should be delimited by the '
                     'query-delimiter character. By default, no taxa '
                     'will be excluded.'),
-        'exact_match': ('Include and exclude terms should only be considered '
-                        'matches if the taxonomic annotation for a '
-                        'feature is an exact match to the query term.'),
+        'mode': ('Mode for determining if a search term matches a taxonomic '
+                 'annotation. "contains" requires that the annotation '
+                 'has the term as a substring; "exact" requires that the '
+                 'annotation is a perfect match to a search term.'),
         'query_delimiter': ('The string used to delimit multiple search terms '
                             'provided to include or exclude. This parameter '
                             'should only need to be modified if the default '
@@ -120,7 +123,9 @@ plugin.methods.register_function(
     },
     parameters={'include': qiime2.plugin.Str,
                 'exclude': qiime2.plugin.Str,
-                'exact_match': qiime2.plugin.Bool,
+                'mode':
+                    qiime2.plugin.Str % qiime2.plugin.Choices(['exact',
+                                                               'contains']),
                 'query_delimiter': qiime2.plugin.Str},
     outputs=[('filtered_sequences', FeatureData[Sequence])],
     input_descriptions={
@@ -141,9 +146,10 @@ plugin.methods.register_function(
                     'more than one term, terms should be delimited by the '
                     'query-delimiter character. By default, no taxa '
                     'will be excluded.'),
-        'exact_match': ('Include and exclude terms should only be considered '
-                        'matches if the taxonomic annotation for a '
-                        'feature is an exact match to the query term.'),
+        'mode': ('Mode for determining if a search term matches a taxonomic '
+                 'annotation. "contains" requires that the annotation '
+                 'has the term as a substring; "exact" requires that the '
+                 'annotation is a perfect match to a search term.'),
         'query_delimiter': ('The string used to delimit multiple search terms '
                             'provided to include or exclude. This parameter '
                             'should only need to be modified if the default '
