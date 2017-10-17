@@ -122,7 +122,7 @@ plugin.methods.register_function(
                 'exclude': qiime2.plugin.Str,
                 'exact_match': qiime2.plugin.Bool,
                 'query_delimiter': qiime2.plugin.Str},
-    outputs=[('filtered_table', FeatureTable[Frequency])],
+    outputs=[('filtered_sequences', FeatureData[Sequence])],
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
                      'feature data. All features in the feature data must '
@@ -151,7 +151,7 @@ plugin.methods.register_function(
                             'taxonomic annotations.')
     },
     output_descriptions={
-        'filtered_table': ('The taxonomy-filtered feature sequences.')
+        'filtered_sequences': ('The taxonomy-filtered feature sequences.')
     },
     name='Taxonomy-based feature sequence filter.',
     description=('This method filters sequences based on their '
