@@ -32,7 +32,7 @@ def collapse(table: pd.DataFrame, taxonomy: pd.Series,
 def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
                                query_delimiter, exact_match):
     if include is None and exclude is None:
-        raise ValueError("At least one filtering criterion must be provided.")
+        raise ValueError("At least one filtering term must be provided.")
 
     if exact_match:
         query_template = "Taxon='%s'"
