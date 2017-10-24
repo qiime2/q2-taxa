@@ -6,11 +6,11 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
-from ._method import collapse
+from ._method import collapse, filter_table, filter_seqs
 from ._visualizer import barplot
 from ._version import get_versions
 
 __version__ = get_versions()['version']
 del get_versions
 
-__all__ = ['barplot', 'collapse']
+__all__ = ['barplot', 'collapse', 'filter_table', 'filter_seqs']
