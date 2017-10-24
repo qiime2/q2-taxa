@@ -409,8 +409,19 @@ class FilterTable(unittest.TestCase):
                 pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
                              index=['feat1', 'feat2'], columns=['Taxon']))
 
-        # keep feat1 only
+        # keep feat1 only - underscore not treated as a wild card
         obs = filter_table(table, taxonomy, include='cc,d_')
+        exp = pd.DataFrame([[2.0], [1.0], [9.0]],
+                           index=['A', 'B', 'C'],
+                           columns=['feat1'])
+        pdt.assert_frame_equal(obs, exp, check_like=True)
+
+        # keep feat1 only - underscore in query matches underscore in
+        # taxonomy annotation
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; c_', 'aa; bb; dd ee'],
+                             index=['feat1', 'feat2'], columns=['Taxon']))
+        obs = filter_table(table, taxonomy, include='c_')
         exp = pd.DataFrame([[2.0], [1.0], [9.0]],
                            index=['A', 'B', 'C'],
                            columns=['feat1'])
@@ -752,8 +763,19 @@ class FilterSeqs(unittest.TestCase):
                 pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
                              index=['feat1', 'feat2'], columns=['Taxon']))
 
-        # keep feat1 only
+        # keep feat1 only - underscore not treated as a wild card
         obs = filter_seqs(seqs, taxonomy, include='cc,d_')
+        exp = pd.Series(['ACGT'], index=['feat1'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+        # keep feat1 only - underscore in query matches underscore in
+        # taxonomy annotation
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; c_', 'aa; bb; dd ee'],
+                             index=['feat1', 'feat2'], columns=['Taxon']))
+        obs = filter_seqs(seqs, taxonomy, include='c_')
         exp = pd.Series(['ACGT'], index=['feat1'])
         obs.sort_values(inplace=True)
         exp.sort_values(inplace=True)
