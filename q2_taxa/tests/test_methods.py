@@ -401,6 +401,35 @@ class FilterTable(unittest.TestCase):
                                exclude='bb',
                                mode='exact')
 
+    def test_filter_table_underscores_escaped(self):
+        table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
+                             index=['A', 'B', 'C', 'D'],
+                             columns=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
+                             index=['feat1', 'feat2'], columns=['Taxon']))
+
+        # keep feat1 only
+        obs = filter_table(table, taxonomy, include='cc,d_')
+        exp = pd.DataFrame([[2.0], [1.0], [9.0]],
+                           index=['A', 'B', 'C'],
+                           columns=['feat1'])
+        pdt.assert_frame_equal(obs, exp, check_like=True)
+
+    def test_all_features_with_frequency_greater_than_zero_get_filtered(self):
+        table = pd.DataFrame([[2.0, 0.0], [1.0, 0.0], [9.0, 0.0], [1.0, 0.0]],
+                             index=['A', 'B', 'C', 'D'],
+                             columns=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
+                             index=['feat1', 'feat2'], columns=['Taxon']))
+
+        # empty - feat2, which is matched by the include term, has a frequency
+        # of zero in all samples, so all samples end up dropped from the table
+        with self.assertRaisesRegex(ValueError,
+                                    expected_regex='greater than zero'):
+            filter_table(table, taxonomy, include='dd')
+
 
 class FilterSeqs(unittest.TestCase):
 
@@ -716,3 +745,16 @@ class FilterSeqs(unittest.TestCase):
                               include='peanut',
                               exclude='bb',
                               mode='exact')
+
+    def test_filter_seqs_underscores_escaped(self):
+        seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
+                             index=['feat1', 'feat2'], columns=['Taxon']))
+
+        # keep feat1 only
+        obs = filter_seqs(seqs, taxonomy, include='cc,d_')
+        exp = pd.Series(['ACGT'], index=['feat1'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)

@@ -37,7 +37,11 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
     if mode == 'exact':
         query_template = "Taxon='%s'"
     elif mode == 'contains':
-        query_template = "Taxon LIKE '%%%s%%'"
+        if include is not None:
+            include = include.replace('_', '\\_')
+        if exclude is not None:
+            exclude = exclude.replace('_', '\\_')
+        query_template = "Taxon LIKE '%%%s%%' ESCAPE '\\'"
     else:
         raise ValueError('Unknown mode: %s' % mode)
 
@@ -48,6 +52,8 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
         ids_to_keep = set()
         for e in include:
             query = query_template % e
+            # an sqlite database is being built for every query. if performance
+            # becomes an issue, this is a target for refactoring.
             ids_to_keep |= set(taxonomy.ids(where=query))
     else:
         ids_to_keep = set(feature_ids)
@@ -57,6 +63,8 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
         exclude = exclude.split(query_delimiter)
         for e in exclude:
             query = query_template % e
+            # an sqlite database is being built for every query. if performance
+            # becomes an issue, this is a target for refactoring.
             ids_to_keep -= set(taxonomy.ids(where=query))
 
     return ids_to_keep
@@ -76,8 +84,13 @@ def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
 
     # filter the table to only the ids that should be retained
     table = table[list(ids_to_keep)]
+
     # drop samples that now have a zero-count
     table = table[table.T.sum() > 0]
+    if table.shape[0] == 0:
+        raise ValueError("All features with frequencies greater than zero "
+                         "were filtered, resulting in an empty table.")
+
     return table
 
 

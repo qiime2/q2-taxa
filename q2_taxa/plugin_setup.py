@@ -69,8 +69,8 @@ plugin.methods.register_function(
     parameters={'include': qiime2.plugin.Str,
                 'exclude': qiime2.plugin.Str,
                 'mode':
-                    qiime2.plugin.Str % qiime2.plugin.Choices(['exact',
-                                                               'contains']),
+                    qiime2.plugin.Str % qiime2.plugin.Choices(
+                        ['exact', 'contains']),
                 'query_delimiter': qiime2.plugin.Str},
     outputs=[('filtered_table', FeatureTable[Frequency])],
     input_descriptions={
@@ -112,7 +112,9 @@ plugin.methods.register_function(
                  'specifying one or more exclude search terms. If both '
                  'include and exclude are provided, the inclusion critera '
                  'will be applied before the exclusion critera. Either '
-                 'include or exclude terms (or both) must be provided.')
+                 'include or exclude terms (or both) must be provided. Any '
+                 'samples that have a total frequency of zero after filtering '
+                 'will be removed from the resulting table.')
 )
 
 plugin.methods.register_function(
@@ -124,8 +126,8 @@ plugin.methods.register_function(
     parameters={'include': qiime2.plugin.Str,
                 'exclude': qiime2.plugin.Str,
                 'mode':
-                    qiime2.plugin.Str % qiime2.plugin.Choices(['exact',
-                                                               'contains']),
+                    qiime2.plugin.Str % qiime2.plugin.Choices(
+                        ['exact', 'contains']),
                 'query_delimiter': qiime2.plugin.Str},
     outputs=[('filtered_sequences', FeatureData[Sequence])],
     input_descriptions={
