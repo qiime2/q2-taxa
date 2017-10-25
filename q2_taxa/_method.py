@@ -34,6 +34,17 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
     if include is None and exclude is None:
         raise ValueError("At least one filtering term must be provided.")
 
+    ids_without_taxonomy = set(feature_ids) - set(taxonomy.ids())
+    if len(ids_without_taxonomy) > 0:
+        raise ValueError("All features ids must be present in taxonomy, but "
+                         "the following feature ids are not: %s"
+                         % ', '.join(ids_without_taxonomy))
+
+    # Remove feature ids from taxonomy that are not present in
+    # feature_ids (this simplifies the actual filtering step downstream) by
+    # ensuring that there are no "extra ids" in the returned ids_to_keep.
+    taxonomy = taxonomy.filter(ids=feature_ids)
+
     if mode == 'exact':
         query_template = "Taxon='%s'"
     elif mode == 'contains':

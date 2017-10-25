@@ -441,6 +441,30 @@ class FilterTable(unittest.TestCase):
                                     expected_regex='greater than zero'):
             filter_table(table, taxonomy, include='dd')
 
+    def test_extra_taxon_ignored(self):
+        table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
+                             index=['A', 'B', 'C', 'D'],
+                             columns=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee', 'aa; bb; cc'],
+                             index=['feat1', 'feat2', 'feat3'],
+                             columns=['Taxon']))
+
+        # keep both features
+        obs = filter_table(table, taxonomy, include='bb')
+        pdt.assert_frame_equal(obs, table, check_like=True)
+
+    def test_missing_taxon_errors(self):
+        table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
+                             index=['A', 'B', 'C', 'D'],
+                             columns=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc'],
+                             index=['feat1'], columns=['Taxon']))
+
+        with self.assertRaisesRegex(ValueError, expected_regex='All.*feat2'):
+            filter_table(table, taxonomy, include='bb')
+
 
 class FilterSeqs(unittest.TestCase):
 
@@ -780,3 +804,26 @@ class FilterSeqs(unittest.TestCase):
         obs.sort_values(inplace=True)
         exp.sort_values(inplace=True)
         pdt.assert_series_equal(obs, exp)
+
+    def test_extra_taxon_ignored(self):
+        seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee', 'aa; bb; cc'],
+                             index=['feat1', 'feat2', 'feat3'],
+                             columns=['Taxon']))
+
+        # keep both features
+        obs = filter_seqs(seqs, taxonomy, include='bb')
+        exp = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        obs.sort_values(inplace=True)
+        exp.sort_values(inplace=True)
+        pdt.assert_series_equal(obs, exp)
+
+    def test_missing_taxon_errors(self):
+        seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(
+                pd.DataFrame(['aa; bb; cc'],
+                             index=['feat1'], columns=['Taxon']))
+
+        with self.assertRaisesRegex(ValueError, expected_regex='All.*feat2'):
+            filter_seqs(seqs, taxonomy, include='bb')
