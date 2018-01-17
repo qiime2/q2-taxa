@@ -190,6 +190,6 @@ plugin.visualizers.register_function(
     name='Visualize taxonomy with an interactive bar plot',
     description='This visualizer produces an interactive barplot visualization'
                 ' of taxonomies. Interactive features include multi-level '
-                'sorting, plot recoloring, category selection/highlighting, '
-                'sample relabeling, and SVG figure export.'
+                'sorting, plot recoloring, sample relabeling, and SVG '
+                'figure export.'
 )

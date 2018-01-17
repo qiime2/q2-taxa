@@ -26,7 +26,7 @@ class BarplotTests(unittest.TestCase):
                              index=['feat1', 'feat2'])
         metadata = qiime2.Metadata(
             pd.DataFrame({'val1': ['1.0', '2.0', '3.0', '4.0']},
-                         index=['A', 'B', 'C', 'D']))
+                         index=pd.Index(['A', 'B', 'C', 'D'], name='id')))
 
         with tempfile.TemporaryDirectory() as output_dir:
             barplot(output_dir, table, taxonomy, metadata)

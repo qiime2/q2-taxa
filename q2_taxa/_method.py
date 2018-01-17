@@ -34,7 +34,7 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
     if include is None and exclude is None:
         raise ValueError("At least one filtering term must be provided.")
 
-    ids_without_taxonomy = set(feature_ids) - set(taxonomy.ids())
+    ids_without_taxonomy = set(feature_ids) - set(taxonomy.ids)
     if len(ids_without_taxonomy) > 0:
         raise ValueError("All features ids must be present in taxonomy, but "
                          "the following feature ids are not: %s"
@@ -43,7 +43,7 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
     # Remove feature ids from taxonomy that are not present in
     # feature_ids (this simplifies the actual filtering step downstream) by
     # ensuring that there are no "extra ids" in the returned ids_to_keep.
-    taxonomy = taxonomy.filter(ids=feature_ids)
+    taxonomy = taxonomy.filter_ids(feature_ids)
 
     if mode == 'exact':
         query_template = "Taxon='%s'"
@@ -65,7 +65,7 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
             query = query_template % e
             # an sqlite database is being built for every query. if performance
             # becomes an issue, this is a target for refactoring.
-            ids_to_keep |= set(taxonomy.ids(where=query))
+            ids_to_keep |= set(taxonomy.get_ids(where=query))
     else:
         ids_to_keep = set(feature_ids)
 
@@ -76,7 +76,7 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
             query = query_template % e
             # an sqlite database is being built for every query. if performance
             # becomes an issue, this is a target for refactoring.
-            ids_to_keep -= set(taxonomy.ids(where=query))
+            ids_to_keep -= set(taxonomy.get_ids(where=query))
 
     return ids_to_keep
 
