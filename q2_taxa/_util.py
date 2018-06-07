@@ -12,6 +12,13 @@ def _get_max_level(taxonomy):
 
 
 def _collapse_table(table, taxonomy, level, max_observed_level):
+    table_ids = set(table.columns)
+    taxonomy_ids = set(taxonomy.index)
+    missing_ids = table_ids.difference(taxonomy_ids)
+    if len(missing_ids) > 0:
+        raise ValueError('Feature IDs found in the table are missing from the '
+                         'taxonomy: {}'.format(missing_ids))
+
     table = table.copy()
 
     def _collapse(tax):
