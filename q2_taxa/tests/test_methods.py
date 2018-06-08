@@ -101,6 +101,18 @@ class CollapseTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'of 0 is too low'):
             collapse(table, taxonomy, 0)
 
+    def test_collapse_missing_table_ids_in_taxonomy(self):
+        table = pd.DataFrame([[2.0, 2.0],
+                              [1.0, 1.0],
+                              [9.0, 8.0],
+                              [0.0, 4.0]],
+                             index=['A', 'B', 'C', 'D'],
+                             columns=['feat1', 'feat2'])
+        taxonomy = pd.Series(['a; b; c', 'a; b; d'],
+                             index=['feat1', 'feat3'])
+        with self.assertRaisesRegex(ValueError, 'missing.*feat2'):
+            collapse(table, taxonomy, 1)
+
 
 class FilterTable(unittest.TestCase):
 
