@@ -82,8 +82,8 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
 
 
 def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
-                 include: str=None, exclude: str=None,
-                 query_delimiter: str=',', mode: str='contains') \
+                 include: str = None, exclude: str = None,
+                 query_delimiter: str = ',', mode: str = 'contains') \
                  -> pd.DataFrame:
     ids_to_keep = _ids_to_keep_from_taxonomy(
         table.columns, taxonomy, include, exclude, query_delimiter,
@@ -106,8 +106,8 @@ def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
 
 
 def filter_seqs(sequences: pd.Series, taxonomy: qiime2.Metadata,
-                include: str=None, exclude: str=None,
-                query_delimiter: str=',', mode: str='contains') \
+                include: str = None, exclude: str = None,
+                query_delimiter: str = ',', mode: str = 'contains') \
                 -> pd.Series:
     ids_to_keep = _ids_to_keep_from_taxonomy(
         sequences.index, taxonomy, include, exclude, query_delimiter,
