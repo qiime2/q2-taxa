@@ -51,7 +51,7 @@ export default function init(level) {
   const dataMeta = setupData(d[level], svgBar);
   const { sortedKeysReverse, levels } = dataMeta;
 
-  const initialSort = sort(data, [sortedKeysReverse[0]], ['Ascending'], [false], dataMeta);
+  const initialSort = sort(data, [sortedKeysReverse[0]], ['Descending'], [false], dataMeta);
   const chartInfo = render(svgBar, initialColorScheme, initialSort, dataMeta);
 
   plotLegend(legendCol, chartInfo);
