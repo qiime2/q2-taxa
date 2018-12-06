@@ -68,8 +68,16 @@ function _sortDescRelative(a, b, key) {
 }
 
 function _computeTotal(data, keys) {
+  let absentSamples = [];
   for (let i = 0; i < data.length; i += 1) {
     const sample = data[i];
+    try {
+      if (typeof sample === 'undefined') {
+        // Sample dooes not exist / missing
+        absentSamples.push(sample);
+      }
+    }
+    catch (error) {/* ignore logic */}
     let t = 0;
     for (let j = 0; j < keys.length; j += 1) {
       t += sample[keys[j]];
