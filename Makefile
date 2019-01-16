@@ -1,5 +1,7 @@
 .PHONY: all lint test test-cov viz-barplot install dev clean distclean
 
+PYTHON ?= python
+
 all: viz-barplot
 
 lint:
@@ -21,7 +23,7 @@ q2_taxa/assets/barplot/dist:
 viz-barplot: q2_taxa/assets/barplot/dist
 
 install: all
-	python setup.py install
+	$(PYTHON) setup.py install
 
 dev: all
 	pip install -e .
