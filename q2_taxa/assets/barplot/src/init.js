@@ -4,6 +4,7 @@ import render from './render';
 import {
   availableColorSchemes,
   addTaxaPicker,
+  addWidthSlider,
   addColorPicker,
   addSortByPicker,
   addDownloadLinks,
@@ -62,4 +63,5 @@ export default function init(level) {
   addTaxaPicker(ctrlRowOne, levels, level + 1);
   addColorPicker(ctrlRowOne, svgBar, legendCol, data, dataMeta);
   addSortByPicker(ctrlRowOne, svgBar, data, dataMeta);
+  addWidthSlider(ctrlRowOne, svgBar, data, dataMeta);
 }

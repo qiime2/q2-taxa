@@ -125,6 +125,30 @@ export function addTaxaPicker(row, levels, selectedLevel) {
   return grp;
 }
 
+/* Adds a slider to let users control the width of the barplot's bars.
+ *
+ * This function was cobbled together from parts of code from
+ * addColorPicker(), addSortByPicker(), and _updateSort().
+ */
+export function addWidthSlider(row, svg, data, dataMeta) {
+  const grp = row.append('div').attr('class', 'col-lg-2 form-group widthSlider');
+  grp.append('label').text('Bar Width');
+  grp.append('input')
+    .attr('type', 'range')
+    .attr('id', 'barWidthSlider')
+    .attr('min', '5')
+    .attr('max', '50')
+    .attr('value', '10')
+    .attr('class', 'form-control')
+    .on('input', () => {
+      const xOrdering = _getSort(row, svg, data, dataMeta);
+      // This line derived from https://stackoverflow.com/a/20154105/10730311.
+      const newVal = select('#barWidthSlider').node().value;
+      render(svg, svg.property('colorScheme'), xOrdering, dataMeta, newVal);
+    });
+  return grp;
+}
+
 export function addColorPicker(row, svg, legendCol, data, dataMeta) {
   const grp = row.append('div').attr('class', 'col-lg-2 form-group colorPicker');
   grp.append('label').text('Color Palette');

@@ -14,9 +14,15 @@ import { availableColorSchemes } from './toolbar';
 
 export const transitionDur = 500;
 
-export default function render(svg, colorScheme, xOrdering, dataMeta) {
+/* barWidth is an optional argument. */
+export default function render(svg, colorScheme, xOrdering, dataMeta, barWidth) {
   const { sortMap, sortedSampleIDs } = xOrdering;
-  const width = sortedSampleIDs.length * 10;
+  // Uses the same default as the #barWidthSlider default value.
+  let newBarWidth = 10;
+  if (barWidth !== undefined) {
+    newBarWidth = barWidth;
+  }
+  const width = sortedSampleIDs.length * newBarWidth;
   const height = 600;
   const margin = { top: 20, left: 60, right: 0, bottom: 50 };
   const { keys } = dataMeta;
