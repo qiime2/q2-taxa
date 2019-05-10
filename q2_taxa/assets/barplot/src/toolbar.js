@@ -140,6 +140,7 @@ export function addWidthSlider(row, svg, data, dataMeta) {
     .attr('max', '50')
     .attr('value', '10')
     .attr('class', 'form-control')
+    .style('padding', '0px')
     .on('input', () => {
       const xOrdering = _getSort(row, svg, data, dataMeta);
       // This line derived from https://stackoverflow.com/a/20154105/10730311.
