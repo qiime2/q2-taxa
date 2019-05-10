@@ -145,9 +145,7 @@ export function addWidthSlider(row, svg, data, dataMeta) {
     .style('padding', '0px')
     .on('input', () => {
       const xOrdering = _getSort(row, svg, data, dataMeta);
-      // This line derived from https://stackoverflow.com/a/20154105/10730311.
-      const newVal = select('#barWidthSlider').node().value;
-      render(svg, svg.property('colorScheme'), xOrdering, dataMeta, newVal);
+      render(svg, svg.property('colorScheme'), xOrdering, dataMeta);
     });
   return grp;
 }

@@ -6,6 +6,7 @@ import {
   axisBottom,
   axisLeft,
   format,
+  select,
 } from 'd3';
 
 import { setupXAxis, setupYAxis } from './axis';
@@ -15,17 +16,15 @@ import { availableColorSchemes } from './toolbar';
 export const transitionDur = 500;
 export const defaultBarWidth = 10;
 
-/* barWidth is an optional argument.
- * If it is not provided, the bar width used will default to defaultBarWidth.
- */
-export default function render(svg, colorScheme, xOrdering, dataMeta, barWidth) {
+export default function render(svg, colorScheme, xOrdering, dataMeta) {
   const { sortMap, sortedSampleIDs } = xOrdering;
-  // Uses the same default as the #barWidthSlider default value.
-  let newBarWidth = defaultBarWidth;
-  if (barWidth !== undefined) {
-    newBarWidth = barWidth;
+  let barWidth = defaultBarWidth;
+  // This line derived from https://stackoverflow.com/a/20154105/10730311.
+  const slider = select('#barWidthSlider').node();
+  if (slider !== null && slider !== undefined) {
+    barWidth = slider.value;
   }
-  const width = sortedSampleIDs.length * newBarWidth;
+  const width = sortedSampleIDs.length * barWidth;
   const height = 600;
   const margin = { top: 20, left: 60, right: 0, bottom: 50 };
   const { keys } = dataMeta;
