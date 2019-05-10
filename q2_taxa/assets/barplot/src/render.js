@@ -13,12 +13,15 @@ import plotBars from './bar';
 import { availableColorSchemes } from './toolbar';
 
 export const transitionDur = 500;
+export const defaultBarWidth = 10;
 
-/* barWidth is an optional argument. */
+/* barWidth is an optional argument.
+ * If it is not provided, the bar width used will default to defaultBarWidth.
+ */
 export default function render(svg, colorScheme, xOrdering, dataMeta, barWidth) {
   const { sortMap, sortedSampleIDs } = xOrdering;
   // Uses the same default as the #barWidthSlider default value.
-  let newBarWidth = 10;
+  let newBarWidth = defaultBarWidth;
   if (barWidth !== undefined) {
     newBarWidth = barWidth;
   }

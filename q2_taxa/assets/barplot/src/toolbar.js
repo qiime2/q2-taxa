@@ -2,7 +2,9 @@ import { select } from 'd3';
 import * as d3chromo from 'd3-scale-chromatic';
 
 import init from './init';
-import render from './render';
+// We have to do the imports this way to accommodate for render() being a
+// "default export." See https://stackoverflow.com/a/33611943/10730311.
+import render, { defaultBarWidth } from './render';
 import { sort } from './data';
 import plotLegend from './legend';
 
@@ -138,7 +140,7 @@ export function addWidthSlider(row, svg, data, dataMeta) {
     .attr('id', 'barWidthSlider')
     .attr('min', '5')
     .attr('max', '50')
-    .attr('value', '10')
+    .attr('value', defaultBarWidth)
     .attr('class', 'form-control')
     .style('padding', '0px')
     .on('input', () => {
