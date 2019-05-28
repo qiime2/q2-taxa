@@ -24,6 +24,11 @@ TEMPLATES = pkg_resources.resource_filename('q2_taxa', 'assets')
 
 def barplot(output_dir: str, table: pd.DataFrame, taxonomy: pd.Series,
             metadata: Metadata) -> None:
+    ids_not_in_metadata = set(table.index) - set(metadata.ids)
+    if ids_not_in_metadata:
+        raise ValueError('Feature table contains the following IDs not '
+                         f'present in metadata {ids_not_in_metadata!r}.')
+
     metadata = metadata.to_dataframe()
     jsonp_files, csv_files = [], []
     collapsed_tables = _extract_to_level(taxonomy, table)
