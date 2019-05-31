@@ -60,5 +60,5 @@ class BarplotTests(unittest.TestCase):
                          index=pd.Index(['A', 'B', 'C'], name='id')))
 
         with tempfile.TemporaryDirectory() as output_dir:
-            with self.assertRaisesRegex(ValueError, "{'D'}"):
+            with self.assertRaisesRegex(ValueError, 'missing.*D'):
                 barplot(output_dir, self.table, self.taxonomy, metadata)
