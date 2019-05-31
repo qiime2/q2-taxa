@@ -6,6 +6,7 @@ import {
   axisBottom,
   axisLeft,
   format,
+  select,
 } from 'd3';
 
 import { setupXAxis, setupYAxis } from './axis';
@@ -13,10 +14,17 @@ import plotBars from './bar';
 import { availableColorSchemes } from './toolbar';
 
 export const transitionDur = 500;
+export const defaultBarWidth = 10;
 
 export default function render(svg, colorScheme, xOrdering, dataMeta) {
   const { sortMap, sortedSampleIDs } = xOrdering;
-  const width = sortedSampleIDs.length * 10;
+  let barWidth = defaultBarWidth;
+  // This line derived from https://stackoverflow.com/a/20154105/10730311.
+  const slider = select('#barWidthSlider').node();
+  if (slider !== null && slider !== undefined) {
+    barWidth = slider.value;
+  }
+  const width = sortedSampleIDs.length * barWidth;
   const height = 600;
   const margin = { top: 20, left: 60, right: 0, bottom: 50 };
   const { keys } = dataMeta;

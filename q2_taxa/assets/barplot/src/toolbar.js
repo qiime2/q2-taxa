@@ -2,7 +2,9 @@ import { select } from 'd3';
 import * as d3chromo from 'd3-scale-chromatic';
 
 import init from './init';
-import render from './render';
+// We have to do the imports this way to accommodate for render() being a
+// "default export." See https://stackoverflow.com/a/33611943/10730311.
+import render, { defaultBarWidth } from './render';
 import { sort } from './data';
 import plotLegend from './legend';
 
@@ -122,6 +124,29 @@ export function addTaxaPicker(row, levels, selectedLevel) {
         .attr('value', d => d)
         .text(d => `Level ${d}`)
         .property('selected', d => (d === selectedLevel));
+  return grp;
+}
+
+/* Adds a slider to let users control the width of the barplot's bars.
+ *
+ * This function was cobbled together from parts of code from
+ * addColorPicker(), addSortByPicker(), and _updateSort().
+ */
+export function addWidthSlider(row, svg, data, dataMeta) {
+  const grp = row.append('div').attr('class', 'col-lg-2 form-group widthSlider');
+  grp.append('label').text('Bar Width');
+  grp.append('input')
+    .attr('type', 'range')
+    .attr('id', 'barWidthSlider')
+    .attr('min', '10')
+    .attr('max', '60')
+    .attr('value', defaultBarWidth)
+    .attr('class', 'form-control')
+    .style('padding', '0px')
+    .on('input', () => {
+      const xOrdering = _getSort(row, svg, data, dataMeta);
+      render(svg, svg.property('colorScheme'), xOrdering, dataMeta);
+    });
   return grp;
 }
 
