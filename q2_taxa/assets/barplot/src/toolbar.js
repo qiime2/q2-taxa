@@ -139,7 +139,7 @@ export function addWidthSlider(row, svg, data, dataMeta) {
     .attr('type', 'range')
     .attr('id', 'barWidthSlider')
     .attr('min', '10')
-    .attr('max', '60')
+    .attr('max', '80')
     .attr('value', defaultBarWidth)
     .attr('class', 'form-control')
     .style('padding', '0px')
