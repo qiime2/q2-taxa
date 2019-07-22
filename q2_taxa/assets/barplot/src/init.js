@@ -13,9 +13,18 @@ import { setupData, sort } from './data';
 import plotLegend from './legend';
 
 
-export default function init(level) {
+/* Re-initializes the display.
+ *
+ * "state" is an object that should contain the following entries:
+ *
+ * level -- an integer indicating the currently selected index in the
+ *          "Taxonomic Level" dropdown (starts at 0)
+ *
+ * barWidth -- an integer indicating the currently selected bar width value
+ */
+export default function init(state) {
   /* global d */
-  const data = d[level].data;
+  const data = d[state.level].data;
 
   // DOM
   const body = select('body .container-fluid');
@@ -49,19 +58,19 @@ export default function init(level) {
     .text('Sample');
 
   const initialColorScheme = availableColorSchemes[0].name;
-  const dataMeta = setupData(d[level], svgBar);
+  const dataMeta = setupData(d[state.level], svgBar);
   const { sortedKeysReverse, levels } = dataMeta;
 
   const initialSort = sort(data, [sortedKeysReverse[0]], ['Ascending'], [false], dataMeta);
-  const chartInfo = render(svgBar, initialColorScheme, initialSort, dataMeta);
+  const chartInfo = render(svgBar, initialColorScheme, initialSort, dataMeta, state.barWidth);
 
   plotLegend(legendCol, chartInfo);
 
   // Controls
   const ctrlRowOne = controls.append('div').attr('class', 'row');
-  addDownloadLinks(ctrlRowOne, svgBar, legendCol.select('svg'), level + 1);
-  addTaxaPicker(ctrlRowOne, levels, level + 1);
+  addDownloadLinks(ctrlRowOne, svgBar, legendCol.select('svg'), state.level + 1);
+  addTaxaPicker(ctrlRowOne, levels, state.level + 1);
   addColorPicker(ctrlRowOne, svgBar, legendCol, data, dataMeta);
   addSortByPicker(ctrlRowOne, svgBar, data, dataMeta);
-  addWidthSlider(ctrlRowOne, svgBar, data, dataMeta);
+  addWidthSlider(ctrlRowOne, svgBar, data, dataMeta, state.barWidth);
 }

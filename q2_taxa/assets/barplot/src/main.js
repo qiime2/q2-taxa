@@ -1,4 +1,4 @@
 import init from './init';
+import { getBarWidth } from './toolbar';
 
-
-init(0);
+init({ level: 0, barWidth: getBarWidth() });
