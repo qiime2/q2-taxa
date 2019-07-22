@@ -1,4 +1,4 @@
 import init from './init';
-import { getBarWidth } from './toolbar';
+import { getBarWidth, getColorScheme } from './toolbar';
 
-init({ level: 0, barWidth: getBarWidth() });
+init({ level: 0, colorScheme: getColorScheme(), barWidth: getBarWidth() });

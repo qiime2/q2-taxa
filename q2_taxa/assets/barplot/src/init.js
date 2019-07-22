@@ -2,7 +2,6 @@ import { select } from 'd3';
 
 import render from './render';
 import {
-  availableColorSchemes,
   addTaxaPicker,
   addWidthSlider,
   addColorPicker,
@@ -19,6 +18,8 @@ import plotLegend from './legend';
  *
  * level -- an integer indicating the currently selected index in the
  *          "Taxonomic Level" dropdown (starts at 0)
+ *
+ * colorScheme -- the name of the current color scheme
  *
  * barWidth -- an integer indicating the currently selected bar width value
  */
@@ -57,12 +58,11 @@ export default function init(state) {
     .style('font', '12px sans-serif')
     .text('Sample');
 
-  const initialColorScheme = availableColorSchemes[0].name;
   const dataMeta = setupData(d[state.level], svgBar);
   const { sortedKeysReverse, levels } = dataMeta;
 
   const initialSort = sort(data, [sortedKeysReverse[0]], ['Ascending'], [false], dataMeta);
-  const chartInfo = render(svgBar, initialColorScheme, initialSort, dataMeta, state.barWidth);
+  const chartInfo = render(svgBar, state.colorScheme, initialSort, dataMeta, state.barWidth);
 
   plotLegend(legendCol, chartInfo);
 
@@ -70,7 +70,7 @@ export default function init(state) {
   const ctrlRowOne = controls.append('div').attr('class', 'row');
   addDownloadLinks(ctrlRowOne, svgBar, legendCol.select('svg'), state.level + 1);
   addTaxaPicker(ctrlRowOne, levels, state.level + 1);
-  addColorPicker(ctrlRowOne, svgBar, legendCol, data, dataMeta);
+  addColorPicker(ctrlRowOne, svgBar, legendCol, data, dataMeta, state.colorScheme);
   addSortByPicker(ctrlRowOne, svgBar, data, dataMeta);
   addWidthSlider(ctrlRowOne, svgBar, data, dataMeta, state.barWidth);
 }

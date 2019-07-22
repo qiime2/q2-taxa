@@ -40,6 +40,17 @@ export function getBarWidth() {
   return barWidth;
 }
 
+export function getColorScheme() {
+  // this is just how initialColorScheme was set in init() -- default to the
+  // first listed color scheme (currently, this is schemeAccent)
+  let scheme = availableColorSchemes[0].name;
+  const sel = select('#colorPickerSelect').node();
+  if (sel !== null && sel !== undefined) {
+    scheme = sel.value;
+  }
+  return scheme;
+}
+
 function _getSort(sel, svg, data, dataMeta) {
   const sorts = sel.selectAll('.xCtrl').nodes().map(d => d.options[d.selectedIndex].value);
   const orders = sel.selectAll('.xOrder').nodes().map(d => d.options[d.selectedIndex].value);
@@ -124,9 +135,10 @@ export function addTaxaPicker(row, levels, selectedLevel) {
     .attr('class', 'form-control')
     .on('change', function appendTaxaPicker() {
       const currBarWidth = getBarWidth();
+      const currColorScheme = getColorScheme();
       const container = select('.container-fluid');
       container.select('.viz.row').remove();
-      init({ level: this.selectedIndex, barWidth: currBarWidth });
+      init({ level: this.selectedIndex, colorScheme: currColorScheme, barWidth: currBarWidth });
     })
     .selectAll('option')
     .data(levels)
@@ -161,7 +173,7 @@ export function addWidthSlider(row, svg, data, dataMeta, currentValue) {
   return grp;
 }
 
-export function addColorPicker(row, svg, legendCol, data, dataMeta) {
+export function addColorPicker(row, svg, legendCol, data, dataMeta, currentValue) {
   const grp = row.append('div').attr('class', 'col-lg-2 form-group colorPicker');
   grp.append('label').text('Color Palette');
   grp.append('a')
@@ -174,6 +186,7 @@ export function addColorPicker(row, svg, legendCol, data, dataMeta) {
       .attr('class', 'glyphicon glyphicon-info-sign');
   const sel = grp.append('select')
     .attr('class', 'form-control')
+    .attr('id', 'colorPickerSelect')
     .on('change', function changeColorPicker() {
       const colorScheme = this.options[this.selectedIndex].value;
       const xOrdering = _getSort(row, svg, data, dataMeta);
@@ -200,6 +213,14 @@ export function addColorPicker(row, svg, legendCol, data, dataMeta) {
   updateOpt.merge(enterOpt)
     .attr('value', d => d.name)
     .text(d => d.name);
+
+  // Set the selected color scheme
+  // (useful if init() is called after the user has been playing with the
+  // visualization -- for example, when the taxonomic level is adjusted)
+  //
+  // Also, note that we have to use .property() instead of .attr() here. See
+  // https://stackoverflow.com/a/28933863/10730311 for context.
+  sel.property('value', currentValue);
 
   return grp;
 }
