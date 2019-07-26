@@ -2,9 +2,7 @@ import { select } from 'd3';
 import * as d3chromo from 'd3-scale-chromatic';
 
 import init from './init';
-// We have to do the imports this way to accommodate for render() being a
-// "default export." See https://stackoverflow.com/a/33611943/10730311.
-import render, { defaultBarWidth } from './render';
+import render from './render';
 import { sort } from './data';
 import plotLegend from './legend';
 
@@ -29,7 +27,30 @@ export const availableColorSchemes = [
   { name: 'Spectral', scheme: d3chromo.interpolateSpectral, type: 's' },
 ];
 
+export const defaultBarWidth = 10;
+
 // HELPERS
+export function getBarWidth() {
+  let barWidth = defaultBarWidth;
+  // This line derived from https://stackoverflow.com/a/20154105/10730311.
+  const slider = select('#barWidthSlider').node();
+  if (slider !== null && slider !== undefined) {
+    barWidth = slider.value;
+  }
+  return barWidth;
+}
+
+export function getColorScheme() {
+  // this is just how initialColorScheme was set in init() -- default to the
+  // first listed color scheme (currently, this is schemeAccent)
+  let scheme = availableColorSchemes[0].name;
+  const sel = select('#colorPickerSelect').node();
+  if (sel !== null && sel !== undefined) {
+    scheme = sel.value;
+  }
+  return scheme;
+}
+
 function _getSort(sel, svg, data, dataMeta) {
   const sorts = sel.selectAll('.xCtrl').nodes().map(d => d.options[d.selectedIndex].value);
   const orders = sel.selectAll('.xOrder').nodes().map(d => d.options[d.selectedIndex].value);
@@ -39,7 +60,7 @@ function _getSort(sel, svg, data, dataMeta) {
 
 function _updateSort(sel, svg, data, dataMeta) {
   const xOrdering = _getSort(sel, svg, data, dataMeta);
-  render(svg, svg.property('colorScheme'), xOrdering, dataMeta);
+  render(svg, svg.property('colorScheme'), xOrdering, dataMeta, getBarWidth());
 }
 
 function _appendSortByPicker(sel, svg, data, dataMeta) {
@@ -113,9 +134,11 @@ export function addTaxaPicker(row, levels, selectedLevel) {
   grp.append('select')
     .attr('class', 'form-control')
     .on('change', function appendTaxaPicker() {
+      const currBarWidth = getBarWidth();
+      const currColorScheme = getColorScheme();
       const container = select('.container-fluid');
       container.select('.viz.row').remove();
-      init(this.selectedIndex);
+      init({ level: this.selectedIndex, colorScheme: currColorScheme, barWidth: currBarWidth });
     })
     .selectAll('option')
     .data(levels)
@@ -132,7 +155,7 @@ export function addTaxaPicker(row, levels, selectedLevel) {
  * This function was cobbled together from parts of code from
  * addColorPicker(), addSortByPicker(), and _updateSort().
  */
-export function addWidthSlider(row, svg, data, dataMeta) {
+export function addWidthSlider(row, svg, data, dataMeta, currentValue) {
   const grp = row.append('div').attr('class', 'col-lg-2 form-group widthSlider');
   grp.append('label').text('Bar Width');
   grp.append('input')
@@ -140,17 +163,17 @@ export function addWidthSlider(row, svg, data, dataMeta) {
     .attr('id', 'barWidthSlider')
     .attr('min', '10')
     .attr('max', '80')
-    .attr('value', defaultBarWidth)
+    .attr('value', currentValue)
     .attr('class', 'form-control')
     .style('padding', '0px')
     .on('input', () => {
       const xOrdering = _getSort(row, svg, data, dataMeta);
-      render(svg, svg.property('colorScheme'), xOrdering, dataMeta);
+      render(svg, svg.property('colorScheme'), xOrdering, dataMeta, getBarWidth());
     });
   return grp;
 }
 
-export function addColorPicker(row, svg, legendCol, data, dataMeta) {
+export function addColorPicker(row, svg, legendCol, data, dataMeta, currentValue) {
   const grp = row.append('div').attr('class', 'col-lg-2 form-group colorPicker');
   grp.append('label').text('Color Palette');
   grp.append('a')
@@ -163,10 +186,11 @@ export function addColorPicker(row, svg, legendCol, data, dataMeta) {
       .attr('class', 'glyphicon glyphicon-info-sign');
   const sel = grp.append('select')
     .attr('class', 'form-control')
+    .attr('id', 'colorPickerSelect')
     .on('change', function changeColorPicker() {
       const colorScheme = this.options[this.selectedIndex].value;
       const xOrdering = _getSort(row, svg, data, dataMeta);
-      const chartInfo = render(svg, colorScheme, xOrdering, dataMeta);
+      const chartInfo = render(svg, colorScheme, xOrdering, dataMeta, getBarWidth());
       plotLegend(legendCol, chartInfo);
     });
 
@@ -189,6 +213,14 @@ export function addColorPicker(row, svg, legendCol, data, dataMeta) {
   updateOpt.merge(enterOpt)
     .attr('value', d => d.name)
     .text(d => d.name);
+
+  // Set the selected color scheme
+  // (useful if init() is called after the user has been playing with the
+  // visualization -- for example, when the taxonomic level is adjusted)
+  //
+  // Also, note that we have to use .property() instead of .attr() here. See
+  // https://stackoverflow.com/a/28933863/10730311 for context.
+  sel.property('value', currentValue);
 
   return grp;
 }
