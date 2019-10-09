@@ -6,9 +6,12 @@ import render from './render';
 import { sort } from './data';
 import plotLegend from './legend';
 
+const temp = d3chromo.schemeAccent;
+const schemeDescent = temp.reverse();
 
 export const availableColorSchemes = [
-  { name: 'schemeAccent', scheme: d3chromo.schemeAccent, type: 'o' },
+  // { name: 'schemeAccent', scheme: d3chromo.schemeAccent, type: 'o' },
+  { name: 'schemeAccent', scheme: schemeDescent, type: 'o' },
   { name: 'schemeDark2', scheme: d3chromo.schemeDark2, type: 'o' },
   { name: 'schemePaired', scheme: d3chromo.schemePaired, type: 'o' },
   { name: 'schemePastel1', scheme: d3chromo.schemePastel1, type: 'o' },
