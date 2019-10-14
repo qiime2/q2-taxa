@@ -31,13 +31,15 @@ export default function render(svg, colorScheme, xOrdering, dataMeta, barWidth) 
   if (scheme.type === 's') {
     z = scaleSequential(scheme.scheme).domain([0, keys.length - 1]);
   } else if (scheme.type === 'o') {
+    const temp = scheme.scheme.reverse();
     const range = [];
     const domain = [];
     for (let i = 0; i < keys.length; i += 1) {
-      range.push(scheme.scheme[i % scheme.scheme.length]);
+      range.push(temp[i % scheme.scheme.length]);
       domain.push(i);
     }
     z = scaleOrdinal(range).domain(domain);
+    scheme.scheme.reverse();
   }
 
   const xAxis = axisBottom();
