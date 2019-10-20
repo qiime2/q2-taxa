@@ -33,7 +33,8 @@ export default function init(state) {
   const vizDiv = vizRow.append('div').attr('class', 'col-lg-12');
   const controlsRow = vizDiv.append('div').attr('class', 'controls row');
   const controls = controlsRow.append('div').attr('class', 'col-lg-12');
-  const detailsRow = vizDiv.append('div').attr('class', 'details row');
+  const detailsRow = vizDiv.append('div').attr('class', 'details row')
+    .style('height', '40px');
   detailsRow.append('div').attr('class', 'col-lg-12');
   const plotRow = vizDiv.append('div').attr('class', 'plot row');
   const barCol = plotRow.append('div').attr('class', 'bars');
