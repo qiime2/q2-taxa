@@ -34,7 +34,10 @@ export default function render(svg, colorScheme, xOrdering, dataMeta, barWidth) 
     const range = [];
     const domain = [];
     for (let i = 0; i < keys.length; i += 1) {
-      range.push(scheme.scheme[i % scheme.scheme.length]);
+      // Assign colors from the "end" of the color scheme, which causes the
+      // color scheme to consistently give the topmost value in the barplot the
+      // same color (https://github.com/qiime2/q2-taxa/issues/111)
+      range.push(scheme.scheme[(keys.length - 1 - i) % scheme.scheme.length]);
       domain.push(i);
     }
     z = scaleOrdinal(range).domain(domain);
