@@ -16,7 +16,7 @@ test-cov: all
 
 q2_taxa/assets/barplot/dist:
 	cd q2_taxa/assets/barplot && \
-	npm install && \
+	npm install --no-save && \
 	npm run build && \
 	cp licenses/* dist/
 
