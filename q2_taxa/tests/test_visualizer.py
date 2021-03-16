@@ -39,6 +39,7 @@ class BarplotTests(unittest.TestCase):
                             open(index_fp).read())
             csv_lvl3_fp = os.path.join(output_dir, 'level-3.csv')
             self.assertTrue(os.path.exists(csv_lvl3_fp))
+            self.assertTrue('val1' in open(csv_lvl3_fp).read())
 
     def test_barplot_metadata_extra_id(self):
         metadata = qiime2.Metadata(
@@ -62,3 +63,14 @@ class BarplotTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as output_dir:
             with self.assertRaisesRegex(ValueError, 'missing.*D'):
                 barplot(output_dir, self.table, self.taxonomy, metadata)
+
+    def test_barplot_no_metadata(self):
+        with tempfile.TemporaryDirectory() as output_dir:
+            barplot(output_dir, self.table, self.taxonomy)
+            index_fp = os.path.join(output_dir, 'index.html')
+            self.assertTrue(os.path.exists(index_fp))
+            self.assertTrue("src='level-1.jsonp?callback=load_data'" in
+                            open(index_fp).read())
+            csv_lvl3_fp = os.path.join(output_dir, 'level-3.csv')
+            self.assertTrue(os.path.exists(csv_lvl3_fp))
+            self.assertTrue('val1' not in open(csv_lvl3_fp).read())
