@@ -26,8 +26,8 @@ def barplot(output_dir: str, table: pd.DataFrame, taxonomy: pd.Series,
             metadata: Metadata = None) -> None:
 
     if metadata is None:
-       metadata = Metadata(pd.DataFrame({'id': table.index}).set_index('id'))
- 
+        metadata = Metadata(pd.DataFrame({'id': table.index}).set_index('id'))
+
     ids_not_in_metadata = set(table.index) - set(metadata.ids)
     if ids_not_in_metadata:
         raise ValueError('Sample IDs found in the table are missing in the '
