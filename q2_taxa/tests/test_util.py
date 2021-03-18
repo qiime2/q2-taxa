@@ -14,10 +14,9 @@ from q2_taxa._util import _get_padding_ranks
 
 class PaddingTests(unittest.TestCase):
 
-
     def test_padding(self):
-
-        # ideal case, no conflict at all ranks -> ranks inferred
+        # ideal case, no conflict at all ranks 
+        # -> ranks inferred
         taxonomy = pd.Series([
             'k__a; p__b; o__c',
             'k__a; p__b; o__c',
@@ -27,7 +26,8 @@ class PaddingTests(unittest.TestCase):
         expected = ['k__', 'p__', 'o__']
         self.assertEqual(observed, expected)
  
-        # no conflict at all ranks and the rank inferred only from before the first "_" 
+        # no conflict at all ranks and the rank 
+        # inferred only from before the first "_" 
         taxonomy = pd.Series([
             'k__a__1__x; p__b; o__c',
             'k__a; p__b; o__c',
@@ -37,7 +37,8 @@ class PaddingTests(unittest.TestCase):
         expected = ['k__', 'p__', 'o__']
         self.assertEqual(observed, expected)
 
-        # conflict at rank 2 (p1 and p2) -> no rank inferred
+        # conflict at rank 2 (p1 and p2) 
+        # -> no rank inferred
         taxonomy = pd.Series([
             'k__a; p1__b; o__c',
             'k__a; p2__b; o__c',
@@ -47,7 +48,8 @@ class PaddingTests(unittest.TestCase):
         expected = None
         self.assertEqual(observed, expected)
  
-        # current situation, before PR, no rank to start with -> no rank inferred
+        # current situation, before PR, no rank 
+        # to start with -> no rank inferred
         taxonomy = pd.Series([
             'a; b; c',
             'a',
