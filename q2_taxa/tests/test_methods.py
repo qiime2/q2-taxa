@@ -121,7 +121,6 @@ class CollapseTests(unittest.TestCase):
                 [0.0, 4.0, 0.0, 4.0]
         ], index=['A', 'B', 'C', 'D'],
                columns=['feat1', 'feat2', 'feat3', 'feat4'])
-
         taxonomy = pd.Series([
                 'k__a; p1__b; o__c',
                 'k__a; p1__b; o__c',
@@ -149,7 +148,6 @@ class CollapseTests(unittest.TestCase):
                 [0.0, 4.0, 0.0, 4.0]
         ], index=['A', 'B', 'C', 'D'],
                columns=['feat1', 'feat2', 'feat3', 'feat4'])
-
         taxonomy = pd.Series([
                 'k__a; p1__b; o__c',
                 'k__a; p1__b; o__c',
@@ -170,7 +168,6 @@ class CollapseTests(unittest.TestCase):
             ])
         self.assert_data_frame_almost_equal(actual, expected)
 
-
         table = pd.DataFrame([
                 [2.0, 2.0, 2.0, 2.0],
                 [1.0, 1.0, 1.0, 1.0],
@@ -178,7 +175,6 @@ class CollapseTests(unittest.TestCase):
                 [0.0, 4.0, 0.0, 4.0]
         ], index=['A', 'B', 'C', 'D'],
                columns=['feat1', 'feat2', 'feat3', 'feat4'])
-
         taxonomy = pd.Series([
                 'k__a; p1__b; o__c',
                 'k__a; p2__b; o__c',
@@ -208,7 +204,6 @@ class CollapseTests(unittest.TestCase):
                 [0.0, 4.0, 0.0, 4.0]
         ], index=['A', 'B', 'C', 'D'],
                columns=['feat1', 'feat2', 'feat3', 'feat4'])
-
         taxonomy = pd.Series([
                 'a; b; c',
                 'a; b; c',
