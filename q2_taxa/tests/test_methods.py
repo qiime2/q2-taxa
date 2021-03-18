@@ -190,8 +190,8 @@ class CollapseTests(unittest.TestCase):
         expected = pd.DataFrame([
                 [4.0, 2.0, 2.0],
                 [2.0, 1.0, 1.0],
-                [17.0 , 9.0, 8.0],
-                [4.0 , 0.0, 4.0]
+                [17.0, 9.0, 8.0],
+                [4.0, 0.0, 4.0]
         ], index=['A', 'B', 'C', 'D'],
                columns=[
                        'k__a; __',
@@ -221,7 +221,7 @@ class CollapseTests(unittest.TestCase):
                 [4.0, 4.0],
                 [2.0, 2.0],
                 [17.0, 17.0],
-                [4.0 , 4.0]
+                [4.0, 4.0]
         ], index=['A', 'B', 'C', 'D'],
                columns=[
                        'a; __',
