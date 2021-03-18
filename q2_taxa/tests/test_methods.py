@@ -8,6 +8,8 @@
 
 import unittest
 
+import numpy as np
+import biom
 import pandas as pd
 import pandas.util.testing as pdt
 import qiime2
@@ -38,56 +40,64 @@ class CollapseTests(unittest.TestCase):
         self.assert_index_equal(left.index, right.index)
 
     def test_collapse(self):
-        table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
-                             index=['A', 'B', 'C', 'D'],
-                             columns=['feat1', 'feat2'])
+        table = biom.Table(np.array([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0],
+                                     [0.0, 4.0]]),
+                           ['A', 'B', 'C', 'D'],
+                           ['feat1', 'feat2']).transpose()
         taxonomy = pd.Series(['a; b; c', 'a; b; d'],
                              index=['feat1', 'feat2'])
 
         actual = collapse(table, taxonomy, 1)
-        expected = pd.DataFrame([[4.0], [2.0], [17.0], [4.0]],
-                                index=['A', 'B', 'C', 'D'],
-                                columns=['a'])
-        self.assert_data_frame_almost_equal(actual, expected)
+        actual.del_metadata()
+        expected = biom.Table(np.array([[4.0], [2.0], [17.0], [4.0]]),
+                              ['A', 'B', 'C', 'D'],
+                              ['a']).transpose()
+        self.assertEqual(actual, expected)
 
         actual = collapse(table, taxonomy, 2)
-        expected = pd.DataFrame([[4.0], [2.0], [17.0], [4.0]],
-                                index=['A', 'B', 'C', 'D'],
-                                columns=['a;b'])
-        self.assert_data_frame_almost_equal(actual, expected)
+        actual.del_metadata()
+        expected = biom.Table(np.array([[4.0], [2.0], [17.0], [4.0]]),
+                              ['A', 'B', 'C', 'D'],
+                              ['a;b']).transpose()
+        self.assertEqual(actual, expected)
 
         actual = collapse(table, taxonomy, 3)
-        expected = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0],
-                                 [0.0, 4.0]],
-                                index=['A', 'B', 'C', 'D'],
-                                columns=['a;b;c', 'a;b;d'])
-        self.assert_data_frame_almost_equal(actual, expected)
+        actual.del_metadata()
+        expected = biom.Table(np.array([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0],
+                                        [0.0, 4.0]]),
+                              ['A', 'B', 'C', 'D'],
+                              ['a;b;c', 'a;b;d']).transpose()
+        self.assertEqual(actual, expected)
 
     def test_collapse_missing_level(self):
-        table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
-                             index=['A', 'B', 'C', 'D'],
-                             columns=['feat1', 'feat2'])
+        table = biom.Table(np.array([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0],
+                                     [0.0, 4.0]]),
+                           ['A', 'B', 'C', 'D'],
+                           ['feat1', 'feat2']).transpose()
         taxonomy = pd.Series(['a; b', 'a; b; d'],
                              index=['feat1', 'feat2'])
 
         actual = collapse(table, taxonomy, 1)
-        expected = pd.DataFrame([[4.0], [2.0], [17.0], [4.0]],
-                                index=['A', 'B', 'C', 'D'],
-                                columns=['a'])
-        self.assert_data_frame_almost_equal(actual, expected)
+        actual.del_metadata()
+        expected = biom.Table(np.array([[4.0], [2.0], [17.0], [4.0]]),
+                              ['A', 'B', 'C', 'D'],
+                              ['a']).transpose()
+        self.assertEqual(actual, expected)
 
         actual = collapse(table, taxonomy, 2)
-        expected = pd.DataFrame([[4.0], [2.0], [17.0], [4.0]],
-                                index=['A', 'B', 'C', 'D'],
-                                columns=['a;b'])
-        self.assert_data_frame_almost_equal(actual, expected)
+        actual.del_metadata()
+        expected = biom.Table(np.array([[4.0], [2.0], [17.0], [4.0]]),
+                              ['A', 'B', 'C', 'D'],
+                              ['a;b']).transpose()
+        self.assertEqual(actual, expected)
 
         actual = collapse(table, taxonomy, 3)
-        expected = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0],
-                                 [0.0, 4.0]],
-                                index=['A', 'B', 'C', 'D'],
-                                columns=['a;b;__', 'a;b;d'])
-        self.assert_data_frame_almost_equal(actual, expected)
+        actual.del_metadata()
+        expected = biom.Table(np.array([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0],
+                                        [0.0, 4.0]]),
+                              ['A', 'B', 'C', 'D'],
+                              ['a;b;__', 'a;b;d']).transpose()
+        self.assertEqual(actual, expected)
 
     def test_collapse_bad_level(self):
         table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
@@ -102,12 +112,12 @@ class CollapseTests(unittest.TestCase):
             collapse(table, taxonomy, 0)
 
     def test_collapse_missing_table_ids_in_taxonomy(self):
-        table = pd.DataFrame([[2.0, 2.0],
-                              [1.0, 1.0],
-                              [9.0, 8.0],
-                              [0.0, 4.0]],
-                             index=['A', 'B', 'C', 'D'],
-                             columns=['feat1', 'feat2'])
+        table = biom.Table(np.array([[2.0, 2.0],
+                                     [1.0, 1.0],
+                                     [9.0, 8.0],
+                                     [0.0, 4.0]]),
+                           ['A', 'B', 'C', 'D'],
+                           ['feat1', 'feat2']).transpose()
         taxonomy = pd.Series(['a; b; c', 'a; b; d'],
                              index=['feat1', 'feat3'])
         with self.assertRaisesRegex(ValueError, 'missing.*feat2'):
