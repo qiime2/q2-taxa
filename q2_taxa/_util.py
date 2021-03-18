@@ -5,6 +5,8 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
+import pandas as pd
+import biom
 
 
 def _get_max_level(taxonomy):
@@ -36,10 +38,13 @@ def _extract_to_level(taxonomy, table):
     # Assemble the taxonomy data
     max_obs_lvl = _get_max_level(taxonomy)
 
+    if isinstance(table, pd.DataFrame):
+        table = biom.Table(table.T.values, table.columns, table.index)
+
     collapsed_tables = []
     # Collapse table at specified level
     for level in range(1, max_obs_lvl + 1):
         collapsed_table = _collapse_table(table, taxonomy, level, max_obs_lvl)
-        collapsed_tables.append(collapsed_table)
+        collapsed_tables.append(collapsed_table.to_dataframe(dense=True))
 
     return collapsed_tables
