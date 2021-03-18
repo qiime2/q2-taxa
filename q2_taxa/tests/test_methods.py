@@ -113,6 +113,122 @@ class CollapseTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'missing.*feat2'):
             collapse(table, taxonomy, 1)
 
+    def test_collapse_padding(self):
+        table = pd.DataFrame([
+                [2.0, 2.0, 2.0, 2.0],
+                [1.0, 1.0, 1.0, 1.0],
+                [9.0, 8.0, 9.0, 8.0],
+                [0.0, 4.0, 0.0, 4.0]
+        ], index=['A', 'B', 'C', 'D'],
+               columns=['feat1', 'feat2', 'feat3', 'feat4'])
+
+        taxonomy = pd.Series([
+                'k__a; p1__b; o__c',
+                'k__a; p1__b; o__c',
+                'k__a; p2__b; o__c',
+                'k__a; p2__b; o__c',
+        ], index=['feat1', 'feat2', 'feat3', 'feat4'])
+
+        actual = collapse(table, taxonomy, 2)
+        expected = pd.DataFrame([
+                [4.0, 4.0],
+                [2.0, 2.0],
+                [17.0, 17.0],
+                [4.0, 4.0]
+        ], index=['A', 'B', 'C', 'D'],
+               columns=[
+                       'k__a; p1__b',
+                       'k__a; p2__b',
+               ])
+        self.assert_data_frame_almost_equal(actual, expected)
+
+        table = pd.DataFrame([
+                [2.0, 2.0, 2.0, 2.0],
+                [1.0, 1.0, 1.0, 1.0],
+                [9.0, 8.0, 9.0, 8.0],
+                [0.0, 4.0, 0.0, 4.0]
+        ], index=['A', 'B', 'C', 'D'],
+               columns=['feat1', 'feat2', 'feat3', 'feat4'])
+
+        taxonomy = pd.Series([
+                'k__a; p1__b; o__c',
+                'k__a; p1__b; o__c',
+                'k__a',
+                'k__a'
+        ], index=['feat1', 'feat2', 'feat3', 'feat4'])
+
+        actual = collapse(table, taxonomy, 2)
+        expected = pd.DataFrame([
+                [4.0, 4.0],
+                [2.0, 2.0],
+                [17.0, 17.0],
+                [4.0, 4.0]
+        ], index=['A', 'B', 'C', 'D'],
+            columns=[
+                'k__a; p1__',
+                'k__a; p1__b'
+            ])
+        self.assert_data_frame_almost_equal(actual, expected)
+
+
+        table = pd.DataFrame([
+                [2.0, 2.0, 2.0, 2.0],
+                [1.0, 1.0, 1.0, 1.0],
+                [9.0, 8.0, 9.0, 8.0],
+                [0.0, 4.0, 0.0, 4.0]
+        ], index=['A', 'B', 'C', 'D'],
+               columns=['feat1', 'feat2', 'feat3', 'feat4'])
+
+        taxonomy = pd.Series([
+                'k__a; p1__b; o__c',
+                'k__a; p2__b; o__c',
+                'k__a',
+                'k__a'
+        ], index=['feat1', 'feat2', 'feat3', 'feat4'])
+
+        actual = collapse(table, taxonomy, 2)
+        expected = pd.DataFrame([
+                [4.0, 2.0, 2.0],
+                [2.0, 1.0, 1.0],
+                [17.0 , 9.0, 8.0],
+                [4.0 , 0.0, 4.0]
+        ], index=['A', 'B', 'C', 'D'],
+               columns=[
+                       'k__a; __',
+                       'k__a; p1__b',
+                       'k__a; p2__b'
+               ])
+        self.assert_data_frame_almost_equal(actual, expected)
+
+        # retain the behavoir before this PR, i.e. padding with __
+        table = pd.DataFrame([
+                [2.0, 2.0, 2.0, 2.0],
+                [1.0, 1.0, 1.0, 1.0],
+                [9.0, 8.0, 9.0, 8.0],
+                [0.0, 4.0, 0.0, 4.0]
+        ], index=['A', 'B', 'C', 'D'],
+               columns=['feat1', 'feat2', 'feat3', 'feat4'])
+
+        taxonomy = pd.Series([
+                'a; b; c',
+                'a; b; c',
+                'a',
+                'a'
+        ], index=['feat1', 'feat2', 'feat3', 'feat4'])
+
+        actual = collapse(table, taxonomy, 2)
+        expected = pd.DataFrame([
+                [4.0, 4.0],
+                [2.0, 2.0],
+                [17.0 , 17.0],
+                [4.0 , 4.0]
+        ], index=['A', 'B', 'C', 'D'],
+               columns=[
+                       'a; __',
+                       'a; b'
+               ])
+        self.assert_data_frame_almost_equal(actual, expected)
+
 
 class FilterTable(unittest.TestCase):
 
