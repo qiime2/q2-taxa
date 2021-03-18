@@ -41,7 +41,8 @@ def _collapse_table(table, taxonomy, level, max_observed_level):
 
         if len(tax) < max_observed_level:
             if padding_ranks:
-                padding = [padding_ranks[x] for x in range(len(tax), max_observed_level)]
+                ranks_range = range(len(tax), max_observed_level)
+                padding = [padding_ranks[x] for x in ranks_range]
             else:
                 # I suggest this situation gets fixed for a collapsing desire
                 # (probably the taxa could be discarded?)
