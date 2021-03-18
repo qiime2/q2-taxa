@@ -220,7 +220,7 @@ class CollapseTests(unittest.TestCase):
         expected = pd.DataFrame([
                 [4.0, 4.0],
                 [2.0, 2.0],
-                [17.0 , 17.0],
+                [17.0, 17.0],
                 [4.0 , 4.0]
         ], index=['A', 'B', 'C', 'D'],
                columns=[
