@@ -27,7 +27,7 @@ class PaddingTests(unittest.TestCase):
         self.assertEqual(observed, expected)
 
         # no conflict at all ranks and the rank
-        # inferred only from before the first "_" 
+        # inferred only from before the first "_"
         taxonomy = pd.Series([
             'k__a__1__x; p__b; o__c',
             'k__a; p__b; o__c',
