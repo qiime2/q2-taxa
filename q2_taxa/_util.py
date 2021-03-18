@@ -12,8 +12,6 @@ def _get_max_level(taxonomy):
 
 
 def _get_padding_ranks(taxonomy):
-    # get the maximum number of ranks
-    max_obs_lvl = _get_max_level(taxonomy)
     # split the taxonomy
     taxonomy_split = taxonomy.str.split('; ', expand=True)
     # reduce ranks to strings before (and with) the first underscore(s)
