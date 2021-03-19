@@ -52,3 +52,4 @@ jobs:
         package-name: q2-taxa
         build-target: staging
         additional-tests: py.test --pyargs q2_taxa
+        library-token: ${{ secrets.LIBRARY_TOKEN }}
