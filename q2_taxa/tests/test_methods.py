@@ -9,7 +9,7 @@
 import unittest
 
 import pandas as pd
-import pandas.util.testing as pdt
+import pandas.testing as pdt
 import qiime2
 
 from q2_taxa import collapse, filter_table, filter_seqs
@@ -31,7 +31,6 @@ class CollapseTests(unittest.TestCase):
                                check_index_type=True,
                                check_column_type=True,
                                check_frame_type=True,
-                               check_less_precise=False,
                                check_names=True,
                                by_blocks=False,
                                check_exact=False)
