@@ -29,7 +29,6 @@
 {% endblock %}
 
 {% block content %}
-    <p>Number of metadata columns provided: {{ num_metadata_cols }}</p>
     <script>
       var d = [];
       function load_data(level, taxaKeys, allKeys, data) {
@@ -46,4 +45,5 @@
     <script src='{{ level }}?callback=load_data'></script>
     {% endfor %}
     <script src='dist/bundle.js'></script>
+    <p>Number of sample metadata columns provided: {{ num_metadata_cols }}</p>
 {% endblock %}

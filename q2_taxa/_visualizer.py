@@ -33,8 +33,8 @@ def barplot(output_dir: str, table: pd.DataFrame, taxonomy: pd.Series,
         raise ValueError('Sample IDs found in the table are missing in the '
                          f'metadata: {ids_not_in_metadata!r}.')
 
+    num_metadata_cols = metadata.column_count
     metadata = metadata.to_dataframe()
-    num_metadata_cols = metadata.shape[1]
     jsonp_files, csv_files = [], []
     collapsed_tables = _extract_to_level(taxonomy, table)
 
