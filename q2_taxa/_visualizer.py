@@ -33,6 +33,7 @@ def barplot(output_dir: str, table: pd.DataFrame, taxonomy: pd.Series,
         raise ValueError('Sample IDs found in the table are missing in the '
                          f'metadata: {ids_not_in_metadata!r}.')
 
+    num_metadata_cols = metadata.column_count
     metadata = metadata.to_dataframe()
     jsonp_files, csv_files = [], []
     collapsed_tables = _extract_to_level(taxonomy, table)
@@ -66,7 +67,9 @@ def barplot(output_dir: str, table: pd.DataFrame, taxonomy: pd.Series,
 
     # Now that the tables have been collapsed, write out the index template
     index = os.path.join(TEMPLATES, 'barplot', 'index.html')
-    q2templates.render(index, output_dir, context={'jsonp_files': jsonp_files})
+    q2templates.render(index, output_dir,
+                       context={'jsonp_files': jsonp_files,
+                                'num_metadata_cols': num_metadata_cols})
 
     # Copy assets for rendering figure
     shutil.copytree(os.path.join(TEMPLATES, 'barplot', 'dist'),
