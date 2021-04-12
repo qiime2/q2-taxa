@@ -38,9 +38,6 @@ def _extract_to_level(taxonomy, table):
     # Assemble the taxonomy data
     max_obs_lvl = _get_max_level(taxonomy)
 
-    if isinstance(table, pd.DataFrame):
-        table = biom.Table(table.T.values, table.columns, table.index)
-
     collapsed_tables = []
     # Collapse table at specified level
     for level in range(1, max_obs_lvl + 1):
