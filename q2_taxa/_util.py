@@ -5,8 +5,6 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-import pandas as pd
-import biom
 
 
 def _get_max_level(taxonomy):
