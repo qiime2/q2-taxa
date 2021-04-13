@@ -14,7 +14,7 @@ from ._util import _collapse_table, _get_max_level
 
 
 def collapse(table: biom.Table, taxonomy: pd.Series,
-             level: int) -> pd.DataFrame:
+             level: int) -> biom.Table:
     if level < 1:
         raise ValueError('Requested level of %d is too low. Must be greater '
                          'than or equal to 1.' % level)
