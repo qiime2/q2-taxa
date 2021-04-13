@@ -10,6 +10,8 @@ import os
 import tempfile
 import unittest
 
+import biom
+import numpy as np
 import pandas as pd
 import qiime2
 
@@ -19,10 +21,10 @@ from q2_taxa import barplot
 class BarplotTests(unittest.TestCase):
 
     def setUp(self):
-        self.table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0],
-                                  [0.0, 4.0]],
-                                  index=['A', 'B', 'C', 'D'],
-                                  columns=['feat1', 'feat2'])
+        self.table = biom.Table(np.array([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0],
+                                          [0.0, 4.0]]),
+                                ['A', 'B', 'C', 'D'],
+                                ['feat1', 'feat2']).transpose()
         self.taxonomy = pd.Series(['a; b; c', 'a; b; d'],
                                   index=['feat1', 'feat2'])
 

@@ -11,6 +11,7 @@ import os.path
 import pkg_resources
 import shutil
 
+import biom
 import pandas as pd
 import q2templates
 
@@ -22,13 +23,14 @@ from ._util import _extract_to_level
 TEMPLATES = pkg_resources.resource_filename('q2_taxa', 'assets')
 
 
-def barplot(output_dir: str, table: pd.DataFrame, taxonomy: pd.Series,
+def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series,
             metadata: Metadata = None) -> None:
 
     if metadata is None:
-        metadata = Metadata(pd.DataFrame({'id': table.index}).set_index('id'))
+        metadata = Metadata(
+            pd.DataFrame({'id': table.ids(axis='sample')}).set_index('id'))
 
-    ids_not_in_metadata = set(table.index) - set(metadata.ids)
+    ids_not_in_metadata = set(table.ids(axis='sample')) - set(metadata.ids)
     if ids_not_in_metadata:
         raise ValueError('Sample IDs found in the table are missing in the '
                          f'metadata: {ids_not_in_metadata!r}.')

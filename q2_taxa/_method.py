@@ -7,12 +7,13 @@
 # ----------------------------------------------------------------------------
 
 import pandas as pd
+import biom
 import qiime2
 
 from ._util import _collapse_table, _get_max_level
 
 
-def collapse(table: pd.DataFrame, taxonomy: pd.Series,
+def collapse(table: biom.Table, taxonomy: pd.Series,
              level: int) -> pd.DataFrame:
     if level < 1:
         raise ValueError('Requested level of %d is too low. Must be greater '

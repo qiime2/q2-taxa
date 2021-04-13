@@ -12,7 +12,7 @@ def _get_max_level(taxonomy):
 
 
 def _collapse_table(table, taxonomy, level, max_observed_level):
-    table_ids = set(table.columns)
+    table_ids = set(table.ids(axis='observation'))
     taxonomy_ids = set(taxonomy.index)
     missing_ids = table_ids.difference(taxonomy_ids)
     if len(missing_ids) > 0:
@@ -21,15 +21,15 @@ def _collapse_table(table, taxonomy, level, max_observed_level):
 
     table = table.copy()
 
-    def _collapse(tax):
+    def _collapse(id_, md):
+        tax = taxonomy.loc[id_]
         tax = [x.strip() for x in tax.split(';')]
         if len(tax) < max_observed_level:
             padding = ['__'] * (max_observed_level - len(tax))
             tax.extend(padding)
         return ';'.join(tax[:level])
 
-    table.columns = taxonomy.apply(_collapse)[table.columns]
-    return table.groupby(table.columns, axis=1).agg(sum)
+    return table.collapse(_collapse, axis='observation', norm=False)
 
 
 def _extract_to_level(taxonomy, table):
@@ -40,6 +40,7 @@ def _extract_to_level(taxonomy, table):
     # Collapse table at specified level
     for level in range(1, max_obs_lvl + 1):
         collapsed_table = _collapse_table(table, taxonomy, level, max_obs_lvl)
-        collapsed_tables.append(collapsed_table)
+        as_df = collapsed_table.transpose().to_dataframe(dense=True)
+        collapsed_tables.append(as_df)
 
     return collapsed_tables
