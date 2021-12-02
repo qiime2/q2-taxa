@@ -21,7 +21,6 @@ requirements:
   host:
     - python {{ python }}
     - setuptools
-    - nodejs
 
   run:
     - python {{ python }}
