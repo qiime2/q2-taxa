@@ -11,7 +11,7 @@ import qiime2.plugin
 import q2_taxa
 
 from q2_types.feature_data import FeatureData, Taxonomy, Sequence
-from q2_types.feature_table import FeatureTable, Frequency
+from q2_types.feature_table import FeatureTable, Frequency, RelativeFrequency
 
 
 from . import barplot, collapse, filter_table, filter_seqs
@@ -176,7 +176,7 @@ plugin.visualizers.register_function(
     function=barplot,
     inputs={
         'taxonomy': FeatureData[Taxonomy],
-        'table': FeatureTable[Frequency]
+        'table': FeatureTable[Frequency] | FeatureTable[RelativeFrequency]
     },
     parameters={'metadata': qiime2.plugin.Metadata},
     input_descriptions={
