@@ -14,6 +14,7 @@ import biom
 import numpy as np
 import pandas as pd
 import qiime2
+from qiime2.plugin.testing import TestPluginBase
 
 from q2_taxa import barplot
 
@@ -76,3 +77,10 @@ class BarplotTests(unittest.TestCase):
             csv_lvl3_fp = os.path.join(output_dir, 'level-3.csv')
             self.assertTrue(os.path.exists(csv_lvl3_fp))
             self.assertTrue('val1' not in open(csv_lvl3_fp).read())
+
+
+class TestUsageExamples(TestPluginBase):
+    package = 'q2_taxa.tests'
+
+    def test_examples(self):
+        self.execute_examples()

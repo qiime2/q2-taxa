@@ -10,6 +10,9 @@ m_p_base = 'https://docs.qiime2.org/{epoch}/data/tutorials/moving-pictures/'
 table_url = m_p_base + 'gut-table.qza'
 taxonomy_url = m_p_base + 'taxonomy.qza'
 
+metadata_url = 'https://data.qiime2.org/{epoch}/tutorials/moving-pictures/' \
+    'sample_metadata.tsv'
+
 
 def collapse_example(use):
     table = use.init_artifact_from_url('table', table_url)
@@ -28,3 +31,23 @@ def collapse_example(use):
     )
 
     collapsed.assert_output_type('FeatureTable[Frequency]')
+
+
+def barplot_example(use):
+    table = use.init_artifact_from_url('table', table_url)
+    taxonomy = use.init_artifact_from_url('taxonomy', taxonomy_url)
+    md = use.init_metadata_from_url('sample-metadata', metadata_url)
+
+    viz, = use.action(
+        use.UsageAction('taxa', 'barplot'),
+        use.UsageInputs(
+            table=table,
+            taxonomy=taxonomy,
+            metadata=md,
+        ),
+        use.UsageOutputNames(
+            visualization='taxa-bar-plots',
+        )
+    )
+
+    viz.assert_output_type('Visualization')
