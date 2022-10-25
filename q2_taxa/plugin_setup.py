@@ -15,6 +15,7 @@ from q2_types.feature_table import FeatureTable, Frequency
 
 
 from . import barplot, collapse, filter_table, filter_seqs
+import q2_taxa._examples as ex
 
 
 plugin = qiime2.plugin.Plugin(
@@ -57,7 +58,10 @@ plugin.methods.register_function(
     name='Collapse features by their taxonomy at the specified level',
     description='Collapse groups of features that have the same taxonomic '
                 'assignment through the specified level. The frequencies of '
-                'all features will be summed when they are collapsed.'
+                'all features will be summed when they are collapsed.',
+    examples={
+        'collapse': ex.collapse_example,
+    },
 )
 
 plugin.methods.register_function(
