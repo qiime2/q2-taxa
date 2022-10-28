@@ -6,7 +6,10 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
-m_p_base = 'https://docs.qiime2.org/{epoch}/data/tutorials/moving-pictures/'
+import qiime2
+
+epoch = qiime2.__release__
+m_p_base = f'https://docs.qiime2.org/{epoch}/data/tutorials/moving-pictures/'
 table_url = m_p_base + 'gut-table.qza'
 taxonomy_url = m_p_base + 'taxonomy.qza'
 
