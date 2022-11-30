@@ -14,7 +14,6 @@ import biom
 import numpy as np
 import pandas as pd
 import qiime2
-from qiime2.plugin.testing import TestPluginBase
 
 from q2_taxa import barplot
 
