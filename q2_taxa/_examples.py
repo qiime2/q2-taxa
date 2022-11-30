@@ -8,13 +8,13 @@
 
 import qiime2
 
-epoch = qiime2.__release__
-m_p_base = f'https://docs.qiime2.org/{epoch}/data/tutorials/moving-pictures/'
-table_url = m_p_base + 'gut-table.qza'
-taxonomy_url = m_p_base + 'taxonomy.qza'
+table_url = ('https://data.qiime2.org/usage-examples/'
+             'moving-pictures/gut-table.qza')
+taxonomy_url = ('https://data.qiime2.org/usage-examples/'
+                'moving-pictures/taxonomy.qza')
 
-metadata_url = 'https://data.qiime2.org/{epoch}/tutorials/moving-pictures/' \
-    'sample_metadata.tsv'
+metadata_url = (f'https://data.qiime2.org/{qiime2.__release__}/tutorials/'
+               'moving-pictures/sample_metadata.tsv')
 
 
 def collapse_example(use):
