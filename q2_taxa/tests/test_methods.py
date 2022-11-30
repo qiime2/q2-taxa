@@ -13,6 +13,7 @@ import biom
 import pandas as pd
 import pandas.testing as pdt
 import qiime2
+from qiime2.plugin.testing import TestPluginBase
 
 from q2_taxa import collapse, filter_table, filter_seqs
 
@@ -873,3 +874,10 @@ class FilterSeqs(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, expected_regex='All.*feat2'):
             filter_seqs(seqs, taxonomy, include='bb')
+
+
+class TestUsageExamples(TestPluginBase):
+    package = 'q2_taxa.tests'
+
+    def test_examples(self):
+        self.execute_examples()
