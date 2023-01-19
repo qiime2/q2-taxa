@@ -13,8 +13,8 @@ table_url = ('https://data.qiime2.org/usage-examples/'
 taxonomy_url = ('https://data.qiime2.org/usage-examples/'
                 'moving-pictures/taxonomy.qza')
 
-metadata_url = (f'https://data.qiime2.org/{qiime2.__release__}/tutorials/'
-                'moving-pictures/sample_metadata.tsv')
+metadata_url = ('https://data.qiime2.org/usage-examples/'
+                'moving-pictures/sample-metadata.tsv')
 
 
 def collapse_example(use):
