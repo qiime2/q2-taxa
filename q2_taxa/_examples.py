@@ -6,8 +6,6 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
-import qiime2
-
 table_url = ('https://data.qiime2.org/usage-examples/'
              'moving-pictures/gut-table.qza')
 taxonomy_url = ('https://data.qiime2.org/usage-examples/'
