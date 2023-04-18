@@ -23,7 +23,7 @@ from ._util import _extract_to_level
 TEMPLATES = pkg_resources.resource_filename('q2_taxa', 'assets')
 
 
-def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series,
+def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series = None,
             metadata: Metadata = None) -> None:
 
     if metadata is None:
@@ -34,6 +34,10 @@ def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series,
     if ids_not_in_metadata:
         raise ValueError('Sample IDs found in the table are missing in the '
                          f'metadata: {ids_not_in_metadata!r}.')
+
+    if taxonomy is None:
+        _ids = table.ids('observation')
+        taxonomy = pd.Series(_ids, index=_ids)
 
     num_metadata_cols = metadata.column_count
     metadata = metadata.to_dataframe()

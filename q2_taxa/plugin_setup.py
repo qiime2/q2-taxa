@@ -188,7 +188,8 @@ plugin.visualizers.register_function(
                      'feature table. All features in the feature table must '
                      'have a corresponding taxonomic annotation. Taxonomic '
                      'annotations that are not present in the feature table '
-                     'will be ignored.'),
+                     'will be ignored. If no taxonomy is provided, the '
+                     'feature IDs will be used as labels.'),
         'table': 'Feature table to visualize at various taxonomic levels.'},
     parameter_descriptions={'metadata': 'The sample metadata.'},
     name='Visualize taxonomy with an interactive bar plot',

@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 import qiime2
 
-from q2_taxa import barplot
+from q2_taxa import barplot, collapse
 
 
 class BarplotTests(unittest.TestCase):
@@ -27,14 +27,14 @@ class BarplotTests(unittest.TestCase):
                                 ['feat1', 'feat2']).transpose()
         self.taxonomy = pd.Series(['a; b; c', 'a; b; d'],
                                   index=['feat1', 'feat2'])
-
-    def test_barplot(self):
-        metadata = qiime2.Metadata(
+        self.metadata = qiime2.Metadata(
             pd.DataFrame({'val1': ['1.0', '2.0', '3.0', '4.0']},
                          index=pd.Index(['A', 'B', 'C', 'D'], name='id')))
 
+    def test_barplot(self):
+
         with tempfile.TemporaryDirectory() as output_dir:
-            barplot(output_dir, self.table, self.taxonomy, metadata)
+            barplot(output_dir, self.table, self.taxonomy, self.metadata)
             index_fp = os.path.join(output_dir, 'index.html')
             self.assertTrue(os.path.exists(index_fp))
             self.assertTrue("src='level-1.jsonp?callback=load_data'" in
@@ -73,6 +73,27 @@ class BarplotTests(unittest.TestCase):
             self.assertTrue(os.path.exists(index_fp))
             self.assertTrue("src='level-1.jsonp?callback=load_data'" in
                             open(index_fp).read())
+            csv_lvl3_fp = os.path.join(output_dir, 'level-3.csv')
+            self.assertTrue(os.path.exists(csv_lvl3_fp))
+            self.assertTrue('val1' not in open(csv_lvl3_fp).read())
+
+    def test_barplot_no_taxonomy(self):
+        with tempfile.TemporaryDirectory() as output_dir:
+            barplot(output_dir, self.table, metadata=self.metadata)
+            index_fp = os.path.join(output_dir, 'index.html')
+            self.assertTrue(os.path.exists(index_fp))
+            self.assertTrue("src='level-1.jsonp?callback=load_data'" in
+                            open(index_fp).read())
+            csv_lvl1_fp = os.path.join(output_dir, 'level-1.csv')
+            self.assertTrue(os.path.exists(csv_lvl1_fp))
+            self.assertTrue('val1' in open(csv_lvl1_fp).read())
+
+    def test_barplot_collapsed_table(self):
+        with tempfile.TemporaryDirectory() as output_dir:
+            collapsed_table = collapse(self.table, self.taxonomy, 3)
+            barplot(output_dir, collapsed_table)
+            # if level three tables exist, the taxonomy was parsed
+            # correctly from the collapsed table.
             csv_lvl3_fp = os.path.join(output_dir, 'level-3.csv')
             self.assertTrue(os.path.exists(csv_lvl3_fp))
             self.assertTrue('val1' not in open(csv_lvl3_fp).read())
