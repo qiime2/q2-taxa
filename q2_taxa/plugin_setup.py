@@ -13,7 +13,6 @@ import q2_taxa
 from q2_types.feature_data import FeatureData, Taxonomy, Sequence
 from q2_types.feature_table import FeatureTable, Frequency
 
-
 from . import barplot, collapse, filter_table, filter_seqs
 import q2_taxa._examples as ex
 
@@ -182,7 +181,8 @@ plugin.visualizers.register_function(
         'taxonomy': FeatureData[Taxonomy],
         'table': FeatureTable[Frequency]
     },
-    parameters={'metadata': qiime2.plugin.Metadata},
+    parameters={'metadata': qiime2.plugin.Metadata,
+                'parse_ids': qiime2.plugin.Bool},
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
                      'feature table. All features in the feature table must '
@@ -191,7 +191,13 @@ plugin.visualizers.register_function(
                      'will be ignored. If no taxonomy is provided, the '
                      'feature IDs will be used as labels.'),
         'table': 'Feature table to visualize at various taxonomic levels.'},
-    parameter_descriptions={'metadata': 'The sample metadata.'},
+    parameter_descriptions={
+        'metadata': 'The sample metadata.',
+        'parse_ids': 'Attempt to parse hierarchical taxonomic information '
+                     'from feature IDs. Taxonomic ranks are inferred from '
+                     'semicolon-delimited IDs. This parameter is ignored if '
+                     'a taxonomy is provided as input.'
+        },
     name='Visualize taxonomy with an interactive bar plot',
     description='This visualizer produces an interactive barplot visualization'
                 ' of taxonomies. Interactive features include multi-level '
