@@ -182,7 +182,7 @@ plugin.visualizers.register_function(
         'table': FeatureTable[Frequency]
     },
     parameters={'metadata': qiime2.plugin.Metadata,
-                'parse_ids': qiime2.plugin.Bool},
+                'level_delimiter': qiime2.plugin.Str},
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
                      'feature table. All features in the feature table must '
@@ -193,10 +193,17 @@ plugin.visualizers.register_function(
         'table': 'Feature table to visualize at various taxonomic levels.'},
     parameter_descriptions={
         'metadata': 'The sample metadata.',
-        'parse_ids': 'Attempt to parse hierarchical taxonomic information '
-                     'from feature IDs. Taxonomic ranks are inferred from '
-                     'semicolon-delimited IDs. This parameter is ignored if '
-                     'a taxonomy is provided as input.'
+        'level_delimiter': 'The delimiter that separates taxonomic ranks in '
+                           'the provided taxonomy. If no taxonomy is provided '
+                           'and a level_delimiter is passed, it will attempt '
+                           'to parse hierarchical taxonomic information from '
+                           'the feature ID labels. If no level_delimiter is '
+                           'provided and a taxonomy is passed, simicolon (;) '
+                           'level delimiters will be assumed by default, but '
+                           'this can be disabled by inputting a false level '
+                           'delimiter. If no taxonomy is provided and no '
+                           'delimiter is provided, feature IDs will not be '
+                           'separated into different taxonomic ranks.'
         },
     name='Visualize taxonomy with an interactive bar plot',
     description='This visualizer produces an interactive barplot visualization'

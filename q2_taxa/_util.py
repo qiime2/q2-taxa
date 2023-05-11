@@ -7,11 +7,12 @@
 # ----------------------------------------------------------------------------
 
 
-def _get_max_level(taxonomy):
-    return taxonomy.apply(lambda x: len(x.split(';'))).max()
+def _get_max_level(taxonomy, level_delimiter):
+    return taxonomy.apply(lambda x: len(x.split(level_delimiter))).max()
 
 
-def _collapse_table(table, taxonomy, level, max_observed_level):
+def _collapse_table(table, taxonomy, level, max_observed_level,
+                    level_delimiter):
     table_ids = set(table.ids(axis='observation'))
     taxonomy_ids = set(taxonomy.index)
     missing_ids = table_ids.difference(taxonomy_ids)
@@ -21,25 +22,26 @@ def _collapse_table(table, taxonomy, level, max_observed_level):
 
     table = table.copy()
 
-    def _collapse(id_, md):
+    def _collapse(id_, md, level_delimiter=level_delimiter):
         tax = taxonomy.loc[id_]
-        tax = [x.strip() for x in tax.split(';')]
+        tax = [x.strip() for x in tax.split(level_delimiter)]
         if len(tax) < max_observed_level:
             padding = ['__'] * (max_observed_level - len(tax))
             tax.extend(padding)
-        return ';'.join(tax[:level])
+        return level_delimiter.join(tax[:level])
 
     return table.collapse(_collapse, axis='observation', norm=False)
 
 
-def _extract_to_level(taxonomy, table):
+def _extract_to_level(taxonomy, table, level_delimiter):
     # Assemble the taxonomy data
-    max_obs_lvl = _get_max_level(taxonomy)
+    max_obs_lvl = _get_max_level(taxonomy, level_delimiter)
 
     collapsed_tables = []
     # Collapse table at specified level
     for level in range(1, max_obs_lvl + 1):
-        collapsed_table = _collapse_table(table, taxonomy, level, max_obs_lvl)
+        collapsed_table = _collapse_table(
+            table, taxonomy, level, max_obs_lvl, level_delimiter)
         as_df = _biom_to_df(collapsed_table)
         collapsed_tables.append(as_df)
 

@@ -20,14 +20,15 @@ def collapse(table: biom.Table, taxonomy: pd.Series,
                          'than or equal to 1.' % level)
 
     # Assemble the taxonomy data
-    max_observed_level = _get_max_level(taxonomy)
+    max_observed_level = _get_max_level(taxonomy, level_delimiter=';')
 
     if level > max_observed_level:
         raise ValueError('Requested level of %d is larger than the maximum '
                          'level available in taxonomy data (%d).' %
                          (level, max_observed_level))
 
-    return _collapse_table(table, taxonomy, level, max_observed_level)
+    return _collapse_table(
+        table, taxonomy, level, max_observed_level, level_delimiter=';')
 
 
 def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
