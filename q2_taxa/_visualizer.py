@@ -24,7 +24,7 @@ TEMPLATES = pkg_resources.resource_filename('q2_taxa', 'assets')
 
 
 def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series = None,
-            metadata: Metadata = None, parse_ids: bool = False) -> None:
+            metadata: Metadata = None, level_delimiter: str = None) -> None:
 
     if metadata is None:
         metadata = Metadata(
@@ -37,10 +37,12 @@ def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series = None,
 
     collapse = True
     if taxonomy is None:
-        _ids = table.ids('observation')
-        taxonomy = pd.Series(_ids, index=_ids)
-        if not parse_ids:
+        if level_delimiter is None:
             collapse = False
+        else:
+            _ids = table.ids('observation')
+            ranks = [r.replace(level_delimiter, ';') for r in _ids]
+            taxonomy = pd.Series(ranks, index=_ids)
 
     num_metadata_cols = metadata.column_count
     metadata = metadata.to_dataframe()

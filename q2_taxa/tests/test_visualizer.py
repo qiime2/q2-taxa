@@ -91,7 +91,7 @@ class BarplotTests(unittest.TestCase):
     def test_barplot_collapsed_table(self):
         with tempfile.TemporaryDirectory() as output_dir:
             collapsed_table = collapse(self.table, self.taxonomy, 3)
-            barplot(output_dir, collapsed_table, parse_ids=True)
+            barplot(output_dir, collapsed_table, level_delimiter=';')
             # if level three tables exist, the taxonomy was parsed
             # correctly from the collapsed table.
             csv_lvl3_fp = os.path.join(output_dir, 'level-3.csv')
