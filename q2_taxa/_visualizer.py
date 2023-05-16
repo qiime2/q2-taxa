@@ -24,7 +24,7 @@ TEMPLATES = pkg_resources.resource_filename('q2_taxa', 'assets')
 
 
 def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series = None,
-            metadata: Metadata = None, level_delimiter: str = None) -> None:
+            metadata: Metadata = None, parse_ids: bool = False) -> None:
 
     if metadata is None:
         metadata = Metadata(
@@ -37,31 +37,16 @@ def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series = None,
 
     collapse = True
     if taxonomy is None:
-        if level_delimiter is None:
+        _ids = table.ids('observation')
+        taxonomy = pd.Series(_ids, index=_ids)
+        if not parse_ids:
             collapse = False
-        else:
-            _ids = table.ids('observation')
-            taxonomy = pd.Series(_ids, index=_ids)
-    # Note: if a taxonomy is passed we will default to a semicolon delimiter.
-    # This feels slightly dirty, but seems like a way to have our cake and eat
-    # it too. i.e., we can add the level_delimiter parameter AND make the
-    # default None (so that feature IDs are not automatically parsed) without
-    # breaking the current behavior of barplot.
-    # The user can override this behavior by just setting an arbitrary
-    # delimiter (e.g., |) if they really want to make a barplot of a taxonomy
-    # without splitting into levels, which feels like an edge case that might
-    # not ever actually happen.
-    else:
-        if level_delimiter is None:
-            level_delimiter = ';'
 
     num_metadata_cols = metadata.column_count
     metadata = metadata.to_dataframe()
     jsonp_files, csv_files = [], []
     if collapse:
-        print(level_delimiter)
-        collapsed_tables = _extract_to_level(
-            taxonomy, table, level_delimiter=level_delimiter)
+        collapsed_tables = _extract_to_level(taxonomy, table)
     else:
         collapsed_tables = [_biom_to_df(table)]
 
