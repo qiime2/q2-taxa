@@ -40,7 +40,11 @@ def _extract_to_level(taxonomy, table):
     # Collapse table at specified level
     for level in range(1, max_obs_lvl + 1):
         collapsed_table = _collapse_table(table, taxonomy, level, max_obs_lvl)
-        as_df = collapsed_table.transpose().to_dataframe(dense=True)
+        as_df = _biom_to_df(collapsed_table)
         collapsed_tables.append(as_df)
 
     return collapsed_tables
+
+
+def _biom_to_df(table):
+    return table.transpose().to_dataframe(dense=True)

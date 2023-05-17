@@ -17,14 +17,14 @@ import q2templates
 
 from qiime2 import Metadata
 
-from ._util import _extract_to_level
+from ._util import _extract_to_level, _biom_to_df
 
 
 TEMPLATES = pkg_resources.resource_filename('q2_taxa', 'assets')
 
 
-def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series,
-            metadata: Metadata = None) -> None:
+def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series = None,
+            metadata: Metadata = None, level_delimiter: str = None) -> None:
 
     if metadata is None:
         metadata = Metadata(
@@ -35,10 +35,22 @@ def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series,
         raise ValueError('Sample IDs found in the table are missing in the '
                          f'metadata: {ids_not_in_metadata!r}.')
 
+    collapse = True
+    if taxonomy is None:
+        if level_delimiter is None:
+            collapse = False
+        else:
+            _ids = table.ids('observation')
+            ranks = [r.replace(level_delimiter, ';') for r in _ids]
+            taxonomy = pd.Series(ranks, index=_ids)
+
     num_metadata_cols = metadata.column_count
     metadata = metadata.to_dataframe()
     jsonp_files, csv_files = [], []
-    collapsed_tables = _extract_to_level(taxonomy, table)
+    if collapse:
+        collapsed_tables = _extract_to_level(taxonomy, table)
+    else:
+        collapsed_tables = [_biom_to_df(table)]
 
     for level, df in enumerate(collapsed_tables, 1):
         # Stash column labels before manipulating dataframe
