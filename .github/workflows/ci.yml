@@ -47,7 +47,7 @@ jobs:
     - name: set up git repo for versioneer
       run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
-    - uses: qiime2/action-library-packaging@alpha1
+    - uses: qiime2/action-library-packaging@beta
       with:
         package-name: q2-taxa
         build-target: dev
