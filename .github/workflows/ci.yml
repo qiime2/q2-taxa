@@ -50,6 +50,7 @@ jobs:
     - uses: qiime2/action-library-packaging@beta
       with:
         package-name: q2-taxa
-        build-target: dev
+        release-target: dev
+        distro-target: core
         additional-tests: py.test --pyargs q2_taxa
         library-token: ${{ secrets.LIBRARY_TOKEN }}
