@@ -38,7 +38,7 @@ test:
     - qiime2 >={{ qiime2 }}
     - q2templates >={{ q2templates }}
     - q2-types >={{ q2_types }}
-    - q2-feature-table >= {{ q2-feature-table }}
+    - q2-feature-table >={{ q2-feature-table }}
     - pytest
 
   imports:
