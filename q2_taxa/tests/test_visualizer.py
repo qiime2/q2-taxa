@@ -28,7 +28,6 @@ class BarplotTests(TestPluginBase):
         super().setUp()
 
         self.barplot = self.plugin.pipelines['barplot']
-        self._call_relative_frequency = _call_relative_frequency
 
         self.table = biom.Table(
             np.array([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]]),
@@ -65,11 +64,13 @@ class BarplotTests(TestPluginBase):
             self.assertTrue(os.path.exists(csv_lvl3_fp))
             self.assertTrue('val1' in open(csv_lvl3_fp).read())
 
-    @patch('q2_taxa._visualizer._call_relative_frequency')
+    @patch(
+        'q2_taxa._visualizer._call_relative_frequency',
+        wraps=_call_relative_frequency
+    )
     def test_barplot_pipeline_absolute_frequency(
         self, relative_frequency_mock
     ):
-        relative_frequency_mock.side_effect = self._call_relative_frequency
         table = Artifact.import_data(
             'FeatureTable[Frequency]', self.table, view_type=biom.Table
         )
@@ -78,11 +79,13 @@ class BarplotTests(TestPluginBase):
         # should be normalized
         relative_frequency_mock.assert_called_once()
 
-    @patch('q2_taxa._visualizer._call_relative_frequency')
+    @patch(
+        'q2_taxa._visualizer._call_relative_frequency',
+        wraps=_call_relative_frequency
+    )
     def test_barplot_pipeline_relative_frequency(
         self, relative_frequency_mock
     ):
-        relative_frequency_mock.side_effect = self._call_relative_frequency
         table = Artifact.import_data(
             'FeatureTable[RelativeFrequency]',
             self.rel_table,
