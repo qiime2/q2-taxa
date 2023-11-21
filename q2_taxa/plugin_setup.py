@@ -6,18 +6,22 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
-import qiime2.plugin
+from qiime2.plugin import (
+     Choices, Int, Metadata, Plugin, Str, Visualization,
+)
 
 import q2_taxa
 
 from q2_types.feature_data import FeatureData, Taxonomy, Sequence
-from q2_types.feature_table import FeatureTable, Frequency, PresenceAbsence
+from q2_types.feature_table import (
+    FeatureTable, Frequency, RelativeFrequency, PresenceAbsence
+)
 
-from . import barplot, collapse, filter_table, filter_seqs
+from . import _barplot, barplot, collapse, filter_table, filter_seqs
 import q2_taxa._examples as ex
 
 
-plugin = qiime2.plugin.Plugin(
+plugin = Plugin(
     name='taxa',
     version=q2_taxa.__version__,
     website='https://github.com/qiime2/q2-taxa',
@@ -35,7 +39,7 @@ plugin.methods.register_function(
         'taxonomy': FeatureData[Taxonomy],
         'table': FeatureTable[Frequency]
     },
-    parameters={'level': qiime2.plugin.Int},
+    parameters={'level': Int},
     outputs=[('collapsed_table', FeatureTable[Frequency])],
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
@@ -69,12 +73,10 @@ plugin.methods.register_function(
         'taxonomy': FeatureData[Taxonomy],
         'table': FeatureTable[Frequency]
     },
-    parameters={'include': qiime2.plugin.Str,
-                'exclude': qiime2.plugin.Str,
-                'mode':
-                    qiime2.plugin.Str % qiime2.plugin.Choices(
-                        ['exact', 'contains']),
-                'query_delimiter': qiime2.plugin.Str},
+    parameters={'include': Str,
+                'exclude': Str,
+                'mode': Str % Choices(['exact', 'contains']),
+                'query_delimiter': Str},
     outputs=[('filtered_table', FeatureTable[Frequency])],
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
@@ -126,12 +128,10 @@ plugin.methods.register_function(
         'taxonomy': FeatureData[Taxonomy],
         'sequences': FeatureData[Sequence]
     },
-    parameters={'include': qiime2.plugin.Str,
-                'exclude': qiime2.plugin.Str,
-                'mode':
-                    qiime2.plugin.Str % qiime2.plugin.Choices(
-                        ['exact', 'contains']),
-                'query_delimiter': qiime2.plugin.Str},
+    parameters={'include': Str,
+                'exclude': Str,
+                'mode': Str % Choices(['exact', 'contains']),
+                'query_delimiter': Str},
     outputs=[('filtered_sequences', FeatureData[Sequence])],
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
@@ -176,34 +176,76 @@ plugin.methods.register_function(
 )
 
 plugin.visualizers.register_function(
-    function=barplot,
+    function=_barplot,
     inputs={
+        'relative_table': FeatureTable[RelativeFrequency],
+        'table': FeatureTable[Frequency | RelativeFrequency | PresenceAbsence],
         'taxonomy': FeatureData[Taxonomy],
-        'table': FeatureTable[Frequency | PresenceAbsence]
     },
-    parameters={'metadata': qiime2.plugin.Metadata,
-                'level_delimiter': qiime2.plugin.Str},
+    parameters={
+        'metadata': Metadata,
+        'level_delimiter': Str,
+    },
     input_descriptions={
-        'taxonomy': ('Taxonomic annotations for features in the provided '
-                     'feature table. All features in the feature table must '
-                     'have a corresponding taxonomic annotation. Taxonomic '
-                     'annotations that are not present in the feature table '
-                     'will be ignored. If no taxonomy is provided, the '
-                     'feature IDs will be used as labels.'),
-        'table': 'Feature table to visualize at various taxonomic levels.'},
+        'taxonomy': 'Taxonomic annotations for features in the provided '
+                    'feature table. All features in the feature table must '
+                    'have a corresponding taxonomic annotation. Taxonomic '
+                    'annotations that are not present in the feature table '
+                    'will be ignored. If no taxonomy is provided, the '
+                    'feature IDs will be used as labels.',
+        'table': 'Feature table to visualize at various taxonomic levels.',
+    },
     parameter_descriptions={
         'metadata': 'The sample metadata.',
         'level_delimiter': 'Attempt to parse hierarchical taxonomic '
                            'information from feature IDs by separating '
                            'levels with this character. This parameter '
-                           'is ignored if a taxonomy is provided as input.'
+                           'is ignored if a taxonomy is provided as input.',
         },
     name='Visualize taxonomy with an interactive bar plot',
-    description='This visualizer produces an interactive barplot visualization'
-                ' of taxonomies. Interactive features include multi-level '
-                'sorting, plot recoloring, sample relabeling, and SVG '
-                'figure export.',
+    description=(
+        'IMPORTANT: This visualizer should not be called on its own. Use the '
+        '`barplot` pipeline instead.'
+    ),
+)
+
+plugin.pipelines.register_function(
+    function=barplot,
+    inputs={
+        'table': FeatureTable[Frequency | RelativeFrequency | PresenceAbsence],
+        'taxonomy': FeatureData[Taxonomy],
+    },
+    parameters={
+        'metadata': Metadata,
+        'level_delimiter': Str,
+    },
+    outputs=[
+        ('visualization', Visualization),
+    ],
+    input_descriptions={
+        'table': 'Feature table to visualize at various taxonomic levels.',
+        'taxonomy': 'Taxonomic annotations for features in the provided '
+                    'feature table. All features in the feature table must '
+                    'have a corresponding taxonomic annotation. Taxonomic '
+                    'annotations that are not present in the feature table '
+                    'will be ignored. If no taxonomy is provided, the '
+                    'feature IDs will be used as labels.',
+    },
+    parameter_descriptions={
+        'metadata': 'The sample metadata.',
+        'level_delimiter': 'Attempt to parse hierarchical taxonomic '
+                           'information from feature IDs by separating '
+                           'levels with this character. This parameter '
+                           'is ignored if a taxonomy is provided as input.',
+    },
+    name='Visualize taxonomy with an interactive bar plot',
+    description=(
+        'This visualizer produces an interactive barplot visualization '
+        'of taxonomies. Interactive features include multi-level '
+        'sorting, plot recoloring, sample relabeling, and SVG '
+        'figure export.'
+    ),
     examples={
         'barplot': ex.barplot_example,
-    },
+    }
 )

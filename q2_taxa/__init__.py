@@ -7,10 +7,10 @@
 # ----------------------------------------------------------------------------
 
 from ._method import collapse, filter_table, filter_seqs
-from ._visualizer import barplot
+from ._visualizer import _barplot, barplot
 from ._version import get_versions
 
 __version__ = get_versions()['version']
 del get_versions
 
-__all__ = ['barplot', 'collapse', 'filter_table', 'filter_seqs']
+__all__ = ['_barplot', 'barplot', 'collapse', 'filter_table', 'filter_seqs']
