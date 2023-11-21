@@ -117,7 +117,7 @@ def barplot(ctx, table, taxonomy=None, metadata=None, level_delimiter=None):
         relative_frequency = ctx.get_action(
             'feature_table', 'relative_frequency'
         )
-        relative_table, = relative_frequency(table=table)
+        relative_table = _call_relative_frequency(table, relative_frequency)
 
     visualization, = _barplot(
         table=table,
@@ -128,3 +128,9 @@ def barplot(ctx, table, taxonomy=None, metadata=None, level_delimiter=None):
     )
 
     return (visualization)
+
+
+# exists for testing purposes
+def _call_relative_frequency(table, relative_frequency_action):
+    relative_table, = relative_frequency_action(table=table)
+    return relative_table

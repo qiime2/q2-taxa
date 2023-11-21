@@ -8,6 +8,7 @@
 
 import os
 import tempfile
+from unittest.mock import patch
 
 import biom
 import numpy as np
@@ -17,6 +18,7 @@ from qiime2.sdk import Artifact
 from qiime2.plugin.testing import TestPluginBase
 
 from q2_taxa import _barplot, collapse
+from q2_taxa._visualizer import _call_relative_frequency
 
 
 class BarplotTests(TestPluginBase):
@@ -26,6 +28,7 @@ class BarplotTests(TestPluginBase):
         super().setUp()
 
         self.barplot = self.plugin.pipelines['barplot']
+        self._call_relative_frequency = _call_relative_frequency
 
         self.table = biom.Table(
             np.array([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]]),
@@ -62,13 +65,33 @@ class BarplotTests(TestPluginBase):
             self.assertTrue(os.path.exists(csv_lvl3_fp))
             self.assertTrue('val1' in open(csv_lvl3_fp).read())
 
-    def test_barplot_pipeline(self):
+    @patch('q2_taxa._visualizer._call_relative_frequency')
+    def test_barplot_pipeline_absolute_frequency(
+        self, relative_frequency_mock
+    ):
+        relative_frequency_mock.side_effect = self._call_relative_frequency
         table = Artifact.import_data(
             'FeatureTable[Frequency]', self.table, view_type=biom.Table
         )
         self.barplot(table=table)
 
-        # TODO: figure out way to patch callable returned by ctx.get_action
+        # should be normalized
+        relative_frequency_mock.assert_called_once()
+
+    @patch('q2_taxa._visualizer._call_relative_frequency')
+    def test_barplot_pipeline_relative_frequency(
+        self, relative_frequency_mock
+    ):
+        relative_frequency_mock.side_effect = self._call_relative_frequency
+        table = Artifact.import_data(
+            'FeatureTable[RelativeFrequency]',
+            self.rel_table,
+            view_type=biom.Table
+        )
+        self.barplot(table=table)
+
+        # should not be redundantly normalized
+        relative_frequency_mock.assert_not_called()
 
     def test_barplot_metadata_extra_id(self):
         metadata = qiime2.Metadata(
