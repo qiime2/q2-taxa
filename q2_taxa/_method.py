@@ -79,7 +79,7 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
             # becomes an issue, this is a target for refactoring.
             ids_to_keep -= set(taxonomy.get_ids(where=query))
 
-    return ids_to_keep
+    return list(ids_to_keep)
 
 
 def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
