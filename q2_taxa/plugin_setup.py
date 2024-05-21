@@ -67,7 +67,7 @@ plugin.methods.register_function(
     function=filter_table,
     inputs={
         'taxonomy': FeatureData[Taxonomy],
-        'table': FeatureTable[Frequency]
+        'table': FeatureTable[Frequency | PresenceAbsence]
     },
     parameters={'include': qiime2.plugin.Str,
                 'exclude': qiime2.plugin.Str,
