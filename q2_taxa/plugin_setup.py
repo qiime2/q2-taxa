@@ -16,6 +16,7 @@ from q2_types.feature_table import FeatureTable, Frequency, PresenceAbsence
 from . import barplot, collapse, filter_table, filter_seqs
 import q2_taxa._examples as ex
 
+T1 = qiime2.plugin.TypeMatch([Frequency, PresenceAbsence])
 
 plugin = qiime2.plugin.Plugin(
     name='taxa',
@@ -67,7 +68,7 @@ plugin.methods.register_function(
     function=filter_table,
     inputs={
         'taxonomy': FeatureData[Taxonomy],
-        'table': FeatureTable[Frequency | PresenceAbsence]
+        'table': FeatureTable[T1]
     },
     parameters={'include': qiime2.plugin.Str,
                 'exclude': qiime2.plugin.Str,
@@ -75,7 +76,7 @@ plugin.methods.register_function(
                     qiime2.plugin.Str % qiime2.plugin.Choices(
                         ['exact', 'contains']),
                 'query_delimiter': qiime2.plugin.Str},
-    outputs=[('filtered_table', FeatureTable[Frequency])],
+    outputs=[('filtered_table', FeatureTable[T1])],
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
                      'feature table. All features in the feature table must '
