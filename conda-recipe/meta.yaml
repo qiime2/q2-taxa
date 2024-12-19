@@ -1,0 +1,38 @@
+package:
+  name: q2-taxa
+  version: {{ PLUGIN_VERSION }}
+source:
+  path: ..
+build:
+  script: make install
+requirements:
+  build:
+  - nodejs
+  - setuptools
+  - versioningit
+  host:
+  - python {{ python }}
+  - setuptools
+  - versioningit
+  - wheel
+  run:
+  - python {{ python }}
+  - pandas {{ pandas }}
+  - qiime2 {{ qiime2_epoch }}.*
+  - q2templates {{ qiime2_epoch }}.*
+  - q2-types {{ qiime2_epoch }}.*
+test:
+  commands:
+  - py.test --pyargs q2_taxa
+  requires:
+  - qiime2 >={{ qiime2 }}
+  - q2templates >={{ q2templates }}
+  - q2-types >={{ q2_types }}
+  - pytest
+  imports:
+  - q2_taxa
+  - qiime2.plugins.taxa
+about:
+  home: https://qiime2.org
+  license: BSD-3-Clause
+  license_family: BSD

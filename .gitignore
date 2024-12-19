@@ -71,3 +71,7 @@ target/
 .DS_Store
 node_modules
 package-lock.json
+
+# Version file from versioningit
+_version.py
+
