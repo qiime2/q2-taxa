@@ -8,9 +8,10 @@
 
 from ._method import collapse, filter_table, filter_seqs
 from ._visualizer import barplot
-from ._version import get_versions
 
-__version__ = get_versions()['version']
-del get_versions
+try:
+    from ._version import __version__
+except ModuleNotFoundError:
+    __version__ = '0.0.0+notfound'
 
 __all__ = ['barplot', 'collapse', 'filter_table', 'filter_seqs']

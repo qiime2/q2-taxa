@@ -23,7 +23,7 @@ q2_taxa/assets/barplot/dist:
 viz-barplot: q2_taxa/assets/barplot/dist
 
 install: all
-	$(PYTHON) setup.py install
+	$(PYTHON) -m pip install -v .
 
 dev: all
 	pip install -e .
