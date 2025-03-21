@@ -8,7 +8,7 @@
 
 import json
 import os.path
-import pkg_resources
+import importlib
 import shutil
 
 import biom
@@ -20,7 +20,7 @@ from qiime2 import Metadata
 from ._util import _extract_to_level, _biom_to_df
 
 
-TEMPLATES = pkg_resources.resource_filename('q2_taxa', 'assets')
+TEMPLATES = importlib.resources.files('q2_taxa') / 'assets'
 
 
 def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series = None,
