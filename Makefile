@@ -2,7 +2,7 @@
 
 PYTHON ?= python
 
-all: viz-barplot
+all: viz-barplot barplot2-visualizer
 
 lint:
 	q2lint
@@ -30,6 +30,14 @@ dev: all
 
 clean: distclean
 	rm -rf q2_taxa/assets/barplot/node_modules
+	rm -rf q2_taxa/_barplot_visualizer/node_modules
 
 distclean:
 	rm -rf q2_taxa/assets/barplot/dist
+	rm -rf q2_taxa/_barplot_visualizer/dist
+
+q2_taxa/_barplot_visualizer/dist:
+	cd q2_taxa/_barplot_visualizer/ && \
+	npm install && npm run build
+
+barplot2-visualizer: q2_taxa/_barplot_visualizer/dist
