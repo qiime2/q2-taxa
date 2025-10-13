@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+.select-primary {
+    @apply bg-white border-2 border-gray-300 rounded-lg;
+    @apply focus:ring-blue-500 focus:border-blue-500 hover:cursor-pointer;
+    @apply text-gray-900 text-sm;
+    @apply h-[1.75rem] px-2 py-0.5;
+}
+
+.button-primary {
+    @apply bg-blue-100 border-2 border-gray-300 rounded-lg;
+    @apply hover:bg-blue-50 hover:cursor-pointer;
+    @apply text-gray-900 text-sm;
+    @apply h-[2rem] px-2 py-1;
+}
+
+.input-primary {
+    @apply bg-white border-2 border-gray-300 rounded-lg;
+    @apply focus:ring-blue-500 focus:border-blue-500;
+    @apply text-gray-900 text-sm;
+    @apply h-[1.75rem] max-w-56 pl-2;
+}
+
+.checkbox-primary {
+    @apply appearance-none bg-white border-2 border-gray-300 rounded-md;
+    @apply checked:bg-blue-500 checked:border-blue-500;
+    @apply checked:[&::after]:content-['✔'];
+    @apply checked:[&::after]:text-white checked:[&::after]:block;
+    @apply checked:[&::after]:text-center checked:[&::after]:leading-4;
+    @apply h-[1.25rem] w-[1.25rem];
+}
+
+.widget-subheading {
+    @apply justify-self-center text-sm font-bold text-center mt-[0.5rem];
+}
+
+rect {
+    transition-property: opacity;
+    /* keep transition-duration in sync with timeout in Plot.drawSamples() */
+    transition-duration: 800ms;
+    transition-timing-function: ease;
+}
+
+/* to make default color selector border go away */
+input[type="color"]::-moz-color-swatch {
+    border: none;
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border-radius: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+}
