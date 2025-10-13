@@ -11,9 +11,11 @@ import qiime2.plugin
 import q2_taxa
 
 from q2_types.feature_data import FeatureData, Taxonomy, Sequence
-from q2_types.feature_table import FeatureTable, Frequency, PresenceAbsence
+from q2_types.feature_table import (
+    FeatureTable, Frequency, RelativeFrequency, PresenceAbsence
+)
 
-from . import barplot, collapse, filter_table, filter_seqs
+from . import barplot, barplot2, collapse, filter_table, filter_seqs
 import q2_taxa._examples as ex
 
 T1 = qiime2.plugin.TypeMatch([Frequency, PresenceAbsence])
@@ -207,4 +209,27 @@ plugin.visualizers.register_function(
     examples={
         'barplot': ex.barplot_example,
     },
+)
+
+plugin.visualizers.register_function(
+    function=barplot2,
+    inputs={
+        'taxonomy': FeatureData[Taxonomy],
+        'table': FeatureTable[Frequency | PresenceAbsence]
+    },
+    parameters={'metadata': qiime2.plugin.Metadata,
+                'level_delimiter': qiime2.plugin.Str},
+    input_descriptions={
+        'table': 'The feature table.',
+        'taxonomy': 'The taxonomy.'
+    },
+    parameter_descriptions={
+        'metadata': 'The sample metadata.',
+        'level_delimiter': (
+            'The character used to delineate taxonomic levels in feature IDs. '
+            'Ignored if a taxonomy is provided.'
+        )
+    },
+    name='Interactive stacked bar plot visualizer of per-sample taxa.',
+    description="...",
 )

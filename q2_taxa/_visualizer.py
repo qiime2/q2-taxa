@@ -8,6 +8,7 @@
 
 import json
 import os.path
+from pathlib import Path
 import importlib
 import shutil
 
@@ -88,3 +89,34 @@ def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series = None,
     # Copy assets for rendering figure
     shutil.copytree(os.path.join(TEMPLATES, 'barplot', 'dist'),
                     os.path.join(output_dir, 'dist'))
+
+
+def barplot2(output_dir: str, table: pd.DataFrame, taxonomy: pd.Series = None,
+            metadata: Metadata = None, level_delimiter: str = None) -> None:
+    '''
+    '''
+    dist_dir = (
+        importlib.resources.files('q2_taxa') / '_barplot_visualizer' / 'dist'
+    )
+    shutil.copytree(str(dist_dir), output_dir, dirs_exist_ok=True)
+
+    table.T.to_csv(Path(output_dir) / 'table.csv', index_label="sampleID")
+
+    if metadata is not None:
+        metadata.to_csv(Path(output_dir) / 'metadata.csv')
+    else:
+        dummy_metadata = pd.DataFrame({
+            'sampleID': ['#q2:types'] + table.index
+        })
+        dummy_metadata.to_csv(Path(output_dir) / 'metadata.csv')
+
+    # put taxonomy into viz
+    if taxonomy is not None:
+        taxonomy.to_csv(Path(output_dir) / 'taxonomy.csv')
+        print(type(taxonomy))
+        print(taxonomy.head())
+    else:
+        # parse taxonomy from table
+        print('feature ids', table.columns)
+
+    # deal with level_delimiter
