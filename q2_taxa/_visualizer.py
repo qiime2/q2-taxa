@@ -120,13 +120,15 @@ def barplot2(
     if taxonomy is not None:
         taxonomy.to_csv(Path(output_dir) / 'taxonomy.csv')
     else:
+        index = pd.Index(list(table.columns), name='Feature ID')
+
         if level_delimiter is not None:
             ids = list(table.columns)
             ids = [id.replace(';', ':') for id in ids]
             ids = [id.replace(level_delimiter, ';') for id in ids]
 
-            dummy_taxonomy = pd.Series(ids, index = table.columns)
+            dummy_taxonomy = pd.Series(ids, index=index, name='Taxon')
         else:
-            dummy_taxonomy = pd.Series(table.columns, index = table.columns)
+            dummy_taxonomy = pd.Series(table.columns, index=index, name='Taxon')
 
-        dummy_taxonomy.to_csv('taxonomy.csv', index=False)
+        dummy_taxonomy.to_csv(Path(output_dir) / 'taxonomy.csv')
