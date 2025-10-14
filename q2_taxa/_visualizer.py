@@ -91,32 +91,42 @@ def barplot(output_dir: str, table: biom.Table, taxonomy: pd.Series = None,
                     os.path.join(output_dir, 'dist'))
 
 
-def barplot2(output_dir: str, table: pd.DataFrame, taxonomy: pd.Series = None,
-            metadata: Metadata = None, level_delimiter: str = None) -> None:
+def barplot2(
+    output_dir: str,
+    table: pd.DataFrame,
+    taxonomy: pd.Series = None,
+    metadata: Metadata = None,
+    level_delimiter: str | None = None
+) -> None:
     '''
     '''
+    # TODO: table & metadata intersection, table & taxonomy intersection
+
     dist_dir = (
         importlib.resources.files('q2_taxa') / '_barplot_visualizer' / 'dist'
     )
     shutil.copytree(str(dist_dir), output_dir, dirs_exist_ok=True)
 
-    table.T.to_csv(Path(output_dir) / 'table.csv', index_label="sampleID")
+    table.to_csv(Path(output_dir) / 'table.csv', index_label="sampleID")
 
     if metadata is not None:
         metadata.to_csv(Path(output_dir) / 'metadata.csv')
     else:
         dummy_metadata = pd.DataFrame({
-            'sampleID': ['#q2:types'] + table.index
+            'sampleID': ['#q2:types'] + list(table.index)
         })
-        dummy_metadata.to_csv(Path(output_dir) / 'metadata.csv')
+        dummy_metadata.to_csv(Path(output_dir) / 'metadata.csv', index=False)
 
-    # put taxonomy into viz
     if taxonomy is not None:
         taxonomy.to_csv(Path(output_dir) / 'taxonomy.csv')
-        print(type(taxonomy))
-        print(taxonomy.head())
     else:
-        # parse taxonomy from table
-        print('feature ids', table.columns)
+        if level_delimiter is not None:
+            ids = list(table.columns)
+            ids = [id.replace(';', ':') for id in ids]
+            ids = [id.replace(level_delimiter, ';') for id in ids]
 
-    # deal with level_delimiter
+            dummy_taxonomy = pd.Series(ids, index = table.columns)
+        else:
+            dummy_taxonomy = pd.Series(table.columns, index = table.columns)
+
+        dummy_taxonomy.to_csv('taxonomy.csv', index=False)
