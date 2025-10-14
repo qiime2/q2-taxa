@@ -159,7 +159,7 @@
         Applied Sorts
     </p>
     <div
-        class="row-start-10 col-start-1 col-end-4 justify-self-center w-[18rem] h-[7rem] bg-white border-2 border-gray-300 rounded-lg overflow-scroll"
+        class="row-start-10 col-start-1 col-end-4 justify-self-center w-[18rem] h-[7rem] bg-white border-2 border-gray-300 rounded-lg overflow-y-scroll"
     >
         <ul>
             {#each sorts as sort, index}

@@ -102,7 +102,7 @@
         Applied Filters
     </p>
     <div
-        class="row-start-6 col-start-1 col-end-4 w-[18rem] h-[7rem] justify-self-center bg-white border-2 border-gray-300 rounded-sm overflow-scroll"
+        class="row-start-6 col-start-1 col-end-4 w-[18rem] h-[7rem] justify-self-center bg-white border-2 border-gray-300 rounded-sm overflow-y-scroll"
     >
         {#each sampleManager.featureControls.filters as filter}
             <div
@@ -124,7 +124,7 @@
         Applied Expansions
     </p>
     <div
-        class="row-start-8 col-start-1 col-end-4 w-[18rem] h-[7rem] justify-self-center bg-white border-2 border-gray-300 rounded-sm overflow-scroll"
+        class="row-start-8 col-start-1 col-end-4 w-[18rem] h-[7rem] justify-self-center bg-white border-2 border-gray-300 rounded-sm overflow-y-scroll"
     >
         {#each sampleManager.taxonomy.expansions as taxon}
             <div

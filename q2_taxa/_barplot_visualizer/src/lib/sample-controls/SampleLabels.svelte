@@ -56,7 +56,7 @@
         Applied Labels
     </p>
     <div
-        class="row-start-4 col-start-1 col-end-4 w-[18rem] h-[7rem] justify-self-center bg-white border-2 border-gray-300 rounded-sm overflow-scroll"
+        class="row-start-4 col-start-1 col-end-4 w-[18rem] h-[7rem] justify-self-center bg-white border-2 border-gray-300 rounded-sm overflow-y-scroll"
     >
         {#each labels as label}
             <div

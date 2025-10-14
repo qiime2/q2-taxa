@@ -120,7 +120,7 @@
         Column Levels
     </p>
     <div
-        class="row-start-4 col-start-1 col-end-4 flex flex-col justify-self-center py-1 w-[18rem] h-[7rem] bg-white border-2 border-gray-300 rounded-sm overflow-scroll"
+        class="row-start-4 col-start-1 col-end-4 flex flex-col justify-self-center py-1 w-[18rem] h-[7rem] bg-white border-2 border-gray-300 rounded-sm overflow-y-scroll"
     >
         {#each categoricalColumnLevels as level}
             <div
@@ -268,7 +268,7 @@
         Applied Filters
     </p>
     <div
-        class="row-start-17 col-start-1 col-end-4 w-[18rem] h-[7rem] justify-self-center bg-white border-2 border-gray-300 rounded-sm overflow-scroll"
+        class="row-start-17 col-start-1 col-end-4 w-[18rem] h-[7rem] justify-self-center bg-white border-2 border-gray-300 rounded-sm overflow-y-scroll"
     >
         {#each filters as filter}
             <div

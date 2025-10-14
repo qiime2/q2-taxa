@@ -7,6 +7,6 @@
     });
 </script>
 
-<div class="h-[40rem] overflow-scroll">
+<div class="h-[40rem] overflow-x-scroll">
     <svg id="barplot" class="h-[39rem]"></svg>
 </div>

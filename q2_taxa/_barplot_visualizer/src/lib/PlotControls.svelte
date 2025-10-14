@@ -47,7 +47,7 @@
     }
 </script>
 
-<div class="flex w-fit items-center py-[1rem] bg-gray-100 rounded-lg">
+<div class="flex w-fit items-center py-[1rem] bg-gray-100 rounded-lg ml-[2rem]">
     <label class="ml-[1rem] mr-[0.5rem]" for="displayLevel">
         Display Level:
     </label>
