@@ -95,13 +95,11 @@ def barplot2(
     output_dir: str,
     table: pd.DataFrame,
     taxonomy: pd.Series = None,
-    metadata: Metadata = None,
+    metadata: pd.DataFrame = None,
     level_delimiter: str | None = None
 ) -> None:
     '''
     '''
-    # TODO: table & metadata intersection, table & taxonomy intersection
-
     dist_dir = (
         importlib.resources.files('q2_taxa') / '_barplot_visualizer' / 'dist'
     )
@@ -110,7 +108,29 @@ def barplot2(
     table.to_csv(Path(output_dir) / 'table.csv', index_label="sampleID")
 
     if metadata is not None:
-        metadata.to_csv(Path(output_dir) / 'metadata.csv')
+        unexpected_ids = set(table.index) - set(metadata.ids)
+        if unexpected_ids:
+            msg = (
+                'There are sample IDs in the feature table that are not '
+                f'accounted for in the metadata. These are {unexpected_ids}.'
+            )
+            raise ValueError(msg)
+
+        # manually recreate types header
+        types_header = ["#q2:types"]
+        for column in metadata.columns:
+            column = metadata.get_column(column)
+            types_header.append(column.type)
+
+        metadata_df = metadata.to_dataframe()
+        metadata_df.index.name = 'sampleID'
+        metadata_df.reset_index(inplace=True)
+
+        col_to_type = zip(list(metadata_df.columns), types_header)
+        types_df = pd.DataFrame({col: [val] for col, val in col_to_type})
+        metadata_df = pd.concat([types_df, metadata_df], ignore_index=True)
+
+        metadata_df.to_csv(Path(output_dir) / 'metadata.csv', index=False)
     else:
         dummy_metadata = pd.DataFrame({
             'sampleID': ['#q2:types'] + list(table.index)
@@ -118,6 +138,14 @@ def barplot2(
         dummy_metadata.to_csv(Path(output_dir) / 'metadata.csv', index=False)
 
     if taxonomy is not None:
+        unexpected_ids = set(table.columns) - set(taxonomy.index)
+        if unexpected_ids:
+            msg = (
+                'There are feature IDs in the feature table that are not '
+                f'accounted for in the taxonomy. These are {unexpected_ids}.'
+            )
+            raise ValueError(msg)
+
         taxonomy.to_csv(Path(output_dir) / 'taxonomy.csv')
     else:
         index = pd.Index(list(table.columns), name='Feature ID')
