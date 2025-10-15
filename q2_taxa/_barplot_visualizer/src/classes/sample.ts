@@ -155,9 +155,16 @@ export class Sample {
         heightAdjustor: number,
         sampleManager: SampleManager,
     ) {
-        // draw from bottom
-        const viewTaxaReversed = this.viewTaxa.slice().reverse();
+        // color taxa
+        for (let viewTaxon of this.viewTaxa) {
+            viewTaxon.taxon.color = sampleManager.colors.colorTaxon(
+                viewTaxon.taxon,
+                1,
+            );
+        }
 
+        // draw taxa from bottom of plot
+        const viewTaxaReversed = this.viewTaxa.slice().reverse();
         let i = 0;
         let sumAbun = 0;
         for (let viewTaxon of viewTaxaReversed) {
@@ -204,10 +211,6 @@ export class Sample {
         rect.setAttribute("class", "taxonRect");
 
         if (viewTaxon != null) {
-            viewTaxon.taxon.color = sampleManager.colors.colorTaxon(
-                viewTaxon.taxon,
-                1,
-            );
             rect.setAttribute("fill", viewTaxon.taxon.color);
 
             rect.addEventListener("click", () => {
