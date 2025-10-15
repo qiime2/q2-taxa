@@ -7,12 +7,14 @@ export class Taxonomy {
     displayLevel: number;
     legend: Legend;
     expansions: Set<Taxon>;
+    featureMap: Map<string, Taxon>;
 
     constructor() {
         this.rootTaxon = new Taxon("placeholder", null);
         this.displayLevel = 1;
         this.legend = new Legend();
         this.expansions = $state(new SvelteSet());
+        this.featureMap = new Map();
     }
 
     /**
@@ -39,6 +41,7 @@ export class Taxonomy {
                     parentNode,
                     levelName,
                 );
+
                 if (existingChild != null) {
                     parentNode = existingChild;
                 } else {
@@ -50,6 +53,13 @@ export class Taxonomy {
                 if (levelIndex == levelNames.length - 1) {
                     // the final node is the classification of a feature
                     parentNode.featureIDs.push(featureID);
+
+                    if (this.featureMap.has(featureID)) {
+                        throw new Error(`
+                            Feature ${featureID} classified to multiple taxa.`
+                        );
+                    }
+                    this.featureMap.set(featureID, parentNode);
                 }
             }
         }
@@ -117,7 +127,11 @@ export class Taxonomy {
      */
     getDisplayTaxon(featureID: string): Taxon | null {
         // find taxon by feature ID
-        const featureTaxon = this.findTaxonByFeatureID(featureID);
+        const featureTaxon = this.featureMap.get(featureID);
+        if (featureTaxon == undefined) {
+            throw new Error(`Feature ${featureID} has no classification.`);
+        }
+
         const featureTaxonLevel = featureTaxon.getLevel();
 
         // map to ancestor if needed
@@ -174,29 +188,6 @@ export class Taxonomy {
         }
 
         return matchingChildren[0];
-    }
-
-    /**
-     * Find the classification of the feature with id `featureID` by searching
-     * the entire taxonomy.
-     */
-    private findTaxonByFeatureID(featureID: string): Taxon {
-        // TODO: hotspot
-        const allTaxa = this.rootTaxon.getDescendants();
-        const matches = allTaxa.filter(
-            (t) => t.featureIDs.indexOf(featureID) != -1,
-        );
-
-        if (matches.length > 1) {
-            throw new Error(
-                `Feature ${featureID} classified to more than one taxon:
-                 ${matches}.`,
-            );
-        }
-        if (matches.length == 0) {
-            throw new Error(`Feature ${featureID} not found in taxonomy.`);
-        }
-        return matches[0];
     }
 }
 
