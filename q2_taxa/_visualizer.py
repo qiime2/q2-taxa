@@ -157,6 +157,8 @@ def barplot2(
 
             dummy_taxonomy = pd.Series(ids, index=index, name='Taxon')
         else:
-            dummy_taxonomy = pd.Series(table.columns, index=index, name='Taxon')
+            dummy_taxonomy = pd.Series(
+                table.columns, index=index, name='Taxon'
+            )
 
         dummy_taxonomy.to_csv(Path(output_dir) / 'taxonomy.csv')

@@ -215,7 +215,7 @@ plugin.visualizers.register_function(
     function=barplot2,
     inputs={
         'taxonomy': FeatureData[Taxonomy],
-        'table': FeatureTable[Frequency | PresenceAbsence]
+        'table': FeatureTable[Frequency | PresenceAbsence | RelativeFrequency]
     },
     parameters={'metadata': qiime2.plugin.Metadata,
                 'level_delimiter': qiime2.plugin.Str},
