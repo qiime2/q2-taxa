@@ -30,7 +30,7 @@
 {#await parsedPromise}
     <p>Loading...</p>
 {:then}
-    <div class="grid grid-cols-4 gap-x-[0.5rem] w-[100%] p-[1rem]">
+    <div class="grid grid-cols-4 gap-x-[2rem] w-[95%] p-[1rem]">
         <div class="col-start-1 col-end-5">
             <PlotControls />
         </div>
@@ -41,7 +41,7 @@
             <Legend />
         </div>
     </div>
-    <div class="grid grid-cols-3 w-[68rem] gap-x-[1rem] ml-[2rem]">
+    <div class="grid grid-cols-3 w-[68rem] gap-x-[1rem] ml-[2rem] pb-[2rem]">
         <div
             class="col-start-1 col-end-2 flex flex-col gap-[0.5rem] mr-[0.5rem]"
         >

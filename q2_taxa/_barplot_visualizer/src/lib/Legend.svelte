@@ -18,7 +18,7 @@
 </script>
 
 <div
-    class="flex flex-col items-center w-[20rem] h-[35rem] overflow-y-scroll bg-gray-100 rounded-lg mt-[25px] py-[0.6rem]"
+    class="flex flex-col items-center w-[20rem] h-[35rem] overflow-y-scroll bg-gray-100 rounded-lg mt-[25px] mr-[2rem] py-[0.6rem]"
 >
     {#each legendRecords as legendRecord}
         <div
