@@ -273,21 +273,22 @@ export class Plot {
 
     downloadPNG() {
         const svgElem = document.querySelector("#barplot");
-        if (svgElem == null) {
-            return;
-        }
 
-        const svgData = new XMLSerializer().serializeToString(svgElem as Node);
-        const svgBlob = new Blob([svgData], {
-            type: "image/svg+xml;charset=utf-8",
-        });
+        const clone = svgElem.cloneNode(true) as SVGSVGElement;
+
+        const bbox = svgElem.getBBox();
+        const width = svgElem.width.baseVal.value || bbox.width;
+        const height = svgElem.height.baseVal.value || bbox.height;
+
+        clone.setAttribute("width", `${width}px`);
+        clone.setAttribute("height", `${height}px`);
+
+        const svgData = new XMLSerializer().serializeToString(clone);
+        const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
         const url = URL.createObjectURL(svgBlob);
 
         const img = new Image();
         img.onload = () => {
-            const width = (svgElem as SVGSVGElement).width.baseVal.value;
-            const height = (svgElem as SVGSVGElement).height.baseVal.value;
-
             const canvas = document.createElement("canvas");
             canvas.width = width;
             canvas.height = height;
@@ -309,6 +310,7 @@ export class Plot {
             URL.revokeObjectURL(url);
         };
 
+        img.crossOrigin = "anonymous";
         img.src = url;
     }
 
