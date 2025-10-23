@@ -16,6 +16,7 @@ export class SampleManager {
     plot: Plot;
     eventBus: EventTarget;
     selectedTaxon: ViewTaxon | null;
+    hoveredSlice: HoveredSlice | null;
 
     constructor() {
         this.samples = [];
@@ -27,6 +28,7 @@ export class SampleManager {
         this.plot = new Plot();
         this.eventBus = new EventTarget();
         this.selectedTaxon = $state(null);
+        this.hoveredSlice = $state(null);
     }
 
     /**
@@ -121,5 +123,7 @@ export class SampleManager {
         this.plot.drawSamples(this);
     }
 }
+
+type HoveredSlice = {sampleID: string, viewTaxon: ViewTaxon};
 
 export const sampleManager = new SampleManager();

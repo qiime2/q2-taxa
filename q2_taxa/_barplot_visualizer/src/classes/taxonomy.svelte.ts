@@ -56,8 +56,7 @@ export class Taxonomy {
 
                     if (this.featureMap.has(featureID)) {
                         throw new Error(`
-                            Feature ${featureID} classified to multiple taxa.`
-                        );
+                            Feature ${featureID} classified to multiple taxa.`);
                     }
                     this.featureMap.set(featureID, parentNode);
                 }
@@ -162,10 +161,9 @@ export class Taxonomy {
         const descendants = ancestor.getDescendants();
         const violators = descendants.filter((d) => {
             const inSubTree = d.getLevel() <= descendantLevel;
-            const isCollapsed = d.expandTo != null;
-            const isExpanded = d.collapseFrom != null;
+            const isExpanded = d.expandTo != null;
 
-            return inSubTree && (isCollapsed || isExpanded);
+            return inSubTree && isExpanded;
         });
 
         return violators.length == 0;

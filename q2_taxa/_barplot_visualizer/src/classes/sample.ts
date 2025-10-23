@@ -216,7 +216,17 @@ export class Sample {
             rect.addEventListener("click", () => {
                 const payload = { viewTaxon: viewTaxon };
                 sampleManager.eventBus.dispatchEvent(
-                    new CustomEvent("taxon-selected", { detail: payload }),
+                    new CustomEvent("taxon-selected", { detail: payload })
+                );
+            });
+
+            rect.addEventListener("mouseover", () => {
+                const payload = {
+                    sampleID: this.sampleID,
+                    viewTaxon: viewTaxon,
+                };
+                sampleManager.eventBus.dispatchEvent(
+                    new CustomEvent("taxon-hovered", { detail: payload })
                 );
             });
         } else {

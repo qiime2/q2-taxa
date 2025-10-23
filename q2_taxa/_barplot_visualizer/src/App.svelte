@@ -9,6 +9,7 @@
     import SampleFilters from "./lib/sample-controls/SampleFilters.svelte";
     import SampleLabels from "./lib/sample-controls/SampleLabels.svelte";
     import SelectedTaxon from "./lib/SelectedTaxon.svelte";
+    import HoveredSlice from "./lib/HoveredSlice.svelte";
     import ColorControls from "./lib/ColorControls.svelte";
     import { sampleManager } from "./classes/sampleManager.svelte";
 
@@ -33,6 +34,9 @@
     <div class="grid grid-cols-4 gap-x-[2rem] w-[95%] p-[1rem]">
         <div class="col-start-1 col-end-5">
             <PlotControls />
+        </div>
+        <div class="col-start-1 col-end-5">
+            <HoveredSlice />
         </div>
         <div class="col-start-1 col-end-4">
             <Plot />
