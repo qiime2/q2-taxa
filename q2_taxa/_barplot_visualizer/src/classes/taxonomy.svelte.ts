@@ -143,7 +143,6 @@ export class Taxonomy {
 
         // follow expansion if present
         if (taxon.expandTo != null) {
-            console.log("expand to detected");
             if (taxon.expandTo <= featureTaxonLevel) {
                 taxon = featureTaxon.getAncestorAtLevel(taxon.expandTo);
             }
