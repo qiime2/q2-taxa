@@ -52,3 +52,23 @@ def barplot_example(use):
     )
 
     viz.assert_output_type('Visualization')
+
+
+def barplot2_example(use):
+    table = use.init_artifact_from_url('table', table_url)
+    taxonomy = use.init_artifact_from_url('taxonomy', taxonomy_url)
+    md = use.init_metadata_from_url('sample-metadata', metadata_url)
+
+    viz, = use.action(
+        use.UsageAction('taxa', 'barplot2'),
+        use.UsageInputs(
+            table=table,
+            taxonomy=taxonomy,
+            metadata=md,
+        ),
+        use.UsageOutputNames(
+            visualization='taxa-bar-plots',
+        )
+    )
+
+    viz.assert_output_type('Visualization')
