@@ -68,11 +68,18 @@
             return;
         }
 
-        if (expandToValue <= selectedTaxonDepth || expandToValue > maxDepth) {
+        if (expandToValue > maxDepth) {
+            alert(`The expanded-to level can not be greater than ${maxDepth}.`);
+
             sampleManager.selectedTaxon!.taxon.expandTo = null;
+            return;
+        }
+        if (expandToValue <= selectedTaxonDepth) {
             alert(
-                `Level must be between ${selectedTaxonDepth + 1} and ${maxDepth}`,
+                "The expanded-to level must be greater than the taxon depth.",
             );
+
+            sampleManager.selectedTaxon!.taxon.expandTo = null;
             return;
         }
 
