@@ -1,4 +1,4 @@
-.PHONY: all lint test test-cov viz-barplot install dev clean distclean
+.PHONY: all lint test test-cov viz-barplot barplot2-visualizer install dev clean distclean
 
 PYTHON ?= python
 
