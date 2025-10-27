@@ -88,7 +88,7 @@ export class Colors {
         return color;
     }
 
-    getTaxonColor(taxon: Taxon) {
+    getTaxonColor(taxon: Taxon): string | null {
         const customColor = this.customColors.get(taxon);
         const assignedColor = this.assignedColors.get(taxon);
 

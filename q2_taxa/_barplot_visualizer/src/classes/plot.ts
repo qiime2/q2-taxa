@@ -272,7 +272,7 @@ export class Plot {
     }
 
     downloadPNG() {
-        const svgElem = document.querySelector("#barplot");
+        const svgElem = document.querySelector("#barplot")!;
 
         const clone = svgElem.cloneNode(true) as SVGSVGElement;
 
@@ -284,7 +284,9 @@ export class Plot {
         clone.setAttribute("height", `${height}px`);
 
         const svgData = new XMLSerializer().serializeToString(clone);
-        const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+        const svgBlob = new Blob([svgData], {
+            type: "image/svg+xml;charset=utf-8",
+        });
         const url = URL.createObjectURL(svgBlob);
 
         const img = new Image();

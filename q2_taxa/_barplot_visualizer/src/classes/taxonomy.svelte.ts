@@ -1,18 +1,15 @@
 import { csv } from "d3-fetch";
-import { Legend } from "./legend";
 import { SvelteSet } from "svelte/reactivity";
 
 export class Taxonomy {
     rootTaxon: Taxon;
     displayLevel: number;
-    legend: Legend;
     expansions: Set<Taxon>;
     featureMap: Map<string, Taxon>;
 
     constructor() {
         this.rootTaxon = new Taxon("placeholder", null);
         this.displayLevel = 1;
-        this.legend = new Legend();
         this.expansions = $state(new SvelteSet());
         this.featureMap = new Map();
     }
@@ -299,7 +296,6 @@ export class ViewTaxon {
     meanRelAbun: number;
     preval: number;
     prevalProp: number;
-    collapsed: boolean;
     expanded: boolean;
 
     constructor(taxon: Taxon) {
@@ -310,7 +306,6 @@ export class ViewTaxon {
         this.meanRelAbun = -1;
         this.preval = -1;
         this.prevalProp = -1;
-        this.collapsed = false;
         this.expanded = false;
     }
 }
