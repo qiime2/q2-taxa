@@ -9,7 +9,7 @@ export class Taxonomy {
 
     constructor() {
         this.rootTaxon = new Taxon("placeholder", null);
-        this.displayLevel = 1;
+        this.displayLevel = $state(1);
         this.expansions = $state(new SvelteSet());
         this.featureMap = new Map();
     }

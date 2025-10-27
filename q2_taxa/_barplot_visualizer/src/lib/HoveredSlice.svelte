@@ -10,28 +10,17 @@
 </script>
 
 <div
-    class="flex w-[42rem] h-[4.8rem] items-center bg-gray-100 rounded-lg p-[1rem] ml-[2rem] mt-[1rem]"
+    class="flex w-[59rem] h-[4.8rem] items-center bg-gray-100 rounded-lg p-[1rem] ml-[2rem] mt-[1rem]"
 >
-    <div class="flex flex-row items-center w-[16rem]">
-        <p class="font-bold text-sm mr-[1rem]">Sample Lables</p>
-        <div class="flex flex-col">
+    <div class="flex flex-row items-center w-[18rem]">
+        <p class="font-bold text-sm mr-[1rem] flex-shrink-0">Sample</p>
+        <div class="flex flex-col min-w-0">
             {#if sampleManager.hoveredSlice != null}
-                {#each sampleManager.sampleControls.getSampleLabels(sampleManager.hoveredSlice.sampleID) as label}
-                    <p class="text-sm truncate">{label}</p>
+                {#each Object.entries(sampleManager.sampleControls.getSampleLabels(sampleManager.hoveredSlice.sampleID)) as [label, value]}
+                    <p class="text-sm truncate">{label}: {value}</p>
                 {/each}
             {/if}
         </div>
-    </div>
-
-    <div class="flex flex-col w-[12rem] ml-[2rem]">
-        <p class="font-bold text-sm">Classification</p>
-        {#if sampleManager.hoveredSlice != null}
-            <p class="text-sm truncate">
-                {sampleManager.hoveredSlice.viewTaxon.taxon.name}
-            </p>
-        {:else}
-            <p class="text-sm">-</p>
-        {/if}
     </div>
 
     <div class="flex flex-col w-[6rem] ml-[2rem]">
@@ -42,6 +31,21 @@
             </p>
         {:else}
             <p class="text-sm">-</p>
+        {/if}
+    </div>
+
+    <div class="flex flex-row items-center w-[28rem] ml-[2rem]">
+        <p class="font-bold text-sm mr-[1rem]">Classification</p>
+        {#if sampleManager.hoveredSlice != null}
+            {#if sampleManager.taxonomy.displayLevel > 1}
+                <p class="text-sm line-clamp-3 break-words">
+                    {sampleManager.hoveredSlice.viewTaxon.taxon
+                        .getFullTaxonomicString()
+                        .slice(5)}
+                </p>
+            {:else}
+                <p class="text-sm line-clamp-3 break-words">root</p>
+            {/if}
         {/if}
     </div>
 </div>

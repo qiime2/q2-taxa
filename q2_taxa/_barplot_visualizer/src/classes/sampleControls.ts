@@ -145,11 +145,10 @@ export class SampleControls {
         ];
     }
 
-    getSampleLabels(sampleId: string): string[] {
-        const sampleLabels: string[] = [];
+    getSampleLabels(sampleId: string): { [key: string]: string } {
+        const sampleLabels = {};
         for (let label of this.labels) {
-            const sampleLabel = this.metadata.getColumnValue(label, sampleId);
-            sampleLabels.push(sampleLabel);
+            sampleLabels[label] = this.metadata.getColumnValue(label, sampleId);
         }
 
         return sampleLabels;

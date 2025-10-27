@@ -187,7 +187,9 @@ export class Plot {
             );
 
             // labels
-            const labels = sampleControls.getSampleLabels(sample.sampleID);
+            const labels = Object.values(
+                sampleControls.getSampleLabels(sample.sampleID),
+            );
             this.drawSvgText(
                 labels,
                 xPosition,
