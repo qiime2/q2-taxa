@@ -14,7 +14,7 @@ export class Colors {
 
     constructor() {
         this.colorSchemes = new Map();
-        this.colorScheme = $state("rainbow");
+        this.colorScheme = $state("schemeAccent");
         this.schemeIndex = 0;
         this.colorLevel = 0;
         this.customColors = $state(new SvelteMap());
