@@ -84,7 +84,7 @@ export class Sample {
     }
 
     /**
-     * Uses  populated prevalence and relative abundance maps to record the
+     * Uses populated prevalence and relative abundance maps to record the
      * prevalence, prevalence proportion, and mean relative abundance of each
      * view taxon in `this.viewTaxa`.
      */
@@ -216,7 +216,7 @@ export class Sample {
             rect.addEventListener("click", () => {
                 const payload = { viewTaxon: viewTaxon };
                 sampleManager.eventBus.dispatchEvent(
-                    new CustomEvent("taxon-selected", { detail: payload })
+                    new CustomEvent("taxon-selected", { detail: payload }),
                 );
             });
 
@@ -226,7 +226,7 @@ export class Sample {
                     viewTaxon: viewTaxon,
                 };
                 sampleManager.eventBus.dispatchEvent(
-                    new CustomEvent("taxon-hovered", { detail: payload })
+                    new CustomEvent("taxon-hovered", { detail: payload }),
                 );
             });
         } else {

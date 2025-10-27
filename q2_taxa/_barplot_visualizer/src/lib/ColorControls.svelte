@@ -13,8 +13,6 @@
             sampleManager.render();
         };
     }
-
-    let show = $state(false);
 </script>
 
 <div

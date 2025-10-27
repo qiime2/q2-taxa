@@ -23,9 +23,6 @@
 
         return Promise.all([tPromise, mdPromise, cPromise]);
     });
-
-    let showTaxaControls = $state(false);
-    let showSampleControls = $state(false);
 </script>
 
 {#await parsedPromise}
@@ -79,5 +76,5 @@
         </div>
     </div>
 {:catch error}
-    <p>An error occured: {error}</p>
+    <p>An error ocurred: {error}</p>
 {/await}
