@@ -105,6 +105,12 @@ def barplot2(
     )
     shutil.copytree(str(dist_dir), output_dir, dirs_exist_ok=True)
 
+    non_empty = table.sum(axis=1) > 0
+    table = table.loc[non_empty, :]
+    if len(table) == 0:
+        msg = 'There are no non-empty samples in your feature table.'
+        raise ValueError(msg)
+
     table.to_csv(Path(output_dir) / 'table.csv', index_label="sampleID")
 
     if metadata is not None:
