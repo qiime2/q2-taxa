@@ -205,10 +205,14 @@ plugin.visualizers.register_function(
     description='This visualizer produces an interactive barplot visualization'
                 ' of taxonomies. Interactive features include multi-level '
                 'sorting, plot recoloring, sample relabeling, and SVG '
-                'figure export.',
+                'figure export.\n\nThis visualizer is planned to be replaced '
+                'with the current `barplot2` visualizer in this plugin. We '
+                'are interested in user feedback on `barplot2`, so please '
+                'consider trying it out and letting us know how it works for '
+                'you.',
     examples={
         'barplot': ex.barplot_example,
-    },
+    }
 )
 
 plugin.visualizers.register_function(
@@ -220,16 +224,30 @@ plugin.visualizers.register_function(
     parameters={'metadata': qiime2.plugin.Metadata,
                 'level_delimiter': qiime2.plugin.Str},
     input_descriptions={
-        'table': 'The feature table.',
-        'taxonomy': 'The taxonomy.'
+        'taxonomy': ('Taxonomic annotations for features in the provided '
+                     'feature table. All features in the feature table must '
+                     'have a corresponding taxonomic annotation. Taxonomic '
+                     'annotations that are not present in the feature table '
+                     'will be ignored. If no taxonomy is provided, the '
+                     'feature IDs will be used as labels.'),
+        'table': 'Feature table to visualize at various taxonomic levels.'
     },
     parameter_descriptions={
         'metadata': 'The sample metadata.',
-        'level_delimiter': (
-            'The character used to delineate taxonomic levels in feature IDs. '
-            'Ignored if a taxonomy is provided.'
-        )
+        'level_delimiter': 'Attempt to parse hierarchical taxonomic '
+                           'information from feature IDs by separating '
+                           'levels with this character. This parameter '
+                           'is ignored if a taxonomy is provided as input.'
     },
-    name='Interactive stacked bar plot visualizer of per-sample taxa.',
-    description="...",
+    name='Experimental interactive stacked bar plot of per-sample taxa.',
+    description=("This is an early release of a replacement for the `barplot` "
+                 "visualizer in this plugin. As of 2025.10, this should be "
+                 "considered experimental, and we are very interested in "
+                 "community feedback on this new visualizer. This command "
+                 "will eventually be removed when this visualizer replaces "
+                 "the `barplot` visualizer."),
+    deprecated=True,
+    examples={
+        'barplot': ex.barplot2_example,
+    },
 )
