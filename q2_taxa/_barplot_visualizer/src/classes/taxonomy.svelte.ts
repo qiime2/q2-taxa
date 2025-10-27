@@ -301,7 +301,7 @@ export class ViewTaxon {
     constructor(taxon: Taxon) {
         this.taxon = taxon;
         this.features = [];
-        this.abundance = -1;
+        this.abundance = 0;
         this.relAbun = -1;
         this.meanRelAbun = -1;
         this.preval = -1;
