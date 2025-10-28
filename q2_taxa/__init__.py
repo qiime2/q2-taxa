@@ -7,11 +7,11 @@
 # ----------------------------------------------------------------------------
 
 from ._method import collapse, filter_table, filter_seqs
-from ._visualizer import barplot
+from ._visualizer import barplot, barplot2
 
 try:
     from ._version import __version__
 except ModuleNotFoundError:
     __version__ = '0.0.0+notfound'
 
-__all__ = ['barplot', 'collapse', 'filter_table', 'filter_seqs']
+__all__ = ['barplot', 'barplot2', 'collapse', 'filter_table', 'filter_seqs']
