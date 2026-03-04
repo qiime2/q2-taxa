@@ -27,7 +27,29 @@ def collapse(table: biom.Table, taxonomy: pd.Series,
                          'level available in taxonomy data (%d).' %
                          (level, max_observed_level))
 
-    return _collapse_table(table, taxonomy, level, max_observed_level)
+    collapsed = _collapse_table(table, taxonomy, level, max_observed_level)
+
+    # Validate relative frequency tables still sum to 1.0 per sample
+    # Check if table is relative frequency by looking at table metadata
+    # If values are between 0 and 1 and represent proportions, validate sums
+    table_df = collapsed.transpose().to_dataframe(dense=True)
+    row_sums = table_df.sum(axis=1)
+
+    # Check if this looks like a relative frequency table (sums close to 1)
+    if (row_sums > 0).any() and (row_sums < 1.1).all():
+        tolerance = 1e-5
+        invalid_samples = (abs(row_sums - 1.0) > tolerance) & (row_sums > 0)
+        if invalid_samples.any():
+            raise ValueError(
+                'Relative frequency table validation failed. '
+                'After collapsing, '
+                'the following samples do not sum to 1.0 (within tolerance): '
+                f'{list(invalid_samples[invalid_samples].index)}. '
+                'This may indicate the input was not a valid '
+                'relative frequency table. '
+            )
+
+    return collapsed
 
 
 def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
@@ -85,7 +107,7 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
 def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
                  include: str = None, exclude: str = None,
                  query_delimiter: str = ',', mode: str = 'contains') \
-                 -> pd.DataFrame:
+        -> pd.DataFrame:
     ids_to_keep = _ids_to_keep_from_taxonomy(
         table.columns, taxonomy, include, exclude, query_delimiter,
         mode)
@@ -109,7 +131,7 @@ def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
 def filter_seqs(sequences: pd.Series, taxonomy: qiime2.Metadata,
                 include: str = None, exclude: str = None,
                 query_delimiter: str = ',', mode: str = 'contains') \
-                -> pd.Series:
+        -> pd.Series:
     ids_to_keep = _ids_to_keep_from_taxonomy(
         sequences.index, taxonomy, include, exclude, query_delimiter,
         mode)
