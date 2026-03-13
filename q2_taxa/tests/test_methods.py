@@ -123,6 +123,114 @@ class CollapseTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'missing.*feat2'):
             collapse(table, taxonomy, 1)
 
+    def test_collapse_relative_frequency(self):
+        '''
+        Tests that collapsing a relative frequency table with two features
+        returns a relative frequency table.
+        '''
+        table = biom.Table(
+            np.array(
+                [
+                    [0.2, 0.8],
+                    [0.5, 0.5],
+                    [0.3, 0.7],
+                    [0.7, 0.3]
+                ]
+            ),
+            ['A', 'B', 'C', 'D'],
+            ['feat1', 'feat2']
+        ).transpose()
+
+        taxonomy = pd.Series(['a; c', 'a; b'], index=['feat1', 'feat2'])
+        collapsed = collapse(table, taxonomy, 1)
+        table_df = collapsed.transpose().to_dataframe()
+        row_sums = table_df.sum(axis=1)
+
+        self.assertTrue((row_sums == 1).all())
+
+    def test_collapse_relative_frequency_3features(self):
+        '''
+        Tests that collapsing a relative frequency table with three features
+        returns a relative frequency table.
+        '''
+        table = biom.Table(
+            np.array(
+                [
+                    [0.2, 0.2, 0.6],
+                    [0.3, 0.4, 0.3],
+                    [0.5, 0.0, 0.5],
+                    [0.6, 0.1, 0.3]
+                ]
+            ),
+            ['A', 'B', 'C', 'D'],
+            ['feat1', 'feat2', 'feat3']
+        ).transpose()
+
+        taxonomy = pd.Series(
+            ['a; c', 'a; b', 'a; d'], index=['feat1', 'feat2', 'feat3']
+        )
+        collapsed = collapse(table, taxonomy, 1)
+        table_df = collapsed.transpose().to_dataframe()
+        row_sums = table_df.sum(axis=1)
+
+        self.assertTrue((row_sums == 1).all())
+
+    def test_collapse_relative_frequency_fails(self):
+        '''
+        Tests that collapsing an incorrect relative frequency table returns
+        an incorrect relative frequenct tabele.
+        '''
+        table = biom.Table(
+            np.array(
+                [
+                    [0.2, 0.2, 0.6],
+                    [0.3, 0.4, 0.3],
+                    [0.5, 0.0, 0.5],
+                    [0.6, 0.1, 0.2]
+                ]
+            ),
+            ['A', 'B', 'C', 'D'],
+            ['feat1', 'feat2', 'feat3']
+        ).transpose()
+
+        taxonomy = pd.Series(
+            ['a; c', 'a; b', 'a; d'], index=['feat1', 'feat2', 'feat3']
+        )
+        collapsed = collapse(table, taxonomy, 1)
+        table_df = collapsed.transpose().to_dataframe()
+        row_sums = table_df.sum(axis=1)
+
+        self.assertFalse((row_sums == 1).all())
+
+    def test_deep_collapse_relative_frequency(self):
+        '''
+        Tests that collapsing a relative frequency table on the deepest level
+        returns the same table.
+        '''
+        table = biom.Table(
+            np.array(
+                [
+                    [0.2, 0.2, 0.6],
+                    [0.3, 0.4, 0.3],
+                    [0.5, 0.0, 0.5],
+                    [0.6, 0.1, 0.3]
+                ]
+            ),
+            ['A', 'B', 'C', 'D'],
+            ['feat1', 'feat2', 'feat3']
+        ).transpose()
+
+        taxonomy = pd.Series(
+            ['a; c', 'a; b', 'a; d'], index=['feat1', 'feat2', 'feat3']
+        )
+
+        expected_table = table.transpose().to_dataframe()
+
+        collapsed = collapse(table, taxonomy, 2)
+        table_df = collapsed.transpose().to_dataframe()
+
+        self.assertEqual(expected_table.values.all(), table_df.values.all())
+
 
 class FilterTable(unittest.TestCase):
 
