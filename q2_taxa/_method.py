@@ -58,9 +58,9 @@ def ids_to_taxonomy(
     strict : bool
         Whether to parse the feature IDs in strict mode. If True, then no
         occurences of semicolons are allowed in the to-be-converted IDs,
-        all IDs must contain `delimiter`, and no empty levels are allowed in
-        the converted taxonomic string. If False, none of these conditions are
-        enforced.
+        at least one feature ID must contain `delimiter`, and no empty levels
+        are allowed in the converted taxonomic string. If False, none of these
+        conditions are enforced.
     semicolon_replacement : str
         The character to use to replace semicolons before replacing
         occurences of `delimiter` with semicolons.
@@ -85,14 +85,13 @@ def ids_to_taxonomy(
                 f'{_format_invalid_ids(semicolon_containing_ids)}.'
             )
 
-        missing_delimiter_ids = [
-            id_ for id_ in feature_ids if delimiter not in id_
+        ids_with_delimiter = [
+            id_ for id_ in feature_ids if delimiter in id_
         ]
-        if missing_delimiter_ids:
+        if not ids_with_delimiter:
             raise ValueError(
-                'Strict parsing requires every feature ID to contain the '
-                f'delimiter {delimiter}. Found '
-                f'{_format_invalid_ids(missing_delimiter_ids)}.'
+                'Strict parsing requires at least one feature ID to contain '
+                f'the delimiter {delimiter}. Found none.'
             )
 
         empty_level_ids = [

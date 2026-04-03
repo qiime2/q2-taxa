@@ -48,17 +48,32 @@ class TestIdsToTaxonomy(unittest.TestCase):
         ):
             ids_to_taxonomy(table, delimiter='|')
 
-    def test_strict_missing_delimiter_errors(self):
+    def test_strict_some_missing_delimiter_allowed(self):
         '''
-        Ensure that with strict=True an error is raised when a feature ID
-        does not contain the delimiter.
+        Ensure that with strict=True we allow single-level taxonomy strings
+        that do not contain the delimiter, as long as at least one feature
+        ID contains the delimiter.
         '''
-        table = self._make_table(['k|p|c', 'k_p_c2'])
+        feature_ids = ['k|p|c', 'k']
+        table = self._make_table(feature_ids)
+
+        obs = ids_to_taxonomy(table, delimiter='|', strict=True)
+        exp = pd.DataFrame(
+            {'Taxon': ['k;p;c', 'k']},
+            index=pd.Index(feature_ids, name='Feature ID')
+        )
+        pdt.assert_frame_equal(obs, exp)
+
+    def test_strict_all_ids_missing_delimiter_errors(self):
+        '''
+        Ensure that with strict=True an error is raised when no feature ID
+        contains the delimiter.
+        '''
+        table = self._make_table(['k', 'p'])
 
         with self.assertRaisesRegex(
             ValueError,
-            r'requires every feature ID to contain the delimiter \|.*'
-            '1 feature IDs'
+            r'requires at least one feature ID to contain the delimiter \|'
         ):
             ids_to_taxonomy(table, delimiter='|')
 

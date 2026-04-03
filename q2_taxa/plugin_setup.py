@@ -91,10 +91,10 @@ plugin.methods.register_function(
         ),
         'strict': (
             'Whether to parse the feature IDs in strict mode. If True, then '
-            'no occurences of semicolons are allowed in the feature IDs, all '
-            'IDs must contain `delimiter`, and no empty levels are allowed in '
-            'the converted taxonomic strings. If False, none of these '
-            'conditions are enforced.'
+            'no occurences of semicolons are allowed in the feature IDs, at '
+            'least one ID must contain `delimiter`, and no empty levels are '
+            'allowed in the converted taxonomic strings. If False, none of '
+            'these conditions are enforced.'
         ),
         'semicolon_replacement': (
             'The character to use to replace semicolons before replacing '
