@@ -15,7 +15,8 @@ from q2_types.feature_table import (
     FeatureTable, Frequency, RelativeFrequency, PresenceAbsence
 )
 
-from . import barplot, barplot2, collapse, filter_table, filter_seqs
+from . import (barplot, barplot2, collapse, ids_to_taxonomy, filter_table,
+               filter_seqs)
 import q2_taxa._examples as ex
 
 T1 = qiime2.plugin.TypeMatch([Frequency, PresenceAbsence])
@@ -64,6 +65,54 @@ plugin.methods.register_function(
     examples={
         'collapse': ex.collapse_example,
     },
+)
+
+plugin.methods.register_function(
+    function=ids_to_taxonomy,
+    inputs={
+        'table': FeatureTable[Frequency | RelativeFrequency | PresenceAbsence]
+    },
+    parameters={
+        'delimiter': qiime2.plugin.Str,
+        'strict': qiime2.plugin.Bool,
+        'semicolon_replacement': qiime2.plugin.Str,
+    },
+    outputs=[('taxonomy', FeatureData[Taxonomy])],
+    input_descriptions={
+        'table': (
+            'The table containing the feature IDs to be parsed into a '
+            'taxonomy.'
+        )
+    },
+    parameter_descriptions={
+        'delimiter': (
+            'The character(s) that delimit taxonomic levels in the feature '
+            'IDs.'
+        ),
+        'strict': (
+            'Whether to parse the feature IDs in strict mode. If True, then '
+            'no occurences of semicolons are allowed in the feature IDs, all '
+            'IDs must contain `delimiter`, and no empty levels are allowed in '
+            'the converted taxonomic strings. If False, none of these '
+            'conditions are enforced.'
+        ),
+        'semicolon_replacement': (
+            'The character to use to replace semicolons before replacing '
+            'occurences of `delimiter` with semicolons. Ignored if `strict` '
+            'parsing is enabled.'
+        )
+    },
+    output_descriptions={
+        'taxonomy': (
+            'The taxonomy parsed from the table\'s feature IDs with the Taxon '
+            'column using the typical semicolon delimitation.'
+        )
+    },
+    name='Create taxonomy from hierarchical feature IDs.',
+    description=(
+        'This method converts feature IDs into taxonomy strings by splitting '
+        'IDs on a delimiter and joining levels with semicolons.'
+    )
 )
 
 plugin.methods.register_function(
