@@ -12,7 +12,8 @@ import q2_taxa
 
 from q2_types.feature_data import FeatureData, Taxonomy, Sequence
 from q2_types.feature_table import (
-    FeatureTable, Frequency, RelativeFrequency, PresenceAbsence
+    FeatureTable, Frequency, RelativeFrequency, PresenceAbsence,
+    Composition
 )
 
 from . import (barplot, barplot2, collapse, ids_to_taxonomy, filter_table,
@@ -70,7 +71,9 @@ plugin.methods.register_function(
 plugin.methods.register_function(
     function=ids_to_taxonomy,
     inputs={
-        'table': FeatureTable[Frequency | RelativeFrequency | PresenceAbsence]
+        'table': FeatureTable[
+            Frequency | RelativeFrequency | PresenceAbsence | Composition
+        ]
     },
     parameters={
         'delimiter': qiime2.plugin.Str,
