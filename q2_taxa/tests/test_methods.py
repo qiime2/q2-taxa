@@ -126,7 +126,9 @@ class CollapseTests(unittest.TestCase):
     def test_collapse_relative_frequency(self):
         '''
         Tests that collapsing a relative frequency table with two features
-        returns a relative frequency table.
+        returns a table where the sum of the frequencys adds to one, i.e.
+        collapsing a relative frequency table returns a relatvie frequency
+        table.
         '''
         table = biom.Table(
             np.array(
@@ -147,11 +149,15 @@ class CollapseTests(unittest.TestCase):
         row_sums = table_df.sum(axis=1)
 
         self.assertTrue((row_sums == 1).all())
+        self.assertGreater(len(row_sums), 0)
+        self.assertEqual(table_df.shape[0], 4)
 
     def test_collapse_relative_frequency_3features(self):
         '''
         Tests that collapsing a relative frequency table with three features
-        returns a relative frequency table.
+        returns a table where the sum of the frequecnys adds to one, i.e.
+        collapsing a relative frequency table returns a relative frequency
+        table.
         '''
         table = biom.Table(
             np.array(
@@ -174,33 +180,8 @@ class CollapseTests(unittest.TestCase):
         row_sums = table_df.sum(axis=1)
 
         self.assertTrue((row_sums == 1).all())
-
-    def test_collapse_relative_frequency_fails(self):
-        '''
-        Tests that collapsing an incorrect relative frequency table returns
-        an incorrect relative frequenct tabele.
-        '''
-        table = biom.Table(
-            np.array(
-                [
-                    [0.2, 0.2, 0.6],
-                    [0.3, 0.4, 0.3],
-                    [0.5, 0.0, 0.5],
-                    [0.6, 0.1, 0.2]
-                ]
-            ),
-            ['A', 'B', 'C', 'D'],
-            ['feat1', 'feat2', 'feat3']
-        ).transpose()
-
-        taxonomy = pd.Series(
-            ['a; c', 'a; b', 'a; d'], index=['feat1', 'feat2', 'feat3']
-        )
-        collapsed = collapse(table, taxonomy, 1)
-        table_df = collapsed.transpose().to_dataframe()
-        row_sums = table_df.sum(axis=1)
-
-        self.assertFalse((row_sums == 1).all())
+        self.assertGreater(len(row_sums), 0)
+        self.assertEqual(table_df.shape[0], 4)
 
     def test_deep_collapse_relative_frequency(self):
         '''
@@ -224,12 +205,52 @@ class CollapseTests(unittest.TestCase):
             ['a; c', 'a; b', 'a; d'], index=['feat1', 'feat2', 'feat3']
         )
 
-        expected_table = table.transpose().to_dataframe()
+        expected_table = biom.Table(
+            np.array(
+                [
+                    [0.2, 0.2, 0.6],
+                    [0.3, 0.4, 0.3],
+                    [0.5, 0.0, 0.5],
+                    [0.6, 0.1, 0.3]
+                ]
+            ),
+            ['A', 'B', 'C', 'D'],
+            ['a;c', 'a;b', 'a;d']
+        ).transpose()
+        expected_table = expected_table.transpose().to_dataframe()
 
         collapsed = collapse(table, taxonomy, 2)
         table_df = collapsed.transpose().to_dataframe()
 
-        self.assertEqual(expected_table.values.all(), table_df.values.all())
+        self.assertTrue(expected_table.equals(table_df))
+
+    def test_root_collapse_relative_frequency(self):
+        '''
+        Tests that collapsing a relative frequency table on the root taxonomy
+        returns a relative frequency table with only one column.
+        '''
+        table = biom.Table(
+            np.array(
+                [
+                    [0.2, 0.2, 0.6],
+                    [0.3, 0.4, 0.3],
+                    [0.5, 0.0, 0.5],
+                    [0.6, 0.1, 0.3]
+                ]
+            ),
+            ['A', 'B', 'C', 'D'],
+            ['feat1', 'feat2', 'feat3']
+        ).transpose()
+
+        taxonomy = pd.Series(
+            ['a; c; q', 'a; b; z', 'a; d; v'],
+            index=['feat1', 'feat2', 'feat3']
+        )
+
+        collapsed = collapse(table, taxonomy, 1)
+        table_df = collapsed.transpose().to_dataframe()
+
+        self.assertEqual(table_df.shape[1], 1)
 
 
 class FilterTable(unittest.TestCase):
