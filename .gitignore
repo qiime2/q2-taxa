@@ -75,3 +75,5 @@ package-lock.json
 # Version file from versioningit
 _version.py
 
+q2_taxa/_barplot_visualizer/public/
+!q2_taxa/_barplot_visualizer/public/colors.csv
