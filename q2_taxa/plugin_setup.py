@@ -113,10 +113,10 @@ plugin.methods.register_function(
             'column using the typical semicolon delimitation.'
         )
     },
-    name='Create taxonomy from hierarchical feature IDs.',
+    name='Create a taxonomy from hierarchical feature IDs in a feature table.',
     description=(
-        'This method converts feature IDs into taxonomy strings by splitting '
-        'IDs on a delimiter and joining levels with semicolons.'
+        'This method converts feature IDs in a feature table into a taxonomy '
+        'by splitting IDs on a delimiter and joining levels with semicolons.'
     )
 )
 
