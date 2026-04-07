@@ -6,7 +6,9 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
-from ._method import collapse, filter_table, filter_seqs
+from ._method import (
+    collapse, feature_ids_to_taxonomy, filter_table, filter_seqs
+)
 from ._visualizer import barplot, barplot2
 
 try:
@@ -14,4 +16,5 @@ try:
 except ModuleNotFoundError:
     __version__ = '0.0.0+notfound'
 
-__all__ = ['barplot', 'barplot2', 'collapse', 'filter_table', 'filter_seqs']
+__all__ = ['barplot', 'barplot2', 'collapse', 'feature_ids_to_taxonomy',
+           'filter_table', 'filter_seqs']

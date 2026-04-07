@@ -30,6 +30,128 @@ def collapse(table: biom.Table, taxonomy: pd.Series,
     return _collapse_table(table, taxonomy, level, max_observed_level)
 
 
+def _format_invalid_ids(ids: list[str], max_examples: int = 5):
+    examples = ', '.join(repr(id_) for id_ in ids[:max_examples])
+    if len(ids) > max_examples:
+        examples = f'{examples}, ...'
+
+    return f'{len(ids)} feature IDs. Examples: {examples}'
+
+
+def feature_ids_to_taxonomy(
+    table: biom.Table,
+    delimiter: str = ';',
+    strict: bool = True,
+    semicolon_replacement: str | None = None,
+) -> pd.DataFrame:
+    '''
+    Convert the feature IDs of `table` into a taxonomy that maps those
+    feature IDs to the typical semicolon representation. No confidence column
+    is stored in the taxonomy.
+
+    Parameters
+    ----------
+    table : biom.Table
+        The table containing the feature IDs to be parsed into a taxonomy.
+    delimiter : str
+        The character(s) that delimit taxonomic levels in the feature IDs.
+    strict : bool
+        Whether to parse the feature IDs in strict mode. If True, then no
+        occurences of semicolons are allowed in the to-be-converted IDs,
+        at least one feature ID must contain `delimiter`, and no empty levels
+        are allowed in the converted taxonomic string. If False, none of these
+        conditions are enforced.
+    semicolon_replacement : str
+        The character to use to replace semicolons before replacing
+        occurences of `delimiter` with semicolons.
+
+    Returns
+    --------
+    pd.DataFrame
+        The taxonomy parsed from the table's feature IDs with the Taxon column
+        using the typical semicolon delimitation.
+    '''
+    if delimiter == '':
+        raise ValueError('The `delimiter` must not be empty.')
+
+    feature_ids = list(table.ids(axis='observation'))
+
+    if strict:
+        semicolon_containing_ids = [id_ for id_ in feature_ids if ';' in id_]
+        if delimiter != ';' and semicolon_containing_ids:
+            raise ValueError(
+                f'Strict parsing with delimiter {delimiter} does not allow '
+                'feature IDs that already contain ";". Found '
+                f'{_format_invalid_ids(semicolon_containing_ids)}.'
+            )
+
+        ids_with_delimiter = [
+            id_ for id_ in feature_ids if delimiter in id_
+        ]
+        if not ids_with_delimiter:
+            raise ValueError(
+                'Strict parsing requires at least one feature ID to contain '
+                f'the delimiter {delimiter}. Found none.'
+            )
+
+        empty_level_ids = [
+            id_ for id_ in feature_ids if '' in id_.split(delimiter)
+        ]
+        if empty_level_ids:
+            raise ValueError(
+                'Strict parsing found empty taxonomic levels after splitting '
+                f'on delimiter {delimiter}. Found '
+                f'{_format_invalid_ids(empty_level_ids)}'
+            )
+
+        taxa = [';'.join(id_.split(delimiter)) for id_ in feature_ids]
+
+    else:
+        taxa = []
+        empty_level_ids = []
+        for id_ in feature_ids:
+            if delimiter != ';' and ';' in id_:
+                if semicolon_replacement is None:
+                    raise ValueError(
+                        'One or more semicolons detected in the following '
+                        f'id: "{id_}", and no `semicolon_replacement` was '
+                        'specified.'
+                    )
+                if semicolon_replacement == ';':
+                    raise ValueError(
+                        'The `semicolon_replacement` parameter can not be '
+                        'a semicolon.'
+                    )
+
+                parsed_id = id_.replace(';', semicolon_replacement)
+            else:
+                parsed_id = id_
+
+            levels = parsed_id.split(delimiter)
+            non_empty_levels = [level for level in levels if level != '']
+            if not non_empty_levels:
+                empty_level_ids.append(id_)
+            else:
+                taxa.append(';'.join(non_empty_levels))
+
+        if empty_level_ids:
+            raise ValueError(
+                'Unable to construct non-empty taxonomy strings for '
+                f'{_format_invalid_ids(empty_level_ids)}. After semicolon '
+                f'replacement and splitting on delimiter {delimiter}, '
+                'all parsed levels were empty. This can occur if a feature ID '
+                'was empty to begin with or contained only semicolons and/or '
+                'delimiters.'
+            )
+
+    taxonomy = pd.DataFrame(
+        {'Taxon': taxa},
+        index=pd.Index(feature_ids, name='Feature ID', dtype=object)
+    )
+
+    return taxonomy
+
+
 def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
                                query_delimiter, mode):
     if include is None and exclude is None:
