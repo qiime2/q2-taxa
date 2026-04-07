@@ -42,7 +42,7 @@ def ids_to_taxonomy(
     table: biom.Table,
     delimiter: str = ';',
     strict: bool = True,
-    semicolon_replacement: str = ':',
+    semicolon_replacement: str | None = None,
 ) -> pd.DataFrame:
     '''
     Convert the feature IDs of `table` into a taxonomy that maps those
@@ -110,7 +110,19 @@ def ids_to_taxonomy(
         taxa = []
         empty_level_ids = []
         for id_ in feature_ids:
-            if delimiter != ';':
+            if delimiter != ';' and ';' in id_:
+                if semicolon_replacement is None:
+                    raise ValueError(
+                        'One or more semicolons detected in the following '
+                        f'id: "{id_}", and no `semicolon_replacement` was '
+                        'specified.'
+                    )
+                if semicolon_replacement == ';':
+                    raise ValueError(
+                        'The `semicolon_replacement` parameter can not be '
+                        'a semicolon.'
+                    )
+
                 parsed_id = id_.replace(';', semicolon_replacement)
             else:
                 parsed_id = id_

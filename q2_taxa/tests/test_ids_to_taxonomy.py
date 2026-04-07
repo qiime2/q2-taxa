@@ -139,6 +139,34 @@ class TestIdsToTaxonomy(unittest.TestCase):
         ):
             ids_to_taxonomy(table, delimiter='|', strict=False)
 
+    def test_semicolon_replacement_not_provided_and_needed_errors(self):
+        '''
+        Ensures that in non-strict mode we error if semicolons are detected
+        in a feature ID and no `semicolon_replacement` was specified.
+        '''
+        table = self._make_table(['k;p|c', 'k|p|c2'])
+
+        with self.assertRaisesRegex(
+            ValueError,
+            r'semicolons detected.*"k;p\|c".*no `semicolon_replacement`'
+        ):
+            ids_to_taxonomy(table, delimiter='|', strict=False)
+
+    def test_semicolon_replacement_is_semicolon_errors(self):
+        '''
+        Ensures that in non-strict mode we error if semicolons are detected
+        in a feature ID and `semicolon_replacement` is set to ';'.
+        '''
+        table = self._make_table(['k;p|c', 'k|p|c2'])
+
+        with self.assertRaisesRegex(
+            ValueError,
+            r'`semicolon_replacement` parameter can not be a semicolon'
+        ):
+            ids_to_taxonomy(
+                table, delimiter='|', semicolon_replacement=';', strict=False
+            )
+
     def test_ids_to_taxonomy_allows_collapse(self):
         '''
         Proves that we can use `ids_to_taxonomy` on a feature table where
