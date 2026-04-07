@@ -13,13 +13,22 @@ import numpy as np
 import pandas as pd
 import pandas.testing as pdt
 
-from q2_taxa import collapse, ids_to_taxonomy
+from qiime2 import Artifact
+from q2_taxa.plugin_setup import plugin
 
 
 class TestIdsToTaxonomy(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.ids_to_taxonomy = plugin.methods['ids_to_taxonomy']
+        cls.collapse = plugin.methods['collapse']
+
     def _make_table(self, feature_ids: list[str]):
         data = np.arange(1, len(feature_ids) + 1).reshape(len(feature_ids), 1)
-        return biom.Table(data, feature_ids, ['sample-1'])
+        table = biom.Table(data, feature_ids, ['sample-1'])
+        return Artifact.import_data('FeatureTable[Frequency]', table)
 
     def test_strict(self):
         '''
@@ -29,7 +38,8 @@ class TestIdsToTaxonomy(unittest.TestCase):
         feature_ids = ['k|p|c', 'k2|p2|c2']
         table = self._make_table(feature_ids)
 
-        obs = ids_to_taxonomy(table, delimiter='|', strict=True)
+        obs, = self.ids_to_taxonomy(table, delimiter='|', strict=True)
+        obs = obs.view(pd.DataFrame)
         exp = pd.DataFrame(
             {'Taxon': ['k;p;c', 'k2;p2;c2']},
             index=pd.Index(feature_ids, name='Feature ID')
@@ -46,7 +56,7 @@ class TestIdsToTaxonomy(unittest.TestCase):
         with self.assertRaisesRegex(
             ValueError, 'already contain ";".*1 feature IDs'
         ):
-            ids_to_taxonomy(table, delimiter='|')
+            self.ids_to_taxonomy(table, delimiter='|')
 
     def test_strict_some_missing_delimiter_allowed(self):
         '''
@@ -57,7 +67,8 @@ class TestIdsToTaxonomy(unittest.TestCase):
         feature_ids = ['k|p|c', 'k']
         table = self._make_table(feature_ids)
 
-        obs = ids_to_taxonomy(table, delimiter='|', strict=True)
+        obs, = self.ids_to_taxonomy(table, delimiter='|', strict=True)
+        obs = obs.view(pd.DataFrame)
         exp = pd.DataFrame(
             {'Taxon': ['k;p;c', 'k']},
             index=pd.Index(feature_ids, name='Feature ID')
@@ -75,7 +86,7 @@ class TestIdsToTaxonomy(unittest.TestCase):
             ValueError,
             r'requires at least one feature ID to contain the delimiter \|'
         ):
-            ids_to_taxonomy(table, delimiter='|')
+            self.ids_to_taxonomy(table, delimiter='|')
 
     def test_strict_empty_level_errors(self):
         '''
@@ -87,7 +98,7 @@ class TestIdsToTaxonomy(unittest.TestCase):
         with self.assertRaisesRegex(
                 ValueError, 'empty taxonomic levels.*1 feature IDs'
         ):
-            ids_to_taxonomy(table, delimiter='|')
+            self.ids_to_taxonomy(table, delimiter='|')
 
     def test_non_strict(self):
         '''
@@ -100,14 +111,13 @@ class TestIdsToTaxonomy(unittest.TestCase):
         feature_ids = ['k|p;g|c', '|a||b|', 'k2']
         table = self._make_table(feature_ids)
 
-        obs = ids_to_taxonomy(
-            table, delimiter='|', strict=False, semicolon_replacement=':'
-        )
+        obs, = self.ids_to_taxonomy(
+            table, delimiter='|', strict=False, semicolon_replacement=':')
+        obs = obs.view(pd.DataFrame)
         exp = pd.DataFrame(
             {'Taxon': ['k;p:g;c', 'a;b', 'k2']},
             index=pd.Index(feature_ids, name='Feature ID')
         )
-
         pdt.assert_frame_equal(obs, exp)
 
     def test_non_strict_id_with_only_delimiters_errors(self):
@@ -121,7 +131,7 @@ class TestIdsToTaxonomy(unittest.TestCase):
             ValueError,
             'Unable to construct non-empty taxonomy strings.*1 feature IDs'
         ):
-            ids_to_taxonomy(table, delimiter='|', strict=False)
+            self.ids_to_taxonomy(table, delimiter='|', strict=False)
 
     def test_non_strict_empty_id_errors(self):
         '''
@@ -137,7 +147,7 @@ class TestIdsToTaxonomy(unittest.TestCase):
                 ValueError,
                 'Unable to construct non-empty taxonomy strings.*1 feature IDs'
         ):
-            ids_to_taxonomy(table, delimiter='|', strict=False)
+            self.ids_to_taxonomy(table, delimiter='|', strict=False)
 
     def test_semicolon_replacement_not_provided_and_needed_errors(self):
         '''
@@ -150,7 +160,7 @@ class TestIdsToTaxonomy(unittest.TestCase):
             ValueError,
             r'semicolons detected.*"k;p\|c".*no `semicolon_replacement`'
         ):
-            ids_to_taxonomy(table, delimiter='|', strict=False)
+            self.ids_to_taxonomy(table, delimiter='|', strict=False)
 
     def test_semicolon_replacement_is_semicolon_errors(self):
         '''
@@ -163,9 +173,8 @@ class TestIdsToTaxonomy(unittest.TestCase):
             ValueError,
             r'`semicolon_replacement` parameter can not be a semicolon'
         ):
-            ids_to_taxonomy(
-                table, delimiter='|', semicolon_replacement=';', strict=False
-            )
+            self.ids_to_taxonomy(
+                table, delimiter='|', semicolon_replacement=';', strict=False)
 
     def test_ids_to_taxonomy_allows_collapse(self):
         '''
@@ -174,14 +183,16 @@ class TestIdsToTaxonomy(unittest.TestCase):
         taxonomy, and then use that taxonomy to collapse, which would not be
         possible otherwise.
         '''
-        table = biom.Table(
-            np.array([[1.0, 2.0], [3.0, 4.0]]),
-            ['k|p|c', 'k|p|g'],
-            ['s1', 's2']
+        table = Artifact.import_data(
+            'FeatureTable[Frequency]',
+            biom.Table(np.array([[1.0, 2.0], [3.0, 4.0]]),
+                       ['k|p|c', 'k|p|g'],
+                       ['s1', 's2'])
         )
 
-        taxonomy = ids_to_taxonomy(table, delimiter='|')
-        obs = collapse(table, taxonomy['Taxon'], level=2)
+        taxonomy, = self.ids_to_taxonomy(table, delimiter='|')
+        collapsed, = self.collapse(taxonomy=taxonomy, table=table, level=2)
+        obs = collapsed.view(biom.Table)
         obs.del_metadata()
 
         exp = biom.Table(np.array([[4.0, 6.0]]), ['k;p'], ['s1', 's2'])
