@@ -16,8 +16,10 @@ from q2_types.feature_table import (
     Composition
 )
 
-from . import (barplot, barplot2, collapse, ids_to_taxonomy, filter_table,
-               filter_seqs)
+from . import (
+    barplot, barplot2, collapse, feature_ids_to_taxonomy, filter_table,
+    filter_seqs
+)
 import q2_taxa._examples as ex
 
 T1 = qiime2.plugin.TypeMatch([Frequency, PresenceAbsence])
@@ -69,7 +71,7 @@ plugin.methods.register_function(
 )
 
 plugin.methods.register_function(
-    function=ids_to_taxonomy,
+    function=feature_ids_to_taxonomy,
     inputs={
         'table': FeatureTable[
             Frequency | RelativeFrequency | PresenceAbsence | Composition

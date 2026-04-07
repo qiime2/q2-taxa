@@ -38,7 +38,7 @@ def _format_invalid_ids(ids: list[str], max_examples: int = 5):
     return f'{len(ids)} feature IDs. Examples: {examples}'
 
 
-def ids_to_taxonomy(
+def feature_ids_to_taxonomy(
     table: biom.Table,
     delimiter: str = ';',
     strict: bool = True,
