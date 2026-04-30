@@ -6,11 +6,16 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
+import re
+
 import pandas as pd
 import biom
 import qiime2
 
 from ._util import _collapse_table, _get_max_level
+
+
+_LEVEL_PREFIX_RE = re.compile(r'^([a-zA-Z])__')
 
 
 def collapse(table: biom.Table, taxonomy: pd.Series,
@@ -150,6 +155,97 @@ def feature_ids_to_taxonomy(
     )
 
     return taxonomy
+
+
+def taxonomy_to_metadata(
+    taxonomy: pd.Series,
+    level_delimiter: str = ';',
+    cumulative: bool = True,
+) -> qiime2.Metadata:
+    '''
+    Convert a taxonomy (a series mapping feature IDs to hierarchical taxonomy
+    strings) into a metadata table whose columns are the individual taxonomic
+    levels.
+
+    Parameters
+    ----------
+    taxonomy : pd.Series
+        Taxonomy strings indexed by feature ID.
+    level_delimiter : str
+        The character(s) that delimit taxonomic levels in the taxonomy
+        strings.
+    cumulative : bool
+        If True, each column contains the label at that level joined to all
+        higher-level labels with `level_delimiter`. If False, each column
+        contains only the label at that level.
+
+    Returns
+    -------
+    qiime2.Metadata
+        Metadata indexed by feature ID, with one column per taxonomic level.
+    '''
+    if level_delimiter == '':
+        raise ValueError('The `level_delimiter` must not be empty.')
+
+    feature_ids = list(taxonomy.index)
+
+    split_levels = [
+        [level.strip() for level in str(value).split(level_delimiter)]
+        for value in taxonomy
+    ]
+
+    max_levels = max(len(levels) for levels in split_levels)
+
+    column_labels = []
+    column_prefixes = []
+    for col in range(max_levels):
+        labels = []
+        prefixes = []
+        for levels in split_levels:
+            value = levels[col] if col < len(levels) else ''
+            match = _LEVEL_PREFIX_RE.match(value)
+            if match:
+                prefixes.append(match.group(1))
+                labels.append(value[match.end():])
+            else:
+                if value != '':
+                    prefixes.append(None)
+                labels.append(value)
+        column_labels.append(labels)
+        column_prefixes.append(prefixes)
+
+    headers = []
+    used = set()
+    for col, prefixes in enumerate(column_prefixes):
+        present = [p for p in prefixes if p is not None]
+        if present and all(p == present[0] for p in present):
+            header = present[0]
+        else:
+            header = f'Level {col + 1}'
+        if header in used:
+            header = f'{header} ({col + 1})'
+        used.add(header)
+        headers.append(header)
+
+    if cumulative:
+        data = {header: [] for header in headers}
+        for row_idx in range(len(feature_ids)):
+            running = []
+            for col in range(max_levels):
+                running.append(column_labels[col][row_idx])
+                data[headers[col]].append(level_delimiter.join(running))
+    else:
+        data = {
+            headers[col]: column_labels[col] for col in range(max_levels)
+        }
+
+    df = pd.DataFrame(
+        data,
+        index=pd.Index(feature_ids, name='Feature ID', dtype=object),
+        columns=headers,
+    )
+
+    return qiime2.Metadata(df)
 
 
 def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
