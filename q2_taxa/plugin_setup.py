@@ -12,10 +12,14 @@ import q2_taxa
 
 from q2_types.feature_data import FeatureData, Taxonomy, Sequence
 from q2_types.feature_table import (
-    FeatureTable, Frequency, RelativeFrequency, PresenceAbsence, Composition
+    FeatureTable, Frequency, RelativeFrequency, PresenceAbsence,
+    Composition
 )
 
-from . import barplot, barplot2, collapse, filter_table, filter_seqs
+from . import (
+    barplot, barplot2, collapse, feature_ids_to_taxonomy, filter_table,
+    filter_seqs
+)
 import q2_taxa._examples as ex
 
 T1 = qiime2.plugin.TypeMatch([Frequency, PresenceAbsence])
@@ -65,6 +69,56 @@ plugin.methods.register_function(
     examples={
         'collapse': ex.collapse_example,
     },
+)
+
+plugin.methods.register_function(
+    function=feature_ids_to_taxonomy,
+    inputs={
+        'table': FeatureTable[
+            Frequency | RelativeFrequency | PresenceAbsence | Composition
+        ]
+    },
+    parameters={
+        'delimiter': qiime2.plugin.Str,
+        'strict': qiime2.plugin.Bool,
+        'semicolon_replacement': qiime2.plugin.Str,
+    },
+    outputs=[('taxonomy', FeatureData[Taxonomy])],
+    input_descriptions={
+        'table': (
+            'The table containing the feature IDs to be parsed into a '
+            'taxonomy.'
+        )
+    },
+    parameter_descriptions={
+        'delimiter': (
+            'The character(s) that delimit taxonomic levels in the feature '
+            'IDs.'
+        ),
+        'strict': (
+            'Whether to parse the feature IDs in strict mode. If True, then '
+            'no occurences of semicolons are allowed in the feature IDs, at '
+            'least one ID must contain `delimiter`, and no empty levels are '
+            'allowed in the converted taxonomic strings. If False, none of '
+            'these conditions are enforced.'
+        ),
+        'semicolon_replacement': (
+            'The character to use to replace semicolons before replacing '
+            'occurences of `delimiter` with semicolons. Ignored if `strict` '
+            'parsing is enabled.'
+        )
+    },
+    output_descriptions={
+        'taxonomy': (
+            'The taxonomy parsed from the table\'s feature IDs with the Taxon '
+            'column using the typical semicolon delimitation.'
+        )
+    },
+    name='Create a taxonomy from hierarchical feature IDs in a feature table.',
+    description=(
+        'This method converts feature IDs in a feature table into a taxonomy '
+        'by splitting IDs on a delimiter and joining levels with semicolons.'
+    )
 )
 
 plugin.methods.register_function(
