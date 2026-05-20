@@ -12,14 +12,14 @@ import q2_taxa
 
 from q2_types.feature_data import FeatureData, Taxonomy, Sequence
 from q2_types.feature_table import (
-    FeatureTable, Frequency, RelativeFrequency, PresenceAbsence
+    FeatureTable, Frequency, RelativeFrequency, PresenceAbsence, Composition
 )
 
 from . import barplot, barplot2, collapse, filter_table, filter_seqs
 import q2_taxa._examples as ex
 
 T1 = qiime2.plugin.TypeMatch([Frequency, PresenceAbsence])
-T2 = qiime2.plugin.TypeMatch([Frequency, RelativeFrequency])
+T2 = qiime2.plugin.TypeMatch([Frequency, RelativeFrequency, Composition])
 
 plugin = qiime2.plugin.Plugin(
     name='taxa',
