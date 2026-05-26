@@ -185,7 +185,7 @@ plugin.methods.register_function(
     function=filter_seqs,
     inputs={
         'taxonomy': FeatureData[Taxonomy],
-        'sequences': FeatureData[T1]
+        'sequences': FeatureData[T2]
     },
     parameters={'include': qiime2.plugin.Str,
                 'exclude': qiime2.plugin.Str,
@@ -193,7 +193,7 @@ plugin.methods.register_function(
                     qiime2.plugin.Str % qiime2.plugin.Choices(
                         ['exact', 'contains']),
                 'query_delimiter': qiime2.plugin.Str},
-    outputs=[('filtered_sequences', FeatureData[T1])],
+    outputs=[('filtered_sequences', FeatureData[T2])],
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
                      'feature sequences. All features in the feature '
