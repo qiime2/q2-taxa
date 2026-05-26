@@ -138,6 +138,30 @@ class FilterTable(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'At least one'):
             filter_table(table, taxonomy)
 
+    def test_filter_relative_frequency(self):
+        table = pd.DataFrame(
+            [[0.2, 0.5, 0.3], [0.3, 0.1, 0.6], [0.8, 0.1, 0.1]],
+            index=['A', 'B', 'C'],
+            columns=['feat1', 'feat2', 'feat3']
+        )
+
+        taxonomy = qiime2.Metadata(
+            pd.DataFrame(
+                ['aa; bb; cc', 'aa; bb; dd', 'aa; bb; ee'],
+                index=pd.Index(['feat1', 'feat2', 'feat3'], name='id'),
+                columns=['Taxon']
+            )
+        )
+
+        obs = filter_table(table, taxonomy, exclude='ee')
+        exp = pd.DataFrame(
+            [[0.2857, 0.7143], [0.75, 0.25], [0.8889, 0.1111]],
+            index=['A', 'B', 'C'],
+            columns=['feat1', 'feat2']
+        )
+
+        pdt.assert_frame_equal(obs, exp, atol=1e-04)
+
     def test_alt_delimiter(self):
         table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
                              index=['A', 'B', 'C', 'D'],
