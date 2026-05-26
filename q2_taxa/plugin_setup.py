@@ -10,11 +10,14 @@ import qiime2.plugin
 
 import q2_taxa
 
-from q2_types.feature_data import FeatureData, Taxonomy, Sequence
+from q2_types.feature_data import (
+    FeatureData, Taxonomy, Sequence, AlignedSequence
+)
 from q2_types.feature_table import (
     FeatureTable, Frequency, RelativeFrequency, PresenceAbsence,
-    Composition
+    Composition,
 )
+
 
 from . import (
     barplot, barplot2, collapse, feature_ids_to_taxonomy, filter_table,
@@ -23,6 +26,7 @@ from . import (
 import q2_taxa._examples as ex
 
 T1 = qiime2.plugin.TypeMatch([Frequency, PresenceAbsence])
+T2 = qiime2.plugin.TypeMatch([Sequence, AlignedSequence])
 
 plugin = qiime2.plugin.Plugin(
     name='taxa',
@@ -181,7 +185,7 @@ plugin.methods.register_function(
     function=filter_seqs,
     inputs={
         'taxonomy': FeatureData[Taxonomy],
-        'sequences': FeatureData[Sequence]
+        'sequences': FeatureData[T1]
     },
     parameters={'include': qiime2.plugin.Str,
                 'exclude': qiime2.plugin.Str,
@@ -189,14 +193,14 @@ plugin.methods.register_function(
                     qiime2.plugin.Str % qiime2.plugin.Choices(
                         ['exact', 'contains']),
                 'query_delimiter': qiime2.plugin.Str},
-    outputs=[('filtered_sequences', FeatureData[Sequence])],
+    outputs=[('filtered_sequences', FeatureData[T1])],
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
                      'feature sequences. All features in the feature '
                      'sequences must have a corresponding taxonomic '
                      'annotation. Taxonomic annotations for features that are '
                      'not present in the feature sequences will be ignored.'),
-        'sequences': 'Feature sequences to be filtered.'},
+        'sequences': 'Feature sequences or aligned sequences to be filtered.'},
     parameter_descriptions={
         'include': ('One or more search terms that indicate which taxa should '
                     'be included in the resulting sequences. If providing '
