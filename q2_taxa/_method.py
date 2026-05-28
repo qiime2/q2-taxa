@@ -210,7 +210,8 @@ def calculate_relative_frequency(table: pd.DataFrame) -> pd.DataFrame:
 
 
 def check_relative_frequency(table: pd.DataFrame) -> bool:
-    return np.isclose((table.sum(axis=1)), 1).all()
+    sums = table.sum(axis=1)
+    return (np.isclose(sums, 1) | (sums == 0)).all()
 
 
 def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
