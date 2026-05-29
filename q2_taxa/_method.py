@@ -239,6 +239,9 @@ def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
 
     if is_rel_freq:
         table = _normalize_relative_frequency(table)
+        if not _is_relative_frequency(table):
+            raise ValueError("Relative frequency table is no longer a "
+                             "relative frequency table after normalizing")
 
     return table
 
