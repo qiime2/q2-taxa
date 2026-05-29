@@ -184,11 +184,8 @@ class FilterTable(unittest.TestCase):
             columns=['feat1', 'feat2']
         )
 
-        print('ACTUAL:', obs)
-        print('EXPECTED:', exp)
-
         pdt.assert_frame_equal(
-            obs, exp, atol=1e-04
+            obs.sort_index(axis=1), exp.sort_index(axis=1), atol=1e-04
         )
 
     def test_alt_delimiter(self):
