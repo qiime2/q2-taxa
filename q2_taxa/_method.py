@@ -205,11 +205,11 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
     return list(ids_to_keep)
 
 
-def calculate_relative_frequency(table: pd.DataFrame) -> pd.DataFrame:
+def _normalize_relative_frequency(table: pd.DataFrame) -> pd.DataFrame:
     return table.div(table.sum(axis=1), axis=0)
 
 
-def check_relative_frequency(table: pd.DataFrame) -> bool:
+def _is_relative_frequency(table: pd.DataFrame) -> bool:
     sums = table.sum(axis=1)
     return (np.isclose(sums, 1) | (sums == 0)).all()
 
@@ -218,7 +218,7 @@ def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
                  include: str = None, exclude: str = None,
                  query_delimiter: str = ',', mode: str = 'contains') \
                  -> pd.DataFrame:
-    is_rel_freq = check_relative_frequency(table)
+    is_rel_freq = _is_relative_frequency(table)
 
     ids_to_keep = _ids_to_keep_from_taxonomy(
         table.columns, taxonomy, include, exclude, query_delimiter,
@@ -238,7 +238,7 @@ def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
                          "were filtered, resulting in an empty table.")
 
     if is_rel_freq:
-        table = calculate_relative_frequency(table)
+        table = _normalize_relative_frequency(table)
 
     return table
 

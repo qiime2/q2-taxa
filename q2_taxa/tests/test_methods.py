@@ -160,7 +160,7 @@ class FilterTable(unittest.TestCase):
         )
 
         pdt.assert_frame_equal(
-            obs.sort_index(axis=1), exp.sort_index(axis=1), atol=1e-04
+            obs, exp, check_like=True, atol=1e-04
         )
 
     def test_filter_relative_frequency_zeros(self):
@@ -185,7 +185,7 @@ class FilterTable(unittest.TestCase):
         )
 
         pdt.assert_frame_equal(
-            obs.sort_index(axis=1), exp.sort_index(axis=1), atol=1e-04
+            obs, exp, check_like=True, atol=1e-04
         )
 
     def test_alt_delimiter(self):
