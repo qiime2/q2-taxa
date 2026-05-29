@@ -204,10 +204,10 @@ class FilterTable(unittest.TestCase):
             columns=['Taxon']
         )
 
-        table = qiime2.Artifact.import_data(
+        table_artifact = qiime2.Artifact.import_data(
             type='FeatureTable[Frequency]', view=table
         )
-        taxonomy = qiime2.Artifact.import_data(
+        taxonomy_artifact = qiime2.Artifact.import_data(
             type='FeatureData[Taxonomy]', view=taxonomy
         )
 
@@ -218,17 +218,13 @@ class FilterTable(unittest.TestCase):
             'q2_taxa._method._normalize_relative_frequency',
             wraps=_normalize_relative_frequency
         ) as norm:
-            obs, = filter_table(table, taxonomy, exclude='hh')
+            obs, = filter_table(
+                table_artifact, taxonomy_artifact, exclude='hh'
+            )
             obs = obs.view(pd.DataFrame)
             norm.assert_called()
 
-        exp = pd.DataFrame(
-            [[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]],
-            index=['A', 'B', 'C'],
-            columns=['feat1', 'feat2', 'feat3']
-        )
-
-        pdt.assert_frame_equal(obs, exp, check_like=True)
+        pdt.assert_frame_equal(obs, table, check_like=True)
 
     def test_alt_delimiter(self):
         table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
