@@ -13,9 +13,13 @@ import biom
 import pandas as pd
 import pandas.testing as pdt
 import qiime2
+from qiime2.sdk import PluginManager
 from qiime2.plugin.testing import TestPluginBase
 
-from q2_taxa import collapse, filter_table, filter_seqs
+from q2_taxa import (
+    collapse, filter_table, filter_seqs, _normalize_relative_frequency
+)
+from unittest.mock import patch
 
 
 class CollapseTests(unittest.TestCase):
@@ -266,6 +270,90 @@ class FilterTable(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, 'At least one'):
             filter_table(table, taxonomy)
+
+    def test_filter_relative_frequency(self):
+        table = pd.DataFrame(
+            [[0.2, 0.5, 0.3], [0.3, 0.1, 0.6], [0.8, 0.1, 0.1]],
+            index=['A', 'B', 'C'],
+            columns=['feat1', 'feat2', 'feat3']
+        )
+        taxonomy = qiime2.Metadata(
+            pd.DataFrame(
+                ['aa; bb; cc', 'aa; bb; dd', 'aa; bb; ee'],
+                index=pd.Index(['feat1', 'feat2', 'feat3'], name='id'),
+                columns=['Taxon']
+            )
+        )
+
+        obs = filter_table(table, taxonomy, exclude='ee')
+        exp = pd.DataFrame(
+            [[0.2857, 0.7143], [0.75, 0.25], [0.8889, 0.1111]],
+            index=['A', 'B', 'C'],
+            columns=['feat1', 'feat2']
+        )
+
+        pdt.assert_frame_equal(
+            obs, exp, check_like=True, atol=1e-04
+        )
+
+    def test_filter_relative_frequency_zeros(self):
+        table = pd.DataFrame(
+            [[0.0, 0.0, 0.0], [0.3, 0.1, 0.6], [0.8, 0.1, 0.1]],
+            index=['A', 'B', 'C'],
+            columns=['feat1', 'feat2', 'feat3']
+        )
+        taxonomy = qiime2.Metadata(
+            pd.DataFrame(
+                ['aa; bb; cc', 'aa; bb; dd', 'aa; bb; ee'],
+                index=pd.Index(['feat1', 'feat2', 'feat3'], name='id'),
+                columns=['Taxon']
+            )
+        )
+
+        obs = filter_table(table, taxonomy, exclude='ee')
+        exp = pd.DataFrame(
+            [[0.75, 0.25], [0.8889, 0.1111]],
+            index=['B', 'C'],
+            columns=['feat1', 'feat2']
+        )
+
+        pdt.assert_frame_equal(
+            obs, exp, check_like=True, atol=1e-04
+        )
+
+    def test_filter_absolute_frequency_table(self):
+        table = pd.DataFrame(
+            [[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]],
+            index=['A', 'B', 'C'],
+            columns=['feat1', 'feat2', 'feat3']
+        )
+        taxonomy = pd.DataFrame(
+            ['aa; bb; cc', 'aa; bb; dd', 'aa; bb; ee'],
+            index=pd.Index(['feat1', 'feat2', 'feat3'], name='Feature ID'),
+            columns=['Taxon']
+        )
+
+        table_artifact = qiime2.Artifact.import_data(
+            type='FeatureTable[Frequency]', view=table
+        )
+        taxonomy_artifact = qiime2.Artifact.import_data(
+            type='FeatureData[Taxonomy]', view=taxonomy
+        )
+
+        pm = PluginManager()
+        filter_table = pm.plugins['taxa'].actions['filter_table']
+
+        with patch(
+            'q2_taxa._method._normalize_relative_frequency',
+            wraps=_normalize_relative_frequency
+        ) as norm:
+            obs, = filter_table(
+                table_artifact, taxonomy_artifact, exclude='hh'
+            )
+            obs = obs.view(pd.DataFrame)
+            norm.assert_called()
+
+        pdt.assert_frame_equal(obs, table, check_like=True)
 
     def test_alt_delimiter(self):
         table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
