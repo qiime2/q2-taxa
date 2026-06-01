@@ -131,7 +131,7 @@ class CollapseTests(unittest.TestCase):
         '''
         Tests that collapsing a relative frequency table with two features
         returns a table where the sum of the frequencys adds to one, i.e.
-        collapsing a relative frequency table returns a relatvie frequency
+        collapsing a relative frequency table returns a relative frequency
         table.
         '''
         table = biom.Table(
@@ -147,19 +147,22 @@ class CollapseTests(unittest.TestCase):
             ['feat1', 'feat2']
         ).transpose()
 
-        taxonomy = pd.Series(['a; c', 'a; b'], index=['feat1', 'feat2'])
-        collapsed = collapse(table, taxonomy, 1)
-        table_df = collapsed.transpose().to_dataframe()
-        row_sums = table_df.sum(axis=1)
+        exp = pd.DataFrame(
+            [[1.0], [1.0], [1.0], [1.0]],
+            index=['A', 'B', 'C', 'D'],
+            columns=['a']
+        )
 
-        self.assertTrue((row_sums == 1).all())
-        self.assertGreater(len(row_sums), 0)
-        self.assertEqual(table_df.shape[0], 4)
+        taxonomy = pd.Series(['a; c', 'a; b'], index=['feat1', 'feat2'])
+        obs = collapse(table, taxonomy, 1)
+        obs = obs.transpose().to_dataframe()
+
+        pdt.assert_frame_equal(obs, exp, check_dtype=False)
 
     def test_collapse_relative_frequency_3features(self):
         '''
         Tests that collapsing a relative frequency table with three features
-        returns a table where the sum of the frequecnys adds to one, i.e.
+        returns a table where the sum of the frequencies adds to one, i.e.
         collapsing a relative frequency table returns a relative frequency
         table.
         '''
@@ -176,16 +179,19 @@ class CollapseTests(unittest.TestCase):
             ['feat1', 'feat2', 'feat3']
         ).transpose()
 
+        exp = pd.DataFrame(
+            [[1.0], [1.0], [1.0], [1.0]],
+            index=['A', 'B', 'C', 'D'],
+            columns=['a']
+        )
+
         taxonomy = pd.Series(
             ['a; c', 'a; b', 'a; d'], index=['feat1', 'feat2', 'feat3']
         )
-        collapsed = collapse(table, taxonomy, 1)
-        table_df = collapsed.transpose().to_dataframe()
-        row_sums = table_df.sum(axis=1)
+        obs = collapse(table, taxonomy, 1)
+        obs = obs.transpose().to_dataframe()
 
-        self.assertTrue((row_sums == 1).all())
-        self.assertGreater(len(row_sums), 0)
-        self.assertEqual(table_df.shape[0], 4)
+        pdt.assert_frame_equal(obs, exp, check_dtype=False)
 
     def test_deep_collapse_relative_frequency(self):
         '''
@@ -251,10 +257,16 @@ class CollapseTests(unittest.TestCase):
             index=['feat1', 'feat2', 'feat3']
         )
 
-        collapsed = collapse(table, taxonomy, 1)
-        table_df = collapsed.transpose().to_dataframe()
+        exp = pd.DataFrame(
+            [[1.0], [1.0], [1.0], [1.0]],
+            index=['A', 'B', 'C', 'D'],
+            columns=['a']
+        )
 
-        self.assertEqual(table_df.shape[1], 1)
+        obs = collapse(table, taxonomy, 1)
+        obs = obs.transpose().to_dataframe()
+
+        pdt.assert_frame_equal(obs, exp, check_dtype=False)
 
 
 class FilterTable(unittest.TestCase):
