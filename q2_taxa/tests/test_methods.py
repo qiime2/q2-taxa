@@ -179,18 +179,25 @@ class CollapseTests(unittest.TestCase):
             ['feat1', 'feat2', 'feat3']
         ).transpose()
 
-        exp = pd.DataFrame(
-            [[1.0], [1.0], [1.0], [1.0]],
-            index=['A', 'B', 'C', 'D'],
-            columns=['a']
-        )
-
         taxonomy = pd.Series(
             ['a; c', 'a; b', 'a; d'], index=['feat1', 'feat2', 'feat3']
         )
-        obs = collapse(table, taxonomy, 1)
-        obs = obs.transpose().to_dataframe()
 
+        exp = pd.DataFrame(
+            [
+                [0.2, 0.2, 0.6],
+                [0.3, 0.4, 0.3],
+                [0.5, 0.0, 0.5],
+                [0.6, 0.1, 0.3]
+            ],
+            index=['A', 'B', 'C', 'D'],
+            columns=['a;c', 'a;b', 'a;d']
+        )
+
+        obs = collapse(table, taxonomy, 2)
+        obs = obs.transpose().to_dataframe()
+        print("OBS:", obs)
+        print("EXP:", exp)
         pdt.assert_frame_equal(obs, exp, check_dtype=False)
 
     def test_deep_collapse_relative_frequency(self):
