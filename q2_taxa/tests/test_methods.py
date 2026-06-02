@@ -180,18 +180,19 @@ class CollapseTests(unittest.TestCase):
         ).transpose()
 
         taxonomy = pd.Series(
-            ['a; c', 'a; b', 'a; d'], index=['feat1', 'feat2', 'feat3']
+            ['a; b; e', 'a; c; e', 'a; b; e'],
+            index=['feat1', 'feat2', 'feat3']
         )
 
         exp = pd.DataFrame(
             [
-                [0.2, 0.2, 0.6],
-                [0.3, 0.4, 0.3],
-                [0.5, 0.0, 0.5],
-                [0.6, 0.1, 0.3]
+                [0.8, 0.2],
+                [0.6, 0.4],
+                [1.0, 0],
+                [0.9, 0.1]
             ],
             index=['A', 'B', 'C', 'D'],
-            columns=['a;c', 'a;b', 'a;d']
+            columns=['a;b', 'a;c']
         )
 
         obs = collapse(table, taxonomy, 2)
