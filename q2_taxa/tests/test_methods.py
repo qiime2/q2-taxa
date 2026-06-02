@@ -197,8 +197,7 @@ class CollapseTests(unittest.TestCase):
 
         obs = collapse(table, taxonomy, 2)
         obs = obs.transpose().to_dataframe()
-        print("OBS:", obs)
-        print("EXP:", exp)
+
         pdt.assert_frame_equal(obs, exp, check_dtype=False)
 
     def test_deep_collapse_relative_frequency(self):
