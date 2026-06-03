@@ -5,6 +5,8 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
+import pandas as pd
+import numpy as np
 
 
 def _get_max_level(taxonomy):
@@ -48,3 +50,12 @@ def _extract_to_level(taxonomy, table):
 
 def _biom_to_df(table):
     return table.transpose().to_dataframe(dense=True)
+
+
+def _is_relative_frequency(table: pd.DataFrame) -> bool:
+    sums = table.sum(axis=1)
+    return (np.isclose(sums, 1) | (sums == 0)).all()
+
+
+def _normalize_relative_frequency(table: pd.DataFrame) -> pd.DataFrame:
+    return table.div(table.sum(axis=1), axis=0)
