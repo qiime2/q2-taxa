@@ -11,6 +11,7 @@ import re
 import pandas as pd
 import biom
 import qiime2
+import numpy as np
 
 from ._util import _collapse_table, _get_max_level
 
@@ -300,10 +301,21 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
     return list(ids_to_keep)
 
 
+def _normalize_relative_frequency(table: pd.DataFrame) -> pd.DataFrame:
+    return table.div(table.sum(axis=1), axis=0)
+
+
+def _is_relative_frequency(table: pd.DataFrame) -> bool:
+    sums = table.sum(axis=1)
+    return (np.isclose(sums, 1) | (sums == 0)).all()
+
+
 def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
                  include: str = None, exclude: str = None,
                  query_delimiter: str = ',', mode: str = 'contains') \
                  -> pd.DataFrame:
+    is_rel_freq = _is_relative_frequency(table)
+
     ids_to_keep = _ids_to_keep_from_taxonomy(
         table.columns, taxonomy, include, exclude, query_delimiter,
         mode)
@@ -320,6 +332,12 @@ def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
     if table.shape[0] == 0:
         raise ValueError("All features with frequencies greater than zero "
                          "were filtered, resulting in an empty table.")
+
+    if is_rel_freq:
+        table = _normalize_relative_frequency(table)
+        if not _is_relative_frequency(table):
+            raise ValueError("Relative frequency table is no longer a "
+                             "relative frequency table after normalizing")
 
     return table
 

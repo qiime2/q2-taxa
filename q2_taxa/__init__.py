@@ -8,7 +8,7 @@
 
 from ._method import (
     collapse, feature_ids_to_taxonomy, filter_table, filter_seqs,
-    taxonomy_to_metadata,
+    _normalize_relative_frequency, taxonomy_to_metadata
 )
 from ._visualizer import barplot, barplot2
 
@@ -17,5 +17,8 @@ try:
 except ModuleNotFoundError:
     __version__ = '0.0.0+notfound'
 
-__all__ = ['barplot', 'barplot2', 'collapse', 'feature_ids_to_taxonomy',
-           'filter_table', 'filter_seqs', 'taxonomy_to_metadata']
+__all__ = [
+    'barplot', 'barplot2', 'collapse', 'feature_ids_to_taxonomy',
+    'filter_table', 'filter_seqs', 'taxonomy_to_metadata',
+    '_normalize_relative_frequency',
+]

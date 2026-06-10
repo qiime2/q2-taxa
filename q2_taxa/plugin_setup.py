@@ -23,7 +23,7 @@ from . import (
 )
 import q2_taxa._examples as ex
 
-T1 = qiime2.plugin.TypeMatch([Frequency, PresenceAbsence])
+T1 = qiime2.plugin.TypeMatch([Frequency, PresenceAbsence, RelativeFrequency])
 
 plugin = qiime2.plugin.Plugin(
     name='taxa',
