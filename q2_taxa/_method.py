@@ -38,7 +38,7 @@ def collapse(table: biom.Table, taxonomy: pd.Series,
     )
 
     if is_relative_frequency and not _is_relative_frequency(
-        collapsed_table.transpose().to_dataframe()
+        collapsed_table
     ):
         raise ValueError(
             'A relative frequency table was passed but is no longer a '
