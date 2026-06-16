@@ -19,9 +19,7 @@ from ._util import (
 def collapse(table: biom.Table, taxonomy: pd.Series,
              level: int) -> biom.Table:
 
-    is_relative_frequency = _is_relative_frequency(
-        table.transpose().to_dataframe()
-    )
+    is_relative_frequency = _is_relative_frequency(table)
 
     if level < 1:
         raise ValueError('Requested level of %d is too low. Must be greater '
