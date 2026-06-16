@@ -9,13 +9,18 @@
 import pandas as pd
 import biom
 import qiime2
-import numpy as np
 
-from ._util import _collapse_table, _get_max_level
+from ._util import (
+    _collapse_table, _get_max_level, _is_relative_frequency,
+    _normalize_relative_frequency
+)
 
 
 def collapse(table: biom.Table, taxonomy: pd.Series,
              level: int) -> biom.Table:
+
+    is_relative_frequency = _is_relative_frequency(table)
+
     if level < 1:
         raise ValueError('Requested level of %d is too low. Must be greater '
                          'than or equal to 1.' % level)
@@ -28,7 +33,19 @@ def collapse(table: biom.Table, taxonomy: pd.Series,
                          'level available in taxonomy data (%d).' %
                          (level, max_observed_level))
 
-    return _collapse_table(table, taxonomy, level, max_observed_level)
+    collapsed_table = _collapse_table(
+        table, taxonomy, level, max_observed_level
+    )
+
+    if is_relative_frequency and not _is_relative_frequency(
+        collapsed_table
+    ):
+        raise ValueError(
+            'A relative frequency table was passed but is no longer a '
+            'relative frequency table after collapsing.'
+        )
+
+    return collapsed_table
 
 
 def _format_invalid_ids(ids: list[str], max_examples: int = 5):
@@ -203,15 +220,6 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
             ids_to_keep -= set(taxonomy.get_ids(where=query))
 
     return list(ids_to_keep)
-
-
-def _normalize_relative_frequency(table: pd.DataFrame) -> pd.DataFrame:
-    return table.div(table.sum(axis=1), axis=0)
-
-
-def _is_relative_frequency(table: pd.DataFrame) -> bool:
-    sums = table.sum(axis=1)
-    return (np.isclose(sums, 1) | (sums == 0)).all()
 
 
 def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,

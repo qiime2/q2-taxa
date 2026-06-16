@@ -23,6 +23,8 @@ from . import (
 import q2_taxa._examples as ex
 
 T1 = qiime2.plugin.TypeMatch([Frequency, PresenceAbsence, RelativeFrequency])
+T2 = qiime2.plugin.TypeMatch([Frequency, RelativeFrequency, Composition])
+
 
 plugin = qiime2.plugin.Plugin(
     name='taxa',
@@ -40,10 +42,10 @@ plugin.methods.register_function(
     function=collapse,
     inputs={
         'taxonomy': FeatureData[Taxonomy],
-        'table': FeatureTable[Frequency]
+        'table': FeatureTable[T2]
     },
     parameters={'level': qiime2.plugin.Int},
-    outputs=[('collapsed_table', FeatureTable[Frequency])],
+    outputs=[('collapsed_table', FeatureTable[T2])],
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
                      'feature table. All features in the feature table must '
