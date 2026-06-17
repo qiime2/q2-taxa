@@ -963,6 +963,38 @@ class FilterSeqs(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, expected_regex='All.*feat2'):
             filter_seqs(seqs, taxonomy, include='bb')
 
+    def test_filter_aligned_seqs(self):
+        from qiime2.sdk import PluginManager
+        from qiime2 import Artifact
+        import tempfile
+        from pathlib import Path
+
+        pm = PluginManager()
+        filter_seqs = pm.plugins['taxa'].actions['filter_seqs']
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            with open(Path(tempdir) / 'aligned-dna-sequences.fasta', 'w') as f:
+                f.write('>seq1\nAGGGGGG\n')
+                f.write('>seq2\n-GGGGGG\n')
+
+            with open(Path(tempdir) / 'aligned-dna-sequences.fasta', 'r') as f:
+                print(f.read())
+
+            taxonomy = pd.DataFrame(
+                ['aa; bb; cc', 'aa; bb; dd ee'],
+                index=pd.Index(['seq1', 'seq2'], name='Feature ID'),
+                columns=['Taxon']
+            )
+            aligned_seqs = Artifact.import_data(
+                type='FeatureData[AlignedSequence]',
+                view=Path(tempdir) / 'aligned-dna-sequences.fasta'
+            )
+            taxonomy = Artifact.import_data(
+                type='FeatureData[Taxonomy]', view=taxonomy
+            )
+
+            filter_seqs(aligned_seqs, taxonomy, include='cc', exclude='ee')
+
 
 class TestUsageExamples(TestPluginBase):
     package = 'q2_taxa.tests'
