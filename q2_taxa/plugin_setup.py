@@ -201,7 +201,7 @@ plugin.methods.register_function(
                      'sequences must have a corresponding taxonomic '
                      'annotation. Taxonomic annotations for features that are '
                      'not present in the feature sequences will be ignored.'),
-        'sequences': 'Feature sequences or aligned sequences to be filtered.'},
+        'sequences': 'Feature sequences to be filtered.'},
     parameter_descriptions={
         'include': ('One or more search terms that indicate which taxa should '
                     'be included in the resulting sequences. If providing '

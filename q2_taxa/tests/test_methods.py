@@ -7,12 +7,14 @@
 # ----------------------------------------------------------------------------
 
 import unittest
-
+import tempfile
 import numpy as np
 import biom
 import pandas as pd
 import pandas.testing as pdt
+from pathlib import Path
 import qiime2
+from qiime2 import Artifact
 from qiime2.sdk import PluginManager
 from qiime2.plugin.testing import TestPluginBase
 from unittest.mock import patch
@@ -1152,11 +1154,6 @@ class FilterSeqs(unittest.TestCase):
             filter_seqs(seqs, taxonomy, include='bb')
 
     def test_filter_aligned_seqs(self):
-        from qiime2.sdk import PluginManager
-        from qiime2 import Artifact
-        import tempfile
-        from pathlib import Path
-
         pm = PluginManager()
         filter_seqs = pm.plugins['taxa'].actions['filter_seqs']
 
@@ -1164,9 +1161,6 @@ class FilterSeqs(unittest.TestCase):
             with open(Path(tempdir) / 'aligned-dna-sequences.fasta', 'w') as f:
                 f.write('>seq1\nAGGGGGG\n')
                 f.write('>seq2\n-GGGGGG\n')
-
-            with open(Path(tempdir) / 'aligned-dna-sequences.fasta', 'r') as f:
-                print(f.read())
 
             taxonomy = pd.DataFrame(
                 ['aa; bb; cc', 'aa; bb; dd ee'],
@@ -1181,7 +1175,15 @@ class FilterSeqs(unittest.TestCase):
                 type='FeatureData[Taxonomy]', view=taxonomy
             )
 
-            filter_seqs(aligned_seqs, taxonomy, include='cc', exclude='ee')
+            exp = pd.Series(['AGGGGGG'], index=['seq1'])
+
+            filtered, = filter_seqs(
+                aligned_seqs, taxonomy, include='cc', exclude='ee'
+            )
+
+            obs = filtered.view(pd.Series).apply(str)
+
+            pdt.assert_series_equal(obs, exp)
 
 
 class TestUsageExamples(TestPluginBase):
