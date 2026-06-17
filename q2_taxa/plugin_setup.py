@@ -26,7 +26,8 @@ from . import (
 import q2_taxa._examples as ex
 
 T1 = qiime2.plugin.TypeMatch([Frequency, PresenceAbsence, RelativeFrequency])
-T2 = qiime2.plugin.TypeMatch([Sequence, AlignedSequence])
+T2 = qiime2.plugin.TypeMatch([Frequency, RelativeFrequency, Composition])
+T3 = qiime2.plugin.TypeMatch([Sequence, AlignedSequence])
 
 plugin = qiime2.plugin.Plugin(
     name='taxa',
@@ -44,10 +45,10 @@ plugin.methods.register_function(
     function=collapse,
     inputs={
         'taxonomy': FeatureData[Taxonomy],
-        'table': FeatureTable[Frequency]
+        'table': FeatureTable[T2]
     },
     parameters={'level': qiime2.plugin.Int},
-    outputs=[('collapsed_table', FeatureTable[Frequency])],
+    outputs=[('collapsed_table', FeatureTable[T2])],
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
                      'feature table. All features in the feature table must '
@@ -185,7 +186,7 @@ plugin.methods.register_function(
     function=filter_seqs,
     inputs={
         'taxonomy': FeatureData[Taxonomy],
-        'sequences': FeatureData[T2]
+        'sequences': FeatureData[T3]
     },
     parameters={'include': qiime2.plugin.Str,
                 'exclude': qiime2.plugin.Str,
@@ -193,7 +194,7 @@ plugin.methods.register_function(
                     qiime2.plugin.Str % qiime2.plugin.Choices(
                         ['exact', 'contains']),
                 'query_delimiter': qiime2.plugin.Str},
-    outputs=[('filtered_sequences', FeatureData[T2])],
+    outputs=[('filtered_sequences', FeatureData[T3])],
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
                      'feature sequences. All features in the feature '
