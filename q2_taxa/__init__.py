@@ -11,6 +11,7 @@ from ._method import (
     _normalize_relative_frequency, taxonomy_to_metadata
 )
 from ._visualizer import barplot, barplot2
+from ._util import _normalize_relative_frequency, _collapse_table
 
 try:
     from ._version import __version__
