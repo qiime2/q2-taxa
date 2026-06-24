@@ -221,8 +221,7 @@ def taxonomy_to_metadata(
     )
 
     used = set()
-    for idx, col in enumerate(levels.columns):
-        level = idx + 1
+    for level, col in enumerate(levels.columns, 1):
         present_prefixes = prefixes.loc[levels[col] != '', col]
         consistent_prefix = (
             not present_prefixes.empty
