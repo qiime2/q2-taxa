@@ -18,9 +18,6 @@ from ._util import (
 )
 
 
-_LEVEL_PREFIX_RE = re.compile(r'^([a-zA-Z])__')
-
-
 def collapse(table: biom.Table, taxonomy: pd.Series,
              level: int) -> biom.Table:
 
@@ -205,65 +202,55 @@ def taxonomy_to_metadata(
     if level_delimiter == '':
         raise ValueError('The `level_delimiter` must not be empty.')
 
-    feature_ids = list(taxonomy.index)
+    level_prefix_re = re.compile(r'^([a-zA-Z])__')
 
-    split_levels = [
-        [level.strip() for level in str(value).split(level_delimiter)]
-        for value in taxonomy
-    ]
+    levels = (
+        taxonomy.astype(str)
+        .str.split(level_delimiter, expand=True, regex=False)
+        .fillna('')
+    )
+    if levels.empty:
+        raise ValueError('Cannot create metadata from an empty taxonomy.')
+    levels = levels.apply(lambda col: col.str.strip())
 
-    max_levels = max(len(levels) for levels in split_levels)
-
-    column_labels = []
-    column_prefixes = []
-    for col in range(max_levels):
-        labels = []
-        prefixes = []
-        for levels in split_levels:
-            value = levels[col] if col < len(levels) else ''
-            match = _LEVEL_PREFIX_RE.match(value)
-            if match:
-                prefixes.append(match.group(1))
-                labels.append(value[match.end():])
-            else:
-                if value != '':
-                    prefixes.append(None)
-                labels.append(value)
-        column_labels.append(labels)
-        column_prefixes.append(prefixes)
-
-    headers = []
-    used = set()
-    for col, prefixes in enumerate(column_prefixes):
-        present = [p for p in prefixes if p is not None]
-        if present and all(p == present[0] for p in present):
-            header = present[0]
-        else:
-            header = f'Level {col + 1}'
-        if header in used:
-            header = f'{header} ({col + 1})'
-        used.add(header)
-        headers.append(header)
-
-    if cumulative:
-        data = {header: [] for header in headers}
-        for row_idx in range(len(feature_ids)):
-            running = []
-            for col in range(max_levels):
-                running.append(column_labels[col][row_idx])
-                data[headers[col]].append(level_delimiter.join(running))
-    else:
-        data = {
-            headers[col]: column_labels[col] for col in range(max_levels)
-        }
-
-    df = pd.DataFrame(
-        data,
-        index=pd.Index(feature_ids, name='Feature ID', dtype=object),
-        columns=headers,
+    prefixes = levels.apply(
+        lambda col: col.str.extract(level_prefix_re, expand=False)
+    )
+    labels = levels.apply(
+        lambda col: col.str.replace(level_prefix_re, '', regex=True)
     )
 
-    return qiime2.Metadata(df)
+    used = set()
+    for idx, col in enumerate(levels.columns):
+        level = idx + 1
+        present_prefixes = prefixes.loc[levels[col] != '', col]
+        consistent_prefix = (
+            not present_prefixes.empty
+            and present_prefixes.notna().all()
+            and present_prefixes.nunique() == 1
+        )
+        if consistent_prefix:
+            header = present_prefixes.iloc[0]
+        else:
+            header = f'Level {level}'
+        if header in used:
+            header = f'{header} ({level})'
+        used.add(header)
+        labels.rename(columns={col: header}, inplace=True)
+
+    if cumulative:
+        metadata = labels.copy()
+        for idx, col in enumerate(labels.columns):
+            current_levels = labels.columns[:idx + 1]
+            metadata[col] = labels.loc[:, current_levels].agg(
+                level_delimiter.join, axis=1
+            )
+    else:
+        metadata = labels
+
+    metadata.index = pd.Index(taxonomy.index, name='Feature ID', dtype=object)
+
+    return qiime2.Metadata(metadata)
 
 
 def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
