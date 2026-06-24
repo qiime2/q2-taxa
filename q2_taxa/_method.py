@@ -240,8 +240,8 @@ def taxonomy_to_metadata(
 
     if cumulative:
         metadata = labels.copy()
-        for idx, col in enumerate(labels.columns):
-            current_levels = labels.columns[:idx + 1]
+        for level, col in enumerate(labels.columns, 1):
+            current_levels = labels.columns[:level]
             metadata[col] = labels.loc[:, current_levels].agg(
                 level_delimiter.join, axis=1
             )
