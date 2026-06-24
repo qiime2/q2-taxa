@@ -232,6 +232,7 @@ def taxonomy_to_metadata(
             header = present_prefixes.iloc[0]
         else:
             header = f'Level {level}'
+
         if header in used:
             header = f'{header} ({level})'
         used.add(header)
