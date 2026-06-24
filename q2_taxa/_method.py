@@ -220,7 +220,7 @@ def taxonomy_to_metadata(
         lambda col: col.str.replace(level_prefix_re, '', regex=True)
     )
 
-    used = set()
+    used_headers = set()
     for level, col in enumerate(levels.columns, 1):
         present_prefixes = prefixes.loc[levels[col] != '', col]
         consistent_prefix = (
