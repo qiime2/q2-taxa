@@ -231,11 +231,11 @@ def taxonomy_to_metadata(
         if consistent_prefix:
             header = present_prefixes.iloc[0]
         else:
-        else:
             header = f'Level {level}'
 
-        if header in used:
+        if header in used_headers:
             header = f'{header} ({level})'
+
         used_headers.add(header)
         labels.rename(columns={col: header}, inplace=True)
 
