@@ -233,7 +233,7 @@ def taxonomy_to_metadata(
         else:
             header = f'Level {level}'
 
-        if header in used:
+        if header in used_headers:
             header = f'{header} ({level})'
         used.add(header)
         labels.rename(columns={col: header}, inplace=True)
