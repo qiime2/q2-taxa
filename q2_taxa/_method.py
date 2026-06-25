@@ -247,7 +247,7 @@ def taxonomy_to_metadata(
                 level_delimiter.join, axis=1
             )
     else:
-        metadata = labels
+        metadata = labels.replace('', pd.NA)
 
     metadata.index = pd.Index(taxonomy.index, name='Feature ID', dtype=object)
 

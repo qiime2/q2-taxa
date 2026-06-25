@@ -139,6 +139,28 @@ class TestTaxonomyToMetadata(unittest.TestCase):
         )
         pdt.assert_frame_equal(obs, exp)
 
+    def test_non_cumulative_uneven_levels_use_missing_values(self):
+        '''
+        Metadata columns cannot store empty strings, so missing
+        non-cumulative levels are represented as missing values.
+        '''
+        taxonomy = self._make_taxonomy({
+            'id1': 'A;B;C',
+            'id2': 'A;B',
+        })
+        result, = self.taxonomy_to_metadata(taxonomy, cumulative=False)
+        obs = self._to_dataframe(result)
+
+        exp = pd.DataFrame(
+            {
+                'Level 1': ['A', 'A'],
+                'Level 2': ['B', 'B'],
+                'Level 3': ['C', float('nan')],
+            },
+            index=pd.Index(['id1', 'id2'], name='Feature ID', dtype=object),
+        )
+        pdt.assert_frame_equal(obs, exp)
+
     def test_whitespace_around_levels_is_stripped(self):
         '''
         Leading/trailing whitespace around each level is stripped.
