@@ -161,6 +161,24 @@ class TestTaxonomyToMetadata(unittest.TestCase):
         )
         pdt.assert_frame_equal(obs, exp)
 
+    def test_cumulative_empty_labels_use_missing_values(self):
+        '''
+        Prefix-only labels such as "d__" become empty after prefix stripping;
+        those exact-empty cumulative values must be represented as missing.
+        '''
+        taxonomy = self._make_taxonomy({
+            'id1': 'd__',
+            'id2': 'd__Bacteria',
+        })
+        result, = self.taxonomy_to_metadata(taxonomy)
+        obs = self._to_dataframe(result)
+
+        exp = pd.DataFrame(
+            {'d': [float('nan'), 'Bacteria']},
+            index=pd.Index(['id1', 'id2'], name='Feature ID', dtype=object),
+        )
+        pdt.assert_frame_equal(obs, exp)
+
     def test_whitespace_around_levels_is_stripped(self):
         '''
         Leading/trailing whitespace around each level is stripped.

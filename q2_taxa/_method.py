@@ -246,6 +246,7 @@ def taxonomy_to_metadata(
             metadata[col] = labels.loc[:, current_levels].agg(
                 level_delimiter.join, axis=1
             )
+        metadata = metadata.replace('', pd.NA)
     else:
         metadata = labels.replace('', pd.NA)
 
