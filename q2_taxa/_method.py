@@ -6,6 +6,8 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
+import re
+
 import pandas as pd
 import biom
 import qiime2
@@ -168,6 +170,89 @@ def feature_ids_to_taxonomy(
     )
 
     return taxonomy
+
+
+def taxonomy_to_metadata(
+    taxonomy: pd.Series,
+    level_delimiter: str = ';',
+    cumulative: bool = True,
+) -> qiime2.Metadata:
+    '''
+    Convert a taxonomy (a series mapping feature IDs to hierarchical taxonomy
+    strings) into a metadata table whose columns are the individual taxonomic
+    levels.
+
+    Parameters
+    ----------
+    taxonomy : pd.Series
+        Taxonomy strings indexed by feature ID.
+    level_delimiter : str
+        The character(s) that delimit taxonomic levels in the taxonomy
+        strings.
+    cumulative : bool
+        If True, each column contains the label at that level joined to all
+        higher-level labels with `level_delimiter`. If False, each column
+        contains only the label at that level.
+
+    Returns
+    -------
+    qiime2.Metadata
+        Metadata indexed by feature ID, with one column per taxonomic level.
+    '''
+    if level_delimiter == '':
+        raise ValueError('The `level_delimiter` must not be empty.')
+
+    level_prefix_re = re.compile(r'^([a-zA-Z])__')
+
+    levels = (
+        taxonomy.astype(str)
+        .str.split(level_delimiter, expand=True, regex=False)
+        .fillna('')
+    )
+    if levels.empty:
+        raise ValueError('Cannot create metadata from an empty taxonomy.')
+    levels = levels.apply(lambda col: col.str.strip())
+
+    prefixes = levels.apply(
+        lambda col: col.str.extract(level_prefix_re, expand=False)
+    )
+    labels = levels.apply(
+        lambda col: col.str.replace(level_prefix_re, '', regex=True)
+    )
+
+    used_headers = set()
+    for level, col in enumerate(levels.columns, 1):
+        present_prefixes = prefixes.loc[levels[col] != '', col]
+        consistent_prefix = (
+            not present_prefixes.empty
+            and present_prefixes.notna().all()
+            and present_prefixes.nunique() == 1
+        )
+        if consistent_prefix:
+            header = present_prefixes.iloc[0]
+        else:
+            header = f'Level {level}'
+
+        if header in used_headers:
+            header = f'{header} ({level})'
+
+        used_headers.add(header)
+        labels.rename(columns={col: header}, inplace=True)
+
+    if cumulative:
+        metadata = labels.copy()
+        for level, col in enumerate(labels.columns, 1):
+            current_levels = labels.columns[:level]
+            metadata[col] = labels.loc[:, current_levels].agg(
+                level_delimiter.join, axis=1
+            )
+        metadata = metadata.replace('', pd.NA)
+    else:
+        metadata = labels.replace('', pd.NA)
+
+    metadata.index = pd.Index(taxonomy.index, name='Feature ID', dtype=object)
+
+    return qiime2.Metadata(metadata)
 
 
 def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,

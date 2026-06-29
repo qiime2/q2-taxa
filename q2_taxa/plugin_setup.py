@@ -17,11 +17,12 @@ from q2_types.feature_table import (
     FeatureTable, Frequency, RelativeFrequency, PresenceAbsence,
     Composition,
 )
+from q2_types.metadata import ImmutableMetadata
 
 
 from . import (
     barplot, barplot2, collapse, feature_ids_to_taxonomy, filter_table,
-    filter_seqs
+    filter_seqs, taxonomy_to_metadata
 )
 import q2_taxa._examples as ex
 
@@ -123,6 +124,44 @@ plugin.methods.register_function(
         'This method converts feature IDs in a feature table into a taxonomy '
         'by splitting IDs on a delimiter and joining levels with semicolons.'
     )
+)
+
+plugin.methods.register_function(
+    function=taxonomy_to_metadata,
+    inputs={'taxonomy': FeatureData[Taxonomy]},
+    parameters={
+        'level_delimiter': qiime2.plugin.Str,
+        'cumulative': qiime2.plugin.Bool,
+    },
+    outputs=[('metadata', ImmutableMetadata)],
+    input_descriptions={
+        'taxonomy': ('Taxonomic annotations for features. Each taxonomy '
+                     'string is split on `level_delimiter` to derive the '
+                     'individual taxonomic levels.')
+    },
+    parameter_descriptions={
+        'level_delimiter': ('The character(s) that delimit taxonomic levels '
+                            'in the taxonomy strings.'),
+        'cumulative': ('If True, each column contains the label at that '
+                       'level joined to all higher-level labels with '
+                       '`level_delimiter`. If False, each column contains '
+                       'only the label at that level.'),
+    },
+    output_descriptions={
+        'metadata': ('A metadata table indexed by feature ID with one column '
+                     'per taxonomic level. Level prefixes of the form '
+                     '"x__" are stripped from the values; when a single '
+                     'prefix is consistent across a level, that letter is '
+                     'used as the column header (otherwise the column is '
+                     'named "Level N").')
+    },
+    name='Convert taxonomy to metadata.',
+    description=(
+        'Convert a taxonomy artifact into an ImmutableMetadata artifact '
+        'where each taxonomic level becomes its own column. This makes the '
+        'taxonomic levels usable anywhere metadata is accepted (for '
+        'example, as a column to color or facet by in a plot).'
+    ),
 )
 
 plugin.methods.register_function(

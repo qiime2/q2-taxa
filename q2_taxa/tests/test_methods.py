@@ -18,9 +18,8 @@ from qiime2 import Artifact
 from qiime2.sdk import PluginManager
 from qiime2.plugin.testing import TestPluginBase
 from unittest.mock import patch
-from q2_taxa import (
-    collapse, filter_table, filter_seqs, _normalize_relative_frequency
-)
+from q2_taxa import collapse, filter_table, filter_seqs
+from q2_taxa._util import _normalize_relative_frequency
 
 
 class CollapseTests(unittest.TestCase):
