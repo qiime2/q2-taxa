@@ -274,18 +274,13 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
     if mode == 'exact':
         query_template = "Taxon='%s'"
     elif mode == 'contains':
-        if include is not None:
-            include = include.replace('_', '\\_')
-        if exclude is not None:
-            exclude = exclude.replace('_', '\\_')
-        query_template = "Taxon LIKE '%%%s%%' ESCAPE '\\'"
+        query_template = "Taxon LIKE '%%%s%%'"
     else:
         raise ValueError('Unknown mode: %s' % mode)
 
     # First identify the features that are included (if no includes are
     # provided, include all features).
     if include is not None:
-        include = include.split(query_delimiter)
         ids_to_keep = set()
         for e in include:
             query = query_template % e
@@ -297,7 +292,6 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
 
     # Then, remove features that are excluded.
     if exclude is not None:
-        exclude = exclude.split(query_delimiter)
         for e in exclude:
             query = query_template % e
             # an sqlite database is being built for every query. if performance

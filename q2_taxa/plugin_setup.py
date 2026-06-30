@@ -170,8 +170,8 @@ plugin.methods.register_function(
         'taxonomy': FeatureData[Taxonomy],
         'table': FeatureTable[T1]
     },
-    parameters={'include': qiime2.plugin.Str,
-                'exclude': qiime2.plugin.Str,
+    parameters={'include': qiime2.plugin.List[qiime2.plugin.Str],
+                'exclude': qiime2.plugin.List[qiime2.plugin.Str],
                 'mode':
                     qiime2.plugin.Str % qiime2.plugin.Choices(
                         ['exact', 'contains']),
@@ -227,8 +227,8 @@ plugin.methods.register_function(
         'taxonomy': FeatureData[Taxonomy],
         'sequences': FeatureData[T3]
     },
-    parameters={'include': qiime2.plugin.Str,
-                'exclude': qiime2.plugin.Str,
+    parameters={'include': qiime2.plugin.List[qiime2.plugin.Str],
+                'exclude': qiime2.plugin.List[qiime2.plugin.Str],
                 'mode':
                     qiime2.plugin.Str % qiime2.plugin.Choices(
                         ['exact', 'contains']),
