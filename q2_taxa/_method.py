@@ -274,7 +274,11 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
     if mode == 'exact':
         query_template = "Taxon='%s'"
     elif mode == 'contains':
-        query_template = "Taxon LIKE '%%%s%%'"
+        if include is not None:
+            include = [inc.replace('_', '\\_') for inc in include]
+        if exclude is not None:
+            exclude = [exc.replace('_', '\\_') for exc in exclude]
+        query_template = "Taxon LIKE '%%%s%%' ESCAPE '\\'"
     else:
         raise ValueError('Unknown mode: %s' % mode)
 
@@ -302,7 +306,7 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
 
 
 def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
-                 include: str = None, exclude: str = None,
+                 include: list[str] = None, exclude: list[str] = None,
                  query_delimiter: str = ',', mode: str = 'contains') \
                  -> pd.DataFrame:
     is_rel_freq = _is_relative_frequency(table)
@@ -334,7 +338,7 @@ def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
 
 
 def filter_seqs(sequences: pd.Series, taxonomy: qiime2.Metadata,
-                include: str = None, exclude: str = None,
+                include: list[str] = None, exclude: list[str] = None,
                 query_delimiter: str = ',', mode: str = 'contains') \
                 -> pd.Series:
     ids_to_keep = _ids_to_keep_from_taxonomy(
