@@ -308,7 +308,7 @@ def _ids_to_keep_from_taxonomy(
 
 def filter_table(
     table: pd.DataFrame, taxonomy: qiime2.Metadata, include: str = None,
-    exclude: str = None, mode: str = 'contains'
+    exclude: list[str] = None, mode: list[str] = 'contains'
 ) -> pd.DataFrame:
     is_rel_freq = _is_relative_frequency(table)
 
@@ -340,7 +340,7 @@ def filter_table(
 
 def filter_seqs(
     sequences: pd.Series, taxonomy: qiime2.Metadata, include: str = None,
-    exclude: str = None, mode: str = 'contains'
+    exclude: list[str] = None, mode: list[str] = 'contains'
 ) -> pd.Series:
     ids_to_keep = _ids_to_keep_from_taxonomy(
         sequences.index, taxonomy, include, exclude,
