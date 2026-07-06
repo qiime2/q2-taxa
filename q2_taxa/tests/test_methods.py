@@ -704,8 +704,6 @@ class FilterTable(unittest.TestCase):
         exp = pd.DataFrame([[2.0], [1.0], [9.0]],
                            index=['A', 'B', 'C'],
                            columns=['feat1'])
-        print('Observed:\n', obs)
-        print('Expected:\n', exp)
 
         pdt.assert_frame_equal(obs, exp, check_like=True)
 
