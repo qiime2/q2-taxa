@@ -255,8 +255,9 @@ def taxonomy_to_metadata(
     return qiime2.Metadata(metadata)
 
 
-def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
-                               query_delimiter, mode):
+def _ids_to_keep_from_taxonomy(
+    feature_ids, taxonomy, include, exclude, mode
+):
     if include is None and exclude is None:
         raise ValueError("At least one filtering term must be provided.")
 
@@ -275,9 +276,9 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
         query_template = "Taxon='%s'"
     elif mode == 'contains':
         if include is not None:
-            include = include.replace('_', '\\_')
+            include = [inc.replace('_', '\\_') for inc in include]
         if exclude is not None:
-            exclude = exclude.replace('_', '\\_')
+            exclude = [exc.replace('_', '\\_') for exc in exclude]
         query_template = "Taxon LIKE '%%%s%%' ESCAPE '\\'"
     else:
         raise ValueError('Unknown mode: %s' % mode)
@@ -285,7 +286,6 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
     # First identify the features that are included (if no includes are
     # provided, include all features).
     if include is not None:
-        include = include.split(query_delimiter)
         ids_to_keep = set()
         for e in include:
             query = query_template % e
@@ -297,7 +297,6 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
 
     # Then, remove features that are excluded.
     if exclude is not None:
-        exclude = exclude.split(query_delimiter)
         for e in exclude:
             query = query_template % e
             # an sqlite database is being built for every query. if performance
@@ -307,15 +306,15 @@ def _ids_to_keep_from_taxonomy(feature_ids, taxonomy, include, exclude,
     return list(ids_to_keep)
 
 
-def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
-                 include: str = None, exclude: str = None,
-                 query_delimiter: str = ',', mode: str = 'contains') \
-                 -> pd.DataFrame:
+def filter_table(
+    table: pd.DataFrame, taxonomy: qiime2.Metadata, include: str = None,
+    exclude: list[str] = None, mode: list[str] = 'contains'
+) -> pd.DataFrame:
     is_rel_freq = _is_relative_frequency(table)
 
     ids_to_keep = _ids_to_keep_from_taxonomy(
-        table.columns, taxonomy, include, exclude, query_delimiter,
-        mode)
+        table.columns, taxonomy, include, exclude, mode
+    )
 
     if len(ids_to_keep) == 0:
         raise ValueError("All features were filtered, resulting in an "
@@ -339,12 +338,12 @@ def filter_table(table: pd.DataFrame, taxonomy: qiime2.Metadata,
     return table
 
 
-def filter_seqs(sequences: pd.Series, taxonomy: qiime2.Metadata,
-                include: str = None, exclude: str = None,
-                query_delimiter: str = ',', mode: str = 'contains') \
-                -> pd.Series:
+def filter_seqs(
+    sequences: pd.Series, taxonomy: qiime2.Metadata, include: str = None,
+    exclude: list[str] = None, mode: list[str] = 'contains'
+) -> pd.Series:
     ids_to_keep = _ids_to_keep_from_taxonomy(
-        sequences.index, taxonomy, include, exclude, query_delimiter,
+        sequences.index, taxonomy, include, exclude,
         mode)
 
     if len(ids_to_keep) == 0:

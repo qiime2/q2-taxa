@@ -14,8 +14,7 @@ from q2_types.feature_data import (
     FeatureData, Taxonomy, Sequence, AlignedSequence
 )
 from q2_types.feature_table import (
-    FeatureTable, Frequency, RelativeFrequency, PresenceAbsence,
-    Composition,
+    FeatureTable, Frequency, RelativeFrequency, PresenceAbsence, Composition
 )
 from q2_types.metadata import ImmutableMetadata
 
@@ -170,12 +169,13 @@ plugin.methods.register_function(
         'taxonomy': FeatureData[Taxonomy],
         'table': FeatureTable[T1]
     },
-    parameters={'include': qiime2.plugin.Str,
-                'exclude': qiime2.plugin.Str,
-                'mode':
-                    qiime2.plugin.Str % qiime2.plugin.Choices(
-                        ['exact', 'contains']),
-                'query_delimiter': qiime2.plugin.Str},
+    parameters={
+        'include': qiime2.plugin.List[qiime2.plugin.Str],
+        'exclude': qiime2.plugin.List[qiime2.plugin.Str],
+        'mode': qiime2.plugin.Str % qiime2.plugin.Choices(
+            ['exact', 'contains']
+        ),
+    },
     outputs=[('filtered_table', FeatureTable[T1])],
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
@@ -199,11 +199,6 @@ plugin.methods.register_function(
                  'annotation. "contains" requires that the annotation '
                  'has the term as a substring; "exact" requires that the '
                  'annotation is a perfect match to a search term.'),
-        'query_delimiter': ('The string used to delimit multiple search terms '
-                            'provided to include or exclude. This parameter '
-                            'should only need to be modified if the default '
-                            'delimiter (a comma) is used in the provided '
-                            'taxonomic annotations.')
     },
     output_descriptions={
         'filtered_table': ('The taxonomy-filtered feature table.')
@@ -227,12 +222,13 @@ plugin.methods.register_function(
         'taxonomy': FeatureData[Taxonomy],
         'sequences': FeatureData[T3]
     },
-    parameters={'include': qiime2.plugin.Str,
-                'exclude': qiime2.plugin.Str,
-                'mode':
-                    qiime2.plugin.Str % qiime2.plugin.Choices(
-                        ['exact', 'contains']),
-                'query_delimiter': qiime2.plugin.Str},
+    parameters={
+        'include': qiime2.plugin.List[qiime2.plugin.Str],
+        'exclude': qiime2.plugin.List[qiime2.plugin.Str],
+        'mode': qiime2.plugin.Str % qiime2.plugin.Choices(
+            ['exact', 'contains']
+        ),
+    },
     outputs=[('filtered_sequences', FeatureData[T3])],
     input_descriptions={
         'taxonomy': ('Taxonomic annotations for features in the provided '
@@ -256,11 +252,6 @@ plugin.methods.register_function(
                  'annotation. "contains" requires that the annotation '
                  'has the term as a substring; "exact" requires that the '
                  'annotation is a perfect match to a search term.'),
-        'query_delimiter': ('The string used to delimit multiple search terms '
-                            'provided to include or exclude. This parameter '
-                            'should only need to be modified if the default '
-                            'delimiter (a comma) is used in the provided '
-                            'taxonomic annotations.')
     },
     output_descriptions={
         'filtered_sequences': ('The taxonomy-filtered feature sequences.')
