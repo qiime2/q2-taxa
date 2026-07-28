@@ -1146,6 +1146,38 @@ class FilterSeqs(unittest.TestCase):
 
             pdt.assert_series_equal(obs, exp)
 
+    def test_filter_linked_seqs(self):
+        pm = PluginManager()
+        filter_seqs = pm.plugins['taxa'].actions['filter_seqs']
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            with open(Path(tempdir) / 'linked-dna-sequences.fasta', 'w') as f:
+                f.write('>seq1\nAGGG GTCA\n')
+                f.write('>seq2\nCTGA AGTT\n')
+
+            taxonomy = pd.DataFrame(
+                ['aa; bb; cc', 'aa; bb; dd ee'],
+                index=pd.Index(['seq1', 'seq2'], name='Feature ID'),
+                columns=['Taxon']
+            )
+            aligned_seqs = Artifact.import_data(
+                type='FeatureData[LinkedSequence]',
+                view=Path(tempdir) / 'linked-dna-sequences.fasta'
+            )
+            taxonomy = Artifact.import_data(
+                type='FeatureData[Taxonomy]', view=taxonomy
+            )
+
+            exp = pd.Series(['AGGG GTCA'], index=['seq1'])
+
+            filtered, = filter_seqs(
+                aligned_seqs, taxonomy, include=['cc'], exclude=['ee']
+            )
+
+            obs = filtered.view(pd.Series).apply(str)
+
+            pdt.assert_series_equal(obs, exp)
+
 
 class TestUsageExamples(TestPluginBase):
     package = 'q2_taxa.tests'
