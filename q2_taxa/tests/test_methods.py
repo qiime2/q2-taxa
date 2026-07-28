@@ -1160,7 +1160,7 @@ class FilterSeqs(unittest.TestCase):
                 index=pd.Index(['seq1', 'seq2'], name='Feature ID'),
                 columns=['Taxon']
             )
-            aligned_seqs = Artifact.import_data(
+            linked_seqs = Artifact.import_data(
                 type='FeatureData[LinkedSequence]',
                 view=Path(tempdir) / 'linked-dna-sequences.fasta'
             )
@@ -1171,7 +1171,7 @@ class FilterSeqs(unittest.TestCase):
             exp = pd.Series(['AGGG GTCA'], index=['seq1'])
 
             filtered, = filter_seqs(
-                aligned_seqs, taxonomy, include=['cc'], exclude=['ee']
+                linked_seqs, taxonomy, include=['cc'], exclude=['ee']
             )
 
             obs = filtered.view(pd.Series).apply(str)
