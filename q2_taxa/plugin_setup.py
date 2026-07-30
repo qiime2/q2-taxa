@@ -11,7 +11,7 @@ import qiime2.plugin
 import q2_taxa
 
 from q2_types.feature_data import (
-    FeatureData, Taxonomy, Sequence, AlignedSequence
+    FeatureData, Taxonomy, Sequence, AlignedSequence, LinkedSequence
 )
 from q2_types.feature_table import (
     FeatureTable, Frequency, RelativeFrequency, PresenceAbsence, Composition
@@ -27,7 +27,7 @@ import q2_taxa._examples as ex
 
 T1 = qiime2.plugin.TypeMatch([Frequency, PresenceAbsence, RelativeFrequency])
 T2 = qiime2.plugin.TypeMatch([Frequency, RelativeFrequency, Composition])
-T3 = qiime2.plugin.TypeMatch([Sequence, AlignedSequence])
+T3 = qiime2.plugin.TypeMatch([Sequence, AlignedSequence, LinkedSequence])
 
 plugin = qiime2.plugin.Plugin(
     name='taxa',
