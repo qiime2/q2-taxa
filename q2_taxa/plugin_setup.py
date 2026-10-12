@@ -186,15 +186,13 @@ plugin.methods.register_function(
         'table': 'Feature table to be filtered.'},
     parameter_descriptions={
         'include': ('One or more search terms that indicate which taxa should '
-                    'be included in the resulting table. If providing '
-                    'more than one term, terms should be delimited by the '
-                    'query-delimiter character. By default, all taxa '
-                    'will be included.'),
+                    'be included in the resulting table. To provide '
+                    'more than one term, pass this parameter multiple times. '
+                    'By default, all taxa will be included.'),
         'exclude': ('One or more search terms that indicate which taxa should '
-                    'be excluded from the resulting table. If providing '
-                    'more than one term, terms should be delimited by the '
-                    'query-delimiter character. By default, no taxa '
-                    'will be excluded.'),
+                    'be excluded from the resulting table. To provide '
+                    'more than one term, pass this parameter multiple times. '
+                    'By default, no taxa will be excluded.'),
         'mode': ('Mode for determining if a search term matches a taxonomic '
                  'annotation. "contains" requires that the annotation '
                  'has the term as a substring; "exact" requires that the '
@@ -239,15 +237,13 @@ plugin.methods.register_function(
         'sequences': 'Feature sequences to be filtered.'},
     parameter_descriptions={
         'include': ('One or more search terms that indicate which taxa should '
-                    'be included in the resulting sequences. If providing '
-                    'more than one term, terms should be delimited by the '
-                    'query-delimiter character. By default, all taxa '
-                    'will be included.'),
+                    'be included in the resulting sequences. To provide '
+                    'more than one term, pass this parameter multiple times. '
+                    'By default, all taxa will be included.'),
         'exclude': ('One or more search terms that indicate which taxa should '
-                    'be excluded from the resulting sequences. If providing '
-                    'more than one term, terms should be delimited by the '
-                    'query-delimiter character. By default, no taxa '
-                    'will be excluded.'),
+                    'be excluded from the resulting sequences. To provide '
+                    'more than one term, pass this parameter multiple times. '
+                    'By default, no taxa will be excluded.'),
         'mode': ('Mode for determining if a search term matches a taxonomic '
                  'annotation. "contains" requires that the annotation '
                  'has the term as a substring; "exact" requires that the '
