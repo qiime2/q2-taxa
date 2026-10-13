@@ -175,6 +175,7 @@ plugin.methods.register_function(
         'mode': qiime2.plugin.Str % qiime2.plugin.Choices(
             ['exact', 'contains']
         ),
+        'query_delimiter': qiime2.plugin.Str
     },
     outputs=[('filtered_table', FeatureTable[T1])],
     input_descriptions={
@@ -187,18 +188,26 @@ plugin.methods.register_function(
     parameter_descriptions={
         'include': ('One or more search terms that indicate which taxa should '
                     'be included in the resulting table. If providing '
-                    'more than one term, terms should be delimited by the '
-                    'query-delimiter character. By default, all taxa '
-                    'will be included.'),
+                    'more than one term, this can either be done by providing '
+                    'a delimited string (see `query_delimiter`) or by passing '
+                    '`include` multiple times (one per desired term). '
+                    'By default, all taxa will be included.'),
         'exclude': ('One or more search terms that indicate which taxa should '
                     'be excluded from the resulting table. If providing '
-                    'more than one term, terms should be delimited by the '
-                    'query-delimiter character. By default, no taxa '
-                    'will be excluded.'),
+                    'more than one term, this can either be done by providing '
+                    'a delimited string (see `query_delimiter`) or by passing '
+                    '`exclude` multiple times (one per desired term). '
+                    'By default, no taxa will be excluded.'),
         'mode': ('Mode for determining if a search term matches a taxonomic '
                  'annotation. "contains" requires that the annotation '
                  'has the term as a substring; "exact" requires that the '
                  'annotation is a perfect match to a search term.'),
+        'query_delimiter': ('The string used to delimit multiple search terms '
+                            'provided to include or exclude. This applies '
+                            'whether terms are given as one delimited string '
+                            'or by repeating the parameter. It should only '
+                            'be changed if your search terms contain a comma.'
+                            ),
     },
     output_descriptions={
         'filtered_table': ('The taxonomy-filtered feature table.')
@@ -228,6 +237,7 @@ plugin.methods.register_function(
         'mode': qiime2.plugin.Str % qiime2.plugin.Choices(
             ['exact', 'contains']
         ),
+        'query_delimiter': qiime2.plugin.Str
     },
     outputs=[('filtered_sequences', FeatureData[T3])],
     input_descriptions={
@@ -240,18 +250,26 @@ plugin.methods.register_function(
     parameter_descriptions={
         'include': ('One or more search terms that indicate which taxa should '
                     'be included in the resulting sequences. If providing '
-                    'more than one term, terms should be delimited by the '
-                    'query-delimiter character. By default, all taxa '
-                    'will be included.'),
+                    'more than one term, this can either be done by providing '
+                    'a delimited string (see `query_delimiter`) or by passing '
+                    '`include` multiple times (one per desired term). '
+                    'By default, all taxa will be included.'),
         'exclude': ('One or more search terms that indicate which taxa should '
                     'be excluded from the resulting sequences. If providing '
-                    'more than one term, terms should be delimited by the '
-                    'query-delimiter character. By default, no taxa '
-                    'will be excluded.'),
+                    'more than one term, this can either be done by providing '
+                    'a delimited string (see `query_delimiter`) or by passing '
+                    '`exclude` multiple times (one per desired term). '
+                    'By default, no taxa will be excluded.'),
         'mode': ('Mode for determining if a search term matches a taxonomic '
                  'annotation. "contains" requires that the annotation '
                  'has the term as a substring; "exact" requires that the '
                  'annotation is a perfect match to a search term.'),
+        'query_delimiter': ('The string used to delimit multiple search terms '
+                            'provided to include or exclude. This applies '
+                            'whether terms are given as one delimited string '
+                            'or by repeating the parameter. It should only '
+                            'be changed if your search terms contain a comma.'
+                            ),
     },
     output_descriptions={
         'filtered_sequences': ('The taxonomy-filtered feature sequences.')
