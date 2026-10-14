@@ -543,6 +543,35 @@ class FilterTable(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, expected_regex='empty table'):
             obs = filter_table(table, taxonomy, include=['bb'], mode='exact')
 
+    def test_filter_table_include_mixed_input_formats(self):
+        table = pd.DataFrame([[2.0, 2.0, 2.0], [1.0, 1.0, 1.0],
+                              [9.0, 8.0, 7.0], [0.0, 4.0, 2.0]],
+                             index=['A', 'B', 'C', 'D'],
+                             columns=['feat1', 'feat2', 'feat3'])
+        taxonomy = qiime2.Metadata(
+            pd.DataFrame(['aa; bb; cc', 'aa; bb; dd', 'aa; bb; ee'],
+                         index=pd.Index(['feat1', 'feat2', 'feat3'],
+                                        name='id'),
+                         columns=['Taxon']))
+
+        obs1 = filter_table(table, taxonomy, include=['cc,dd'])
+        obs2 = filter_table(table, taxonomy, include=['cc', 'dd'])
+        exp12 = pd.DataFrame([[2.0, 2.0], [1.0, 1.0],
+                              [9.0, 8.0], [0.0, 4.0]],
+                             index=['A', 'B', 'C', 'D'],
+                             columns=['feat1', 'feat2'])
+
+        pdt.assert_frame_equal(obs1, obs2, check_like=True)
+        pdt.assert_frame_equal(obs1, exp12, check_like=True)
+
+        obs3 = filter_table(table, taxonomy, include=['cc,dd', 'ee'])
+        exp3 = pd.DataFrame([[2.0, 2.0, 2.0], [1.0, 1.0, 1.0],
+                             [9.0, 8.0, 7.0], [0.0, 4.0, 2.0]],
+                            index=['A', 'B', 'C', 'D'],
+                            columns=['feat1', 'feat2', 'feat3'])
+
+        pdt.assert_frame_equal(obs3, exp3, check_like=True)
+
     def test_filter_table_exclude(self):
         table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
                              index=['A', 'B', 'C', 'D'],
@@ -647,6 +676,32 @@ class FilterTable(unittest.TestCase):
             obs = filter_table(table, taxonomy,
                                exclude=['aa; bb; cc', 'aa; bb; dd ee'],
                                mode='exact')
+
+    def test_filter_table_exclude_mixed_input_formats(self):
+        table = pd.DataFrame([[2.0, 2.0, 2.0, 2.0], [1.0, 1.0, 1.0, 1.0],
+                              [9.0, 8.0, 7.0, 6.0], [0.0, 4.0, 2.0, 1.0]],
+                             index=['A', 'B', 'C', 'D'],
+                             columns=['feat1', 'feat2', 'feat3', 'feat4'])
+        taxonomy = qiime2.Metadata(pd.DataFrame(
+            ['aa; bb; cc', 'aa; bb; dd', 'aa; bb; ee', 'ff; gg; hh'],
+            index=pd.Index(['feat1', 'feat2', 'feat3', 'feat4'], name='id'),
+            columns=['Taxon']))
+
+        obs1 = filter_table(table, taxonomy, exclude=['cc,dd'])
+        obs2 = filter_table(table, taxonomy, exclude=['cc', 'dd'])
+        exp12 = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [7.0, 6.0], [2.0, 1.0]],
+                             index=['A', 'B', 'C', 'D'],
+                             columns=['feat3', 'feat4'])
+
+        pdt.assert_frame_equal(obs1, obs2, check_like=True)
+        pdt.assert_frame_equal(obs1, exp12, check_like=True)
+
+        obs3 = filter_table(table, taxonomy, exclude=['cc,dd', 'ee'])
+        exp3 = pd.DataFrame([[2.0], [1.0], [6.0], [1.0]],
+                            index=['A', 'B', 'C', 'D'],
+                            columns=['feat4'])
+
+        pdt.assert_frame_equal(obs3, exp3, check_like=True)
 
     def test_filter_table_include_exclude(self):
         table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
@@ -929,6 +984,33 @@ class FilterSeqs(unittest.TestCase):
                                     expected_regex='empty collection'):
             obs = filter_seqs(seqs, taxonomy, include=['bb'], mode='exact')
 
+    def test_filter_seqs_include_mixed_input_formats(self):
+        seqs = pd.Series(['ACGT', 'ACCC', 'GTTT'],
+                         index=['feat1', 'feat2', 'feat3'])
+        taxonomy = qiime2.Metadata(
+            pd.DataFrame(['aa; bb; cc', 'aa; bb; dd', 'aa; bb; ee'],
+                         index=pd.Index(['feat1', 'feat2', 'feat3'],
+                                        name='id'),
+                         columns=['Taxon']))
+
+        # string in-place formatting
+        obs1 = filter_seqs(seqs, taxonomy, include=['cc,dd']).sort_values()
+        # multi-param formatting
+        obs2 = filter_seqs(seqs, taxonomy, include=['cc', 'dd']).sort_values()
+        exp12 = pd.Series(['ACGT', 'ACCC'],
+                          index=['feat1', 'feat2']).sort_values()
+
+        pdt.assert_series_equal(obs1, obs2)
+        pdt.assert_series_equal(obs1, exp12)
+
+        # combined formatting
+        obs3 = filter_seqs(seqs, taxonomy,
+                           include=['cc,dd', 'ee']).sort_values()
+        exp3 = pd.Series(['ACGT', 'ACCC', 'GTTT'],
+                         index=['feat1', 'feat2', 'feat3']).sort_values()
+
+        pdt.assert_series_equal(obs3, exp3)
+
     def test_filter_seqs_exclude(self):
         seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
         taxonomy = qiime2.Metadata(
@@ -1041,6 +1123,32 @@ class FilterSeqs(unittest.TestCase):
             obs = filter_seqs(seqs, taxonomy,
                               exclude=['aa; bb; cc', 'aa; bb; dd ee'],
                               mode='exact')
+
+    def test_filter_seqs_exclude_mixed_input_formats(self):
+        seqs = pd.Series(['ACGT', 'ACCC', 'GTTT', 'TGCA'],
+                         index=['feat1', 'feat2', 'feat3', 'feat4'])
+        taxonomy = qiime2.Metadata(pd.DataFrame(
+            ['aa; bb; cc', 'aa; bb; dd', 'aa; bb; ee', 'ff; gg; hh'],
+            index=pd.Index(['feat1', 'feat2', 'feat3', 'feat4'], name='id'),
+            columns=['Taxon']))
+
+        # string in-place formatting
+        obs1 = filter_seqs(seqs, taxonomy, exclude=['cc,dd']).sort_values()
+        # multi-param formatting
+        obs2 = filter_seqs(seqs, taxonomy, exclude=['cc', 'dd']).sort_values()
+        exp12 = pd.Series(['GTTT', 'TGCA'],
+                          index=['feat3', 'feat4']).sort_values()
+
+        pdt.assert_series_equal(obs1, obs2)
+        pdt.assert_series_equal(obs1, exp12)
+
+        # combined formatting
+        obs3 = filter_seqs(seqs, taxonomy,
+                           exclude=['cc,dd', 'ee']).sort_values()
+        exp3 = pd.Series(['TGCA'],
+                         index=['feat4']).sort_values()
+
+        pdt.assert_series_equal(obs3, exp3)
 
     def test_filter_seqs_include_exclude(self):
         seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
