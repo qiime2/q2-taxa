@@ -415,26 +415,31 @@ class FilterTable(unittest.TestCase):
 
         pdt.assert_frame_equal(obs, table, check_like=True)
 
-    def test_alt_delimiter(self):
-        table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [0.0, 4.0]],
+    def test_filter_table_alt_delimiter_with_comma_retained(self):
+        table = pd.DataFrame([[2.0, 2.0, 2.0, 2.0], [1.0, 1.0, 1.0, 1.0],
+                              [9.0, 8.0, 7.0, 6.0], [0.0, 4.0, 2.0, 1.0]],
                              index=['A', 'B', 'C', 'D'],
-                             columns=['feat1', 'feat2'])
-        taxonomy = qiime2.Metadata(
-                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
-                             index=pd.Index(['feat1', 'feat2'], name='id'),
-                             columns=['Taxon']))
+                             columns=['feat1', 'feat2', 'feat3', 'feat4'])
+        taxonomy = qiime2.Metadata(pd.DataFrame(
+            ['aa; bb; cc', 'aa; bb; dd', 'aa; bb; x,y', 'ff; gg; hh'],
+            index=pd.Index(['feat1', 'feat2', 'feat3', 'feat4'], name='id'),
+            columns=['Taxon']))
 
         # include with delimiter
-        obs = filter_table(table, taxonomy, include=['cc@peanut@ee'],
-                           query_delimiter='@peanut@')
-        pdt.assert_frame_equal(obs, table, check_like=True)
+        obs = filter_table(table, taxonomy, include=['cc', 'dd&&&x,y'],
+                           query_delimiter='&&&')
+        exp = pd.DataFrame([[2.0, 2.0, 2.0], [1.0, 1.0, 1.0],
+                            [9.0, 8.0, 7.0], [0.0, 4.0, 2.0]],
+                           index=['A', 'B', 'C', 'D'],
+                           columns=['feat1', 'feat2', 'feat3'])
+        pdt.assert_frame_equal(obs, exp, check_like=True)
 
         # exclude with delimiter
-        obs = filter_table(table, taxonomy, exclude=['ww@peanut@ee'],
-                           query_delimiter='@peanut@')
-        exp = pd.DataFrame([[2.0], [1.0], [9.0]],
-                           index=['A', 'B', 'C'],
-                           columns=['feat1'])
+        obs = filter_table(table, taxonomy, exclude=['cc', 'dd&&&x,y'],
+                           query_delimiter='&&&')
+        exp = pd.DataFrame([[2.0], [1.0], [6.0], [1.0]],
+                           index=['A', 'B', 'C', 'D'],
+                           columns=['feat4'])
         pdt.assert_frame_equal(obs, exp, check_like=True)
 
     def test_filter_table_unknown_mode(self):
@@ -850,25 +855,27 @@ class FilterSeqs(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'At least one'):
             filter_seqs(seqs, taxonomy)
 
-    def test_alt_delimiter(self):
-        seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
-        taxonomy = qiime2.Metadata(
-                pd.DataFrame(['aa; bb; cc', 'aa; bb; dd ee'],
-                             index=pd.Index(['feat1', 'feat2'], name='id'),
-                             columns=['Taxon']))
+    def test_filter_seqs_alt_delimiter_with_comma_retained(self):
+        seqs = pd.Series(['ACGT', 'ACCC', 'GTTT', 'TGCA'],
+                         index=['feat1', 'feat2', 'feat3', 'feat4'])
+        taxonomy = qiime2.Metadata(pd.DataFrame(
+            ['aa; bb; cc', 'aa; bb; dd', 'aa; bb; x,y', 'ff; gg; hh'],
+            index=pd.Index(['feat1', 'feat2', 'feat3', 'feat4'], name='id'),
+            columns=['Taxon']))
 
         # include with delimiter
-        obs = filter_seqs(seqs, taxonomy, include=['cc@peanut@ee'],
-                          query_delimiter='@peanut@')
-        exp = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        obs = filter_seqs(seqs, taxonomy, include=['cc', 'dd&&&x,y'],
+                          query_delimiter='&&&')
+        exp = pd.Series(['ACGT', 'ACCC', 'GTTT'],
+                        index=['feat1', 'feat2', 'feat3'])
         obs.sort_values(inplace=True)
         exp.sort_values(inplace=True)
         pdt.assert_series_equal(obs, exp)
 
         # exclude with delimiter
-        obs = filter_seqs(seqs, taxonomy, exclude=['ww@peanut@ee'],
-                          query_delimiter='@peanut@')
-        exp = pd.Series(['ACGT'], index=['feat1'])
+        obs = filter_seqs(seqs, taxonomy, exclude=['cc', 'dd&&&x,y'],
+                          query_delimiter='&&&')
+        exp = pd.Series(['TGCA'], index=['feat4'])
         obs.sort_values(inplace=True)
         exp.sort_values(inplace=True)
         pdt.assert_series_equal(obs, exp)
