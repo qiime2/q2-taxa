@@ -415,13 +415,36 @@ class FilterTable(unittest.TestCase):
 
         pdt.assert_frame_equal(obs, table, check_like=True)
 
+    def test_filter_table_bare_string(self):
+        table = pd.DataFrame([[2.0, 2.0], [1.0, 1.0], [9.0, 8.0], [1.0, 4.0]],
+                             index=['A', 'B', 'C', 'D'],
+                             columns=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(pd.DataFrame(
+            ['aa; bb; cc', 'bb; dd; ff'],
+            index=pd.Index(['feat1', 'feat2'], name='id'),
+            columns=['Taxon']))
+
+        # include
+        obs1 = filter_table(table, taxonomy, include='cc,xx')
+        exp1 = pd.DataFrame([[2.0], [1.0], [9.0], [1.0]],
+                            index=['A', 'B', 'C', 'D'],
+                            columns=['feat1'])
+        pdt.assert_frame_equal(obs1, exp1, check_like=True)
+
+        # exclude
+        obs2 = filter_table(table, taxonomy, exclude='dd,ff')
+        exp2 = pd.DataFrame([[2.0], [1.0], [9.0], [1.0]],
+                            index=['A', 'B', 'C', 'D'],
+                            columns=['feat1'])
+        pdt.assert_frame_equal(obs2, exp2, check_like=True)
+
     def test_filter_table_alt_delimiter_with_comma_retained(self):
         table = pd.DataFrame([[2.0, 2.0, 2.0, 2.0], [1.0, 1.0, 1.0, 1.0],
                               [9.0, 8.0, 7.0, 6.0], [0.0, 4.0, 2.0, 1.0]],
                              index=['A', 'B', 'C', 'D'],
                              columns=['feat1', 'feat2', 'feat3', 'feat4'])
         taxonomy = qiime2.Metadata(pd.DataFrame(
-            ['aa; bb; cc', 'aa; bb; dd', 'aa; bb; x,y', 'ff; gg; hh'],
+            ['aa; bb; cc', 'aa; bb; dd', 'aa; bb; x,y', 'ff; gg; yy'],
             index=pd.Index(['feat1', 'feat2', 'feat3', 'feat4'], name='id'),
             columns=['Taxon']))
 
@@ -855,11 +878,28 @@ class FilterSeqs(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'At least one'):
             filter_seqs(seqs, taxonomy)
 
+    def test_filter_seqs_bare_string(self):
+        seqs = pd.Series(['ACGT', 'ACCC'], index=['feat1', 'feat2'])
+        taxonomy = qiime2.Metadata(pd.DataFrame(
+            ['aa; bb; cc', 'bb; dd; ff'],
+            index=pd.Index(['feat1', 'feat2'], name='id'),
+            columns=['Taxon']))
+
+        # include
+        obs1 = filter_seqs(seqs, taxonomy, include='aa,xx').sort_values()
+        exp1 = pd.Series(['ACGT'], index=['feat1']).sort_values()
+        pdt.assert_series_equal(obs1, exp1)
+
+        # exclude
+        obs2 = filter_seqs(seqs, taxonomy, exclude='dd,ff')
+        exp2 = pd.Series(['ACGT'], index=['feat1'])
+        pdt.assert_series_equal(obs2, exp2)
+
     def test_filter_seqs_alt_delimiter_with_comma_retained(self):
         seqs = pd.Series(['ACGT', 'ACCC', 'GTTT', 'TGCA'],
                          index=['feat1', 'feat2', 'feat3', 'feat4'])
         taxonomy = qiime2.Metadata(pd.DataFrame(
-            ['aa; bb; cc', 'aa; bb; dd', 'aa; bb; x,y', 'ff; gg; hh'],
+            ['aa; bb; cc', 'aa; bb; dd', 'aa; bb; x,y', 'ff; gg; yy'],
             index=pd.Index(['feat1', 'feat2', 'feat3', 'feat4'], name='id'),
             columns=['Taxon']))
 
