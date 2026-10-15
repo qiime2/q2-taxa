@@ -258,9 +258,6 @@ def taxonomy_to_metadata(
 def _split_terms(terms, query_delimiter):
     if terms is None:
         return None
-    # convert bare string into list
-    if isinstance(terms, str):
-        terms = [terms]
     split = []
     # handle multi-splitting via list & provided delimiter
     for term in terms:
