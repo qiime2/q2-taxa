@@ -255,9 +255,22 @@ def taxonomy_to_metadata(
     return qiime2.Metadata(metadata)
 
 
+def _split_terms(terms, query_delimiter):
+    if terms is None:
+        return None
+    split = []
+    # handle multi-splitting via list & provided delimiter
+    for term in terms:
+        split.extend(term.split(query_delimiter))
+    return split
+
+
 def _ids_to_keep_from_taxonomy(
-    feature_ids, taxonomy, include, exclude, mode
+    feature_ids, taxonomy, include, exclude, query_delimiter, mode
 ):
+    include = _split_terms(include, query_delimiter)
+    exclude = _split_terms(exclude, query_delimiter)
+
     if include is None and exclude is None:
         raise ValueError("At least one filtering term must be provided.")
 
@@ -307,13 +320,15 @@ def _ids_to_keep_from_taxonomy(
 
 
 def filter_table(
-    table: pd.DataFrame, taxonomy: qiime2.Metadata, include: str = None,
-    exclude: list[str] = None, mode: list[str] = 'contains'
+    table: pd.DataFrame, taxonomy: qiime2.Metadata, include: list[str] = None,
+    exclude: list[str] = None, query_delimiter: str = ',',
+    mode: str = 'contains'
 ) -> pd.DataFrame:
+
     is_rel_freq = _is_relative_frequency(table)
 
     ids_to_keep = _ids_to_keep_from_taxonomy(
-        table.columns, taxonomy, include, exclude, mode
+        table.columns, taxonomy, include, exclude, query_delimiter, mode
     )
 
     if len(ids_to_keep) == 0:
@@ -339,12 +354,13 @@ def filter_table(
 
 
 def filter_seqs(
-    sequences: pd.Series, taxonomy: qiime2.Metadata, include: str = None,
-    exclude: list[str] = None, mode: list[str] = 'contains'
+    sequences: pd.Series, taxonomy: qiime2.Metadata, include: list[str] = None,
+    exclude: list[str] = None, query_delimiter: str = ',',
+    mode: str = 'contains'
 ) -> pd.Series:
+
     ids_to_keep = _ids_to_keep_from_taxonomy(
-        sequences.index, taxonomy, include, exclude,
-        mode)
+        sequences.index, taxonomy, include, exclude, query_delimiter, mode)
 
     if len(ids_to_keep) == 0:
         raise ValueError("All features were filtered, resulting in an "
